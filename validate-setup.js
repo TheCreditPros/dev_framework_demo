@@ -1,42 +1,42 @@
 #!/usr/bin/env node
 
 const { execSync } = require('child_process');
-const fs = require('fs');
 
 console.log('🔍 Validating AI-SDLC Setup...\n');
 
 const checks = [
   {
     name: 'Git Hooks',
-    command: 'ls .git/hooks/pre-commit',
-    success: 'Pre-commit hooks installed'
+    command: 'test -f .husky/pre-commit && echo "exists"',
+    success: 'Pre-commit hooks installed',
   },
   {
     name: 'ESLint',
     command: 'npx eslint --version',
-    success: 'ESLint available'
+    success: 'ESLint available',
   },
   {
     name: 'Prettier',
     command: 'npx prettier --version',
-    success: 'Prettier available'
+    success: 'Prettier available',
   },
   {
     name: 'Husky',
     command: 'npx husky --version',
-    success: 'Husky available'
-  }
+    success: 'Husky available',
+  },
 ];
 
 let passed = 0;
-let total = checks.length;
+const total = checks.length;
 
-checks.forEach(check => {
+// Command checks
+checks.forEach((check) => {
   try {
     execSync(check.command, { stdio: 'ignore' });
     console.log(`✅ ${check.success}`);
     passed++;
-  } catch (error) {
+  } catch {
     console.log(`❌ ${check.name} not properly configured`);
   }
 });
