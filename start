@@ -1,0 +1,40 @@
+#!/bin/bash
+
+# Initial setup command for AI-SDLC Framework
+# Handles both fresh installs (no npm) and existing projects
+
+set -e
+
+# Colors
+GREEN="\033[0;32m"
+BLUE="\033[0;34m"
+YELLOW="\033[1;33m"
+NC="\033[0m"
+
+echo_color() { echo -e "${1}${2}${NC}"; }
+
+echo_color $BLUE "🚀 AI-SDLC Framework Initial Setup"
+echo ""
+
+# Check if this is a fresh installation (no node_modules)
+if [[ ! -d "node_modules" ]]; then
+    echo_color $YELLOW "📦 Fresh installation detected - installing dependencies..."
+    npm install
+    echo_color $GREEN "✅ Dependencies installed!"
+fi
+
+# Run the setup
+echo_color $YELLOW "⚙️ Running AI-SDLC setup..."
+if [[ -f ".scripts/auto-setup.sh" ]]; then
+    bash .scripts/auto-setup.sh
+else
+    echo_color $RED "❌ Setup script not found"
+    exit 1
+fi
+
+echo_color $GREEN "🎉 Setup complete!"
+echo ""
+echo_color $BLUE "Next steps:"
+echo "  npm run ai:status    - Check setup status"
+echo "  npm run ai           - Access AI-SDLC CLI"
+echo "  npm run setup        - Re-run setup if needed"
