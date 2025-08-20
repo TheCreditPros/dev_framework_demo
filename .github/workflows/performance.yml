@@ -40,7 +40,7 @@ jobs:
     if: github.event.inputs.test_type == 'lighthouse' || github.event.inputs.test_type == 'full' || github.event.inputs.test_type == ''
     steps:
       - name: 📥 Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: 🔧 Setup Node.js
         uses: actions/setup-node@v4
@@ -82,7 +82,7 @@ jobs:
     if: github.event.inputs.test_type == 'load' || github.event.inputs.test_type == 'full' || github.event.inputs.test_type == ''
     steps:
       - name: 📥 Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: 🔧 Setup Node.js
         uses: actions/setup-node@v4
@@ -122,7 +122,7 @@ jobs:
     if: github.event.inputs.test_type == 'memory' || github.event.inputs.test_type == 'full' || github.event.inputs.test_type == ''
     steps:
       - name: 📥 Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: 🔧 Setup Node.js
         uses: actions/setup-node@v4
@@ -165,7 +165,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: 📥 Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: 🔧 Setup Node.js
         uses: actions/setup-node@v4
@@ -240,7 +240,7 @@ jobs:
           echo "- Credit Performance: ${{ needs.credit-performance.result }}" >> performance-report.md
 
       - name: 📊 Upload Performance Report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: performance-report-${{ github.run_number }}
           path: performance-report.md
