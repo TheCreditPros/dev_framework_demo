@@ -70,7 +70,7 @@ jobs:
       - name: 📦 Generate Cache Keys
         id: cache-keys
         run: |
-          echo "cache-key=node-modules-${{ env.CACHE_VERSION }}-${{ hashFiles('**/package-lock.json') }}" >> $GITHUB_OUTPUT
+          echo "cache-key=node-modules-${{ env.CACHE_VERSION }}-${{ hashFiles('**/package.json') }}" >> $GITHUB_OUTPUT
 
       - name: 📦 Cache Dependencies
         uses: actions/cache@v3
@@ -84,7 +84,7 @@ jobs:
             node-modules-${{ env.CACHE_VERSION }}-
 
       - name: 📦 Install Dependencies
-        run: npm ci --prefer-offline --no-audit
+        run: npm install --prefer-offline --no-audit
 
       - name: 🔍 Validate Package Structure
         run: |
@@ -147,7 +147,7 @@ jobs:
           key: ${{ needs.setup.outputs.cache-key }}
 
       - name: 📦 Install Dependencies
-        run: npm ci --prefer-offline --no-audit
+        run: npm install --prefer-offline --no-audit
 
       - name: 🔍 ESLint Check
         if: matrix.check == 'lint'
@@ -206,7 +206,7 @@ jobs:
           key: ${{ needs.setup.outputs.cache-key }}
 
       - name: 📦 Install Dependencies
-        run: npm ci --prefer-offline --no-audit
+        run: npm install --prefer-offline --no-audit
 
       - name: 🧪 Unit Tests
         if: matrix.test-type == 'unit'
@@ -273,7 +273,7 @@ jobs:
           key: ${{ needs.setup.outputs.cache-key }}
 
       - name: 📦 Install Dependencies
-        run: npm ci --prefer-offline --no-audit
+        run: npm install --prefer-offline --no-audit
 
       - name: 📊 Download Coverage Reports
         uses: actions/download-artifact@v3
@@ -351,7 +351,7 @@ jobs:
           key: ${{ needs.setup.outputs.cache-key }}
 
       - name: 📦 Install Dependencies
-        run: npm ci --prefer-offline --no-audit
+        run: npm install --prefer-offline --no-audit
 
       - name: 🏗️ Build Application
         run: npm run build
