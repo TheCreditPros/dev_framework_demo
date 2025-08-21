@@ -304,55 +304,8 @@ setup_cicd_automation() {
     echo_color $GREEN "✔️ CODEOWNERS already configured"
   fi
 
-  # Setup Lighthouse configuration
-  if [[ ! -f "lighthouse.config.js" ]]; then
-    echo_color $BLUE "⚡ Creating Lighthouse performance configuration..."
-    cat > lighthouse.config.js << 'EOF'
-// AI-SDLC Framework v3.2.1 - Lighthouse CI Configuration
-// Performance monitoring and web vitals tracking
-
-module.exports = {
-  ci: {
-    collect: {
-      url: ['http://localhost:3000'],
-      startServerCommand: 'npm run dev',
-      startServerReadyPattern: 'ready|listening|started',
-      startServerReadyTimeout: 30000,
-      numberOfRuns: 3,
-      settings: {
-        chromeFlags: '--no-sandbox --disable-dev-shm-usage',
-      },
-    },
-    assert: {
-      assertions: {
-        // Performance budgets for credit repair applications
-        'categories:performance': ['error', { minScore: 0.8 }],
-        'categories:accessibility': ['error', { minScore: 0.9 }],
-        'categories:best-practices': ['error', { minScore: 0.9 }],
-        'categories:seo': ['error', { minScore: 0.8 }],
-
-        // Core Web Vitals - Critical for user experience
-        'first-contentful-paint': ['error', { maxNumericValue: 2000 }],
-        'largest-contentful-paint': ['error', { maxNumericValue: 2500 }],
-        'cumulative-layout-shift': ['error', { maxNumericValue: 0.1 }],
-        'total-blocking-time': ['error', { maxNumericValue: 300 }],
-
-        // Security and compliance
-        'is-on-https': 'error',
-        'uses-http2': 'warn',
-        'no-vulnerable-libraries': 'error',
-      },
-    },
-    upload: {
-      target: 'temporary-public-storage',
-    },
-  },
-};
-EOF
-    echo_color $GREEN "✔️ Lighthouse configuration created"
-  else
-    echo_color $GREEN "✔️ Lighthouse configuration already exists"
-  fi
+  # Performance monitoring setup (Lighthouse removed per requirements)
+  echo_color $BLUE "⚡ Performance monitoring configuration skipped"
 
   # Add CI/CD scripts to package.json
   if [[ -f "package.json" ]]; then
