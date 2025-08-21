@@ -11,7 +11,7 @@
     "test:watch": "vitest --watch",
     "test:coverage": "vitest --coverage",
     "test:e2e": "playwright test",
-    "test:unit": "vitest run tests/unit/",
+    "test:unit": "vitest run __tests__/",
     "test:changed": "vitest run --changed HEAD~1 --reporter=verbose",
     "test:smart": "node scripts-complex/smart-test-selector.js",
     "test:watch-coverage": "vitest --coverage --watch",

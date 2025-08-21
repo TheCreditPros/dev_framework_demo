@@ -304,55 +304,8 @@ setup_cicd_automation() {
     echo_color $GREEN "✔️ CODEOWNERS already configured"
   fi
 
-  # Setup Lighthouse configuration
-  if [[ ! -f "lighthouse.config.js" ]]; then
-    echo_color $BLUE "⚡ Creating Lighthouse performance configuration..."
-    cat > lighthouse.config.js << 'EOF'
-// AI-SDLC Framework v3.2.1 - Lighthouse CI Configuration
-// Performance monitoring and web vitals tracking
-
-module.exports = {
-  ci: {
-    collect: {
-      url: ['http://localhost:3000'],
-      startServerCommand: 'npm run dev',
-      startServerReadyPattern: 'ready|listening|started',
-      startServerReadyTimeout: 30000,
-      numberOfRuns: 3,
-      settings: {
-        chromeFlags: '--no-sandbox --disable-dev-shm-usage',
-      },
-    },
-    assert: {
-      assertions: {
-        // Performance budgets for credit repair applications
-        'categories:performance': ['error', { minScore: 0.8 }],
-        'categories:accessibility': ['error', { minScore: 0.9 }],
-        'categories:best-practices': ['error', { minScore: 0.9 }],
-        'categories:seo': ['error', { minScore: 0.8 }],
-
-        // Core Web Vitals - Critical for user experience
-        'first-contentful-paint': ['error', { maxNumericValue: 2000 }],
-        'largest-contentful-paint': ['error', { maxNumericValue: 2500 }],
-        'cumulative-layout-shift': ['error', { maxNumericValue: 0.1 }],
-        'total-blocking-time': ['error', { maxNumericValue: 300 }],
-
-        // Security and compliance
-        'is-on-https': 'error',
-        'uses-http2': 'warn',
-        'no-vulnerable-libraries': 'error',
-      },
-    },
-    upload: {
-      target: 'temporary-public-storage',
-    },
-  },
-};
-EOF
-    echo_color $GREEN "✔️ Lighthouse configuration created"
-  else
-    echo_color $GREEN "✔️ Lighthouse configuration already exists"
-  fi
+  # Performance monitoring setup (Lighthouse removed per requirements)
+  echo_color $BLUE "⚡ Performance monitoring configuration skipped"
 
   # Add CI/CD scripts to package.json
   if [[ -f "package.json" ]]; then
@@ -426,7 +379,6 @@ create_validation_script() {
 #!/usr/bin/env node
 
 const { execSync } = require('child_process');
-const fs = require('fs');
 
 console.log('🔍 Validating AI-SDLC Setup...\n');
 
@@ -453,44 +405,16 @@ const checks = [
   }
 ];
 
-// File existence checks
-const fileChecks = [
-  { file: '.clinerules', name: 'Cline Rules Configuration' },
-  { file: '.clinerules_modular', name: 'Modular Cline Rules', isDirectory: true },
-  { file: 'cline_config', name: 'Cline Configuration Directory', isDirectory: true },
-  { file: 'cline_templates', name: 'Cline Templates Directory', isDirectory: true },
-  { file: 'cline_config/multi-model-strategy.json', name: 'Multi-Model AI Strategy' }
-];
-
 let passed = 0;
-let total = checks.length + fileChecks.length;
+const total = checks.length;
 
-// Command checks
 checks.forEach(check => {
   try {
     execSync(check.command, { stdio: 'ignore' });
     console.log(`✅ ${check.success}`);
     passed++;
-  } catch (error) {
+  } catch {
     console.log(`❌ ${check.name} not properly configured`);
-  }
-});
-
-// File existence checks
-fileChecks.forEach(check => {
-  try {
-    const exists = check.isDirectory ?
-      fs.statSync(check.file).isDirectory() :
-      fs.statSync(check.file).isFile();
-
-    if (exists) {
-      console.log(`✅ ${check.name} configured`);
-      passed++;
-    } else {
-      console.log(`❌ ${check.name} missing`);
-    }
-  } catch (error) {
-    console.log(`❌ ${check.name} missing`);
   }
 });
 
@@ -498,7 +422,6 @@ console.log(`\n📊 Validation Results: ${passed}/${total} checks passed`);
 
 if (passed === total) {
   console.log('🎉 All systems ready for AI-powered development!');
-  console.log('🧠 Cline AI configuration with 97% cost reduction strategy active');
 } else {
   console.log('⚠️  Some components need attention. Check documentation.');
 }

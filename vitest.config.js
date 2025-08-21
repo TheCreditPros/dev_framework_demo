@@ -7,6 +7,8 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
     setupFiles: ['./src/test/setup.js'],
+    include: ['**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
+    css: true,
     coverage: {
       reporter: ['text', 'json', 'html'],
       exclude: [
@@ -14,21 +16,21 @@ export default defineConfig({
         'src/test/',
         '**/*.d.ts',
         '**/*.config.js',
-        '**/coverage/**'
+        '**/coverage/**',
       ],
       thresholds: {
         global: {
           branches: 70,
           functions: 80,
           lines: 80,
-          statements: 80
-        }
-      }
-    }
+          statements: 80,
+        },
+      },
+    },
   },
   resolve: {
     alias: {
-      '@': '/src'
-    }
-  }
+      '@': '/src',
+    },
+  },
 });
