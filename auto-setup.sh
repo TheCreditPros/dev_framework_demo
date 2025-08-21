@@ -433,7 +433,7 @@ console.log('🔍 Validating AI-SDLC Setup...\n');
 const checks = [
   {
     name: 'Git Hooks',
-    command: 'ls .git/hooks/pre-commit',
+    command: 'test -f .husky/pre-commit && echo "exists"',
     success: 'Pre-commit hooks installed'
   },
   {
