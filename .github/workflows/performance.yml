@@ -49,7 +49,7 @@ jobs:
           cache: 'npm'
 
       - name: 📦 Install Dependencies
-        run: npm ci
+        run: npm install
 
       - name: 🏗️ Build Application
         run: npm run build
@@ -91,7 +91,7 @@ jobs:
           cache: 'npm'
 
       - name: 📦 Install Dependencies
-        run: npm ci
+        run: npm install
 
       - name: 🏗️ Build Application
         run: npm run build
@@ -131,7 +131,7 @@ jobs:
           cache: 'npm'
 
       - name: 📦 Install Dependencies
-        run: npm ci
+        run: npm install
 
       - name: 🧠 Memory Leak Detection
         run: |
@@ -174,7 +174,7 @@ jobs:
           cache: 'npm'
 
       - name: 📦 Install Dependencies
-        run: npm ci
+        run: npm install
 
       - name: 🏦 Credit Score Calculation Performance
         run: |
