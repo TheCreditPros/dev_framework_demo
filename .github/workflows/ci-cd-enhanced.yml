@@ -65,7 +65,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
 
       - name: 📦 Generate Cache Keys
         id: cache-keys
@@ -135,7 +134,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
 
       - name: 📦 Restore Dependencies
         uses: actions/cache@v3
@@ -194,7 +192,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'npm'
 
       - name: 📦 Restore Dependencies
         uses: actions/cache@v3
@@ -235,7 +232,7 @@ jobs:
 
       - name: 📊 Upload Test Results
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: test-results-${{ matrix.test-type }}-node${{ matrix.node-version }}
           path: |
@@ -261,7 +258,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
 
       - name: 📦 Restore Dependencies
         uses: actions/cache@v3
@@ -339,7 +335,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
 
       - name: 📦 Restore Dependencies
         uses: actions/cache@v3
@@ -357,7 +352,7 @@ jobs:
         run: npm run build
 
       - name: 📦 Create Build Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: build-${{ needs.setup.outputs.version }}
           path: |
