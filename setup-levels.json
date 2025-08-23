@@ -208,11 +208,11 @@
   "messages": {
     "minimal": {
       "start": "🚀 Setting up AI-SDLC Framework - Minimal Mode\n   ⚡ Essential tools only - perfect for getting started quickly",
-      "complete": "✅ Minimal setup complete! You have:\n   • ESLint & Prettier for code quality\n   • Husky for git hooks\n   • Vitest for testing\n   • Basic validation\n\n💡 Run './auto-setup-enhanced.sh --standard' to add more features later"
+      "complete": "✅ Minimal setup complete! You have:\n   • ESLint & Prettier for code quality\n   • Husky for git hooks\n   • Vitest for testing\n   • Basic validation\n\n💡 Run './auto-setup.sh --standard' to add more features later"
     },
     "standard": {
       "start": "🚀 Setting up AI-SDLC Framework - Standard Mode\n   ⚖️  Balanced setup with full development tools",
-      "complete": "✅ Standard setup complete! You have:\n   • Complete linting & formatting\n   • Comprehensive testing (unit + E2E)\n   • AI-powered test generation\n   • Performance monitoring\n   • CI/CD automation\n\n💡 Run './auto-setup-enhanced.sh --enterprise' for compliance tools"
+      "complete": "✅ Standard setup complete! You have:\n   • Complete linting & formatting\n   • Comprehensive testing (unit + E2E)\n   • AI-powered test generation\n   • Performance monitoring\n   • CI/CD automation\n\n💡 Run './auto-setup.sh --enterprise' for compliance tools"
     },
     "enterprise": {
       "start": "🚀 Setting up AI-SDLC Framework - Enterprise Mode\n   🏢 Full enterprise features + compliance tools",
