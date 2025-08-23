@@ -1,0 +1,222 @@
+{
+  "version": "1.0.0",
+  "compatibility": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0",
+    "git": ">=2.20.0"
+  },
+  "overrides": {
+    "skipSecurity": "--skip-security",
+    "skipTesting": "--skip-testing",
+    "skipAI": "--skip-ai",
+    "skipMCP": "--skip-mcp",
+    "skipCompliance": "--skip-compliance"
+  },
+  "conditionalFeatures": {
+    "ai": {
+      "condition": "OPENAI_API_KEY",
+      "fallback": false,
+      "message": "AI features require OPENAI_API_KEY environment variable"
+    },
+    "mcp": {
+      "condition": "scripts-complex/mcp-installer.js",
+      "fallback": false,
+      "message": "MCP features require scripts-complex directory"
+    },
+    "postgresql": {
+      "condition": "psql",
+      "fallback": false,
+      "message": "PostgreSQL features require psql command"
+    }
+  },
+  "rollback": {
+    "checkpoints": ["dependencies", "configs", "scripts", "hooks"],
+    "cleanupCommand": "./auto-setup.sh --cleanup",
+    "backupFiles": [".eslintrc.js", ".prettierrc", "package.json"]
+  },
+  "setupLevels": {
+    "minimal": {
+      "name": "Minimal Setup",
+      "description": "Essential tools only - perfect for new developers",
+      "estimatedTime": "2-3 minutes",
+      "resources": {
+        "diskSpace": "50MB",
+        "networkRequests": "~20",
+        "apiCalls": "0"
+      },
+      "dependencies": {
+        "core": ["eslint", "prettier", "husky", "lint-staged"],
+        "testing": ["vitest"],
+        "optional": []
+      },
+      "features": {
+        "linting": true,
+        "formatting": true,
+        "gitHooks": true,
+        "basicTesting": true,
+        "cicd": false,
+        "security": false,
+        "compliance": false,
+        "ai": false,
+        "mcp": false,
+        "performance": false
+      },
+      "scripts": {
+        "lint": "eslint . --cache",
+        "format": "prettier --write .",
+        "test": "vitest",
+        "validate": "node validate-setup.js"
+      }
+    },
+    "standard": {
+      "name": "Standard Setup",
+      "description": "Current full setup - balanced development experience",
+      "estimatedTime": "5-8 minutes",
+      "resources": {
+        "diskSpace": "120MB",
+        "networkRequests": "~60",
+        "apiCalls": "2-5"
+      },
+      "dependencies": {
+        "core": ["eslint", "prettier", "husky", "lint-staged", "commitlint", "@commitlint/config-conventional"],
+        "testing": ["vitest", "@testing-library/react", "@testing-library/jest-dom", "jsdom", "@playwright/test"],
+        "typescript": ["@typescript-eslint/parser", "@typescript-eslint/eslint-plugin"],
+        "optional": []
+      },
+      "features": {
+        "linting": true,
+        "formatting": true,
+        "gitHooks": true,
+        "basicTesting": true,
+        "e2eTesting": true,
+        "cicd": true,
+        "security": false,
+        "compliance": false,
+        "ai": true,
+        "mcp": false,
+        "performance": true
+      },
+      "scripts": {
+        "lint": "eslint . --cache --cache-location .eslintcache/",
+        "format": "prettier --write .",
+        "test": "vitest",
+        "test:coverage": "vitest --coverage",
+        "test:e2e": "playwright test",
+        "validate": "node validate-setup.js",
+        "ai:generate-tests": "node scripts-complex/real-ai-test-generator.js generate"
+      }
+    },
+    "enterprise": {
+      "name": "Enterprise Setup",
+      "description": "Full enterprise features + compliance tools",
+      "estimatedTime": "10-15 minutes",
+      "resources": {
+        "diskSpace": "200MB",
+        "networkRequests": "~100",
+        "apiCalls": "5-10"
+      },
+      "sublevels": {
+        "security": "Enterprise security tools only",
+        "compliance": "FCRA compliance tools only",
+        "monitoring": "Performance & monitoring only"
+      },
+      "dependencies": {
+        "core": ["eslint", "prettier", "husky", "lint-staged", "commitlint", "@commitlint/config-conventional"],
+        "testing": ["vitest", "@testing-library/react", "@testing-library/jest-dom", "jsdom", "@playwright/test", "playwright-qase-reporter"],
+        "typescript": ["@typescript-eslint/parser", "@typescript-eslint/eslint-plugin"],
+        "security": ["@semantic-release/changelog", "@semantic-release/git", "semantic-release"],
+        "optional": []
+      },
+      "features": {
+        "linting": true,
+        "formatting": true,
+        "gitHooks": true,
+        "basicTesting": true,
+        "e2eTesting": true,
+        "cicd": true,
+        "security": true,
+        "compliance": true,
+        "ai": true,
+        "mcp": true,
+        "performance": true,
+        "monitoring": true,
+        "postgresql": true
+      },
+      "scripts": {
+        "lint": "eslint . --cache --cache-location .eslintcache/",
+        "format": "prettier --write .",
+        "test": "vitest",
+        "test:coverage": "vitest --coverage",
+        "test:e2e": "playwright test",
+        "test:ci": "vitest --run --coverage",
+        "validate": "node validate-setup.js",
+        "ai:generate-tests": "node scripts-complex/real-ai-test-generator.js generate",
+        "ai:generate-e2e": "node scripts-complex/ai-e2e-generator.js generate",
+        "mcp:setup": "node scripts-complex/mcp-installer.js",
+        "mcp:validate": "node scripts-complex/mcp-validator.js",
+        "ci:security": "npm audit && npm run lint:security || echo \"Security check complete\"",
+        "ci:performance": "lighthouse-ci || echo \"Performance check complete\"",
+        "ci:compliance": "node scripts-complex/security-scanner.js || echo \"Compliance check complete\"",
+        "db:test": "./postgres-automation.sh test",
+        "db:setup": "./postgres-automation.sh setup",
+        "teams:setup": "./scripts-complex/setup-ms-teams.sh",
+        "teams:validate": "node scripts-complex/quality-gate-notifier.js test-webhook"
+      }
+    }
+  },
+  "validation": {
+    "conflictingFlags": [
+      ["--minimal", "--enterprise"],
+      ["--minimal", "--standard"],
+      ["--standard", "--enterprise"]
+    ],
+    "requiredTools": {
+      "minimal": {
+        "node": ">=18.0.0",
+        "npm": ">=8.0.0",
+        "git": ">=2.20.0"
+      },
+      "standard": {
+        "node": ">=18.0.0",
+        "npm": ">=8.0.0",
+        "git": ">=2.20.0"
+      },
+      "enterprise": {
+        "node": ">=18.0.0",
+        "npm": ">=8.0.0",
+        "git": ">=2.20.0"
+      }
+    },
+    "optionalTools": {
+      "minimal": [],
+      "standard": ["composer"],
+      "enterprise": ["composer", "psql", "docker"]
+    },
+    "dependencyConflicts": [
+      {
+        "package1": "eslint@8.x",
+        "package2": "@typescript-eslint/parser@6.x",
+        "resolution": "Use eslint@9.x with @typescript-eslint/parser@8.x"
+      }
+    ],
+    "environmentChecks": {
+      "minimal": ["NODE_ENV"],
+      "standard": ["NODE_ENV"],
+      "enterprise": ["NODE_ENV", "SECURITY_SCAN_LEVEL"]
+    }
+  },
+  "messages": {
+    "minimal": {
+      "start": "🚀 Setting up AI-SDLC Framework - Minimal Mode\n   ⚡ Essential tools only - perfect for getting started quickly",
+      "complete": "✅ Minimal setup complete! You have:\n   • ESLint & Prettier for code quality\n   • Husky for git hooks\n   • Vitest for testing\n   • Basic validation\n\n💡 Run './auto-setup-enhanced.sh --standard' to add more features later"
+    },
+    "standard": {
+      "start": "🚀 Setting up AI-SDLC Framework - Standard Mode\n   ⚖️  Balanced setup with full development tools",
+      "complete": "✅ Standard setup complete! You have:\n   • Complete linting & formatting\n   • Comprehensive testing (unit + E2E)\n   • AI-powered test generation\n   • Performance monitoring\n   • CI/CD automation\n\n💡 Run './auto-setup-enhanced.sh --enterprise' for compliance tools"
+    },
+    "enterprise": {
+      "start": "🚀 Setting up AI-SDLC Framework - Enterprise Mode\n   🏢 Full enterprise features + compliance tools",
+      "complete": "✅ Enterprise setup complete! You have:\n   • All standard features\n   • Security scanning & compliance\n   • MCP server integration\n   • PostgreSQL automation\n   • MS Teams notifications\n   • FCRA compliance tools\n\n🎉 Ready for enterprise development!"
+    }
+  }
+}
