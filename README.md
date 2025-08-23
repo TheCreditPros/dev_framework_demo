@@ -606,3 +606,5 @@ The framework provides **sophisticated, intelligent feedback** (not binary) thro
 **Enterprise Support:** Available for The Credit Pros development teams
 **License:** MIT - Open source with enterprise features
 **Security:** GitGuardian + SonarCloud + Multi-layer protection + CI/CD automation
+
+<!-- This is a small change -->
