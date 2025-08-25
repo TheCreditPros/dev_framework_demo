@@ -14,7 +14,8 @@ const path = require('path');
 const { execSync } = require('child_process');
 
 class APIContractTester {
-  constructor() {
+  constructor(fsModule = null) {
+    this.fs = fsModule || fs;
     this.projectRoot = process.cwd();
     this.reportsDir = path.join(this.projectRoot, 'reports', 'api-contracts');
     this.setupReportsDirectory();
@@ -25,26 +26,26 @@ class APIContractTester {
         name: 'Dredd',
         package: 'dredd',
         config: 'dredd.yml',
-        command: 'dredd'
+        command: 'dredd',
       },
       pact: {
         name: 'Pact',
         package: '@pact-foundation/pact',
         config: 'pact.config.js',
-        command: 'pact'
+        command: 'pact',
       },
       openapi: {
         name: 'OpenAPI Validator',
         package: 'openapi-validator',
         config: 'openapi.yaml',
-        command: 'openapi-validator'
-      }
+        command: 'openapi-validator',
+      },
     };
   }
 
   setupReportsDirectory() {
-    if (!fs.existsSync(this.reportsDir)) {
-      fs.mkdirSync(this.reportsDir, { recursive: true });
+    if (!this.fs.existsSync(this.reportsDir)) {
+      this.fs.mkdirSync(this.reportsDir, { recursive: true });
     }
   }
 
@@ -59,7 +60,7 @@ class APIContractTester {
         // Check if tool is installed
         execSync(`npm list ${toolInfo.package}`, { stdio: 'ignore' });
         availableTools.push(toolKey);
-      } catch (error) {
+      } catch {
         // Tool not installed, continue
       }
     }
@@ -78,7 +79,7 @@ class APIContractTester {
       'openapi.json',
       'swagger.yaml',
       'swagger.yml',
-      'swagger.json'
+      'swagger.json',
     ];
 
     // Search in common API documentation locations
@@ -87,7 +88,7 @@ class APIContractTester {
       path.join(this.projectRoot, 'docs'),
       path.join(this.projectRoot, 'api'),
       path.join(this.projectRoot, 'spec'),
-      path.join(this.projectRoot, 'specs')
+      path.join(this.projectRoot, 'specs'),
     ];
 
     for (const searchPath of searchPaths) {
@@ -142,7 +143,6 @@ class APIContractTester {
       if (spec.components && spec.components.schemas) {
         issues.push(...this.validateSchemas(spec.components.schemas));
       }
-
     } catch (error) {
       issues.push(`Failed to parse specification: ${error.message}`);
     }
@@ -177,8 +177,14 @@ class APIContractTester {
       }
 
       for (const [method, operation] of Object.entries(pathItem)) {
-        if (['get', 'post', 'put', 'delete', 'patch', 'head', 'options'].includes(method.toLowerCase())) {
-          issues.push(...this.validateOperation(operation, path, method, specPath));
+        if (
+          ['get', 'post', 'put', 'delete', 'patch', 'head', 'options'].includes(
+            method.toLowerCase()
+          )
+        ) {
+          issues.push(
+            ...this.validateOperation(operation, path, method, specPath)
+          );
         }
       }
     }
@@ -194,26 +200,38 @@ class APIContractTester {
 
     // Validate operationId
     if (!operation.operationId) {
-      issues.push(`Missing operationId for ${method.toUpperCase()} ${path} in ${specPath}`);
+      issues.push(
+        `Missing operationId for ${method.toUpperCase()} ${path} in ${specPath}`
+      );
     }
 
     // Validate summary
     if (!operation.summary) {
-      issues.push(`Missing summary for ${method.toUpperCase()} ${path} in ${specPath}`);
+      issues.push(
+        `Missing summary for ${method.toUpperCase()} ${path} in ${specPath}`
+      );
     } else if (operation.summary.length < 20) {
-      issues.push(`Summary too brief for ${method.toUpperCase()} ${path} in ${specPath}`);
+      issues.push(
+        `Summary too brief for ${method.toUpperCase()} ${path} in ${specPath}`
+      );
     }
 
     // Validate responses
     if (!operation.responses) {
-      issues.push(`Missing responses for ${method.toUpperCase()} ${path} in ${specPath}`);
+      issues.push(
+        `Missing responses for ${method.toUpperCase()} ${path} in ${specPath}`
+      );
     } else {
-      issues.push(...this.validateResponses(operation.responses, path, method, specPath));
+      issues.push(
+        ...this.validateResponses(operation.responses, path, method, specPath)
+      );
     }
 
     // Validate parameters
     if (operation.parameters) {
-      issues.push(...this.validateParameters(operation.parameters, path, method, specPath));
+      issues.push(
+        ...this.validateParameters(operation.parameters, path, method, specPath)
+      );
     }
 
     return issues;
@@ -227,14 +245,22 @@ class APIContractTester {
 
     for (const [statusCode, response] of Object.entries(responses)) {
       if (!response.description) {
-        issues.push(`Missing description for ${statusCode} response in ${method.toUpperCase()} ${path} in ${specPath}`);
+        issues.push(
+          `Missing description for ${statusCode} response in ${method.toUpperCase()} ${path} in ${specPath}`
+        );
       }
 
       // Validate response schemas
       if (response.content) {
         for (const [contentType, content] of Object.entries(response.content)) {
           if (content.schema) {
-            issues.push(...this.validateSchema(content.schema, `${statusCode} ${contentType}`, specPath));
+            issues.push(
+              ...this.validateSchema(
+                content.schema,
+                `${statusCode} ${contentType}`,
+                specPath
+              )
+            );
           }
         }
       }
@@ -251,21 +277,31 @@ class APIContractTester {
 
     for (const param of parameters) {
       if (!param.name) {
-        issues.push(`Parameter missing name in ${method.toUpperCase()} ${path} in ${specPath}`);
+        issues.push(
+          `Parameter missing name in ${method.toUpperCase()} ${path} in ${specPath}`
+        );
       }
 
       if (!param.in) {
-        issues.push(`Parameter "${param.name}" missing location (in) in ${method.toUpperCase()} ${path} in ${specPath}`);
+        issues.push(
+          `Parameter "${param.name}" missing location (in) in ${method.toUpperCase()} ${path} in ${specPath}`
+        );
       }
 
       if (!param.description) {
-        issues.push(`Parameter "${param.name}" missing description in ${method.toUpperCase()} ${path} in ${specPath}`);
+        issues.push(
+          `Parameter "${param.name}" missing description in ${method.toUpperCase()} ${path} in ${specPath}`
+        );
       } else if (param.description.length < 20) {
-        issues.push(`Parameter "${param.name}" description too brief in ${method.toUpperCase()} ${path} in ${specPath}`);
+        issues.push(
+          `Parameter "${param.name}" description too brief in ${method.toUpperCase()} ${path} in ${specPath}`
+        );
       }
 
       if (param.required === undefined) {
-        issues.push(`Parameter "${param.name}" missing required field in ${method.toUpperCase()} ${path} in ${specPath}`);
+        issues.push(
+          `Parameter "${param.name}" missing required field in ${method.toUpperCase()} ${path} in ${specPath}`
+        );
       }
     }
 
@@ -291,18 +327,32 @@ class APIContractTester {
   validateSchema(schema, schemaName) {
     const issues = [];
 
-    if (!schema.type && !schema.$ref && !schema.allOf && !schema.anyOf && !schema.oneOf) {
+    if (
+      !schema.type &&
+      !schema.$ref &&
+      !schema.allOf &&
+      !schema.anyOf &&
+      !schema.oneOf
+    ) {
       issues.push(`Schema "${schemaName}" missing type definition`);
     }
 
     if (schema.properties) {
       for (const [propName, prop] of Object.entries(schema.properties)) {
         if (!prop.type && !prop.$ref) {
-          issues.push(`Property "${propName}" in schema "${schemaName}" missing type`);
+          issues.push(
+            `Property "${propName}" in schema "${schemaName}" missing type`
+          );
         }
 
-        if (prop.required === true && schema.required && !schema.required.includes(propName)) {
-          issues.push(`Required property "${propName}" not listed in required array for schema "${schemaName}"`);
+        if (
+          prop.required === true &&
+          schema.required &&
+          !schema.required.includes(propName)
+        ) {
+          issues.push(
+            `Required property "${propName}" not listed in required array for schema "${schemaName}"`
+          );
         }
       }
     }
@@ -315,15 +365,15 @@ class APIContractTester {
    */
   setupDredd(specPath) {
     const dreddConfig = {
-      'swagger': specPath,
-      'server': 'http://localhost:3000',
+      swagger: specPath,
+      server: 'http://localhost:3000',
       'hooks-worker-timeout': 5000,
       'hooks-worker-connect-timeout': 1500,
       'hooks-worker-after-connect-wait': 100,
       'hooks-worker-term-timeout': 5000,
       'hooks-worker-term-retry': 500,
       'hooks-worker-handler-host': '127.0.0.1',
-      'hooks-worker-handler-port': 61321
+      'hooks-worker-handler-port': 61321,
     };
 
     const configPath = path.join(this.projectRoot, 'dredd.yml');
@@ -371,7 +421,10 @@ class APIContractTester {
         console.log('✅ Dredd installed successfully');
       } catch (error) {
         console.error('❌ Failed to install Dredd:', error.message);
-        return { status: 'failed', error: 'Could not install contract testing tool' };
+        return {
+          status: 'failed',
+          error: 'Could not install contract testing tool',
+        };
       }
     }
 
@@ -380,7 +433,9 @@ class APIContractTester {
 
     if (specFiles.length === 0) {
       console.log('⚠️  No API specification files found');
-      console.log('💡 Create openapi.yaml, swagger.yaml, or similar in your project');
+      console.log(
+        '💡 Create openapi.yaml, swagger.yaml, or similar in your project'
+      );
       return { status: 'warning', message: 'No API specifications found' };
     }
 
@@ -418,7 +473,7 @@ class APIContractTester {
             specFile,
             tool: 'dredd',
             status: 'configured',
-            issues: validationIssues.length
+            issues: validationIssues.length,
           });
         } catch (error) {
           console.error('❌ Dredd setup failed:', error.message);
@@ -426,7 +481,7 @@ class APIContractTester {
             specFile,
             tool: 'dredd',
             status: 'failed',
-            error: error.message
+            error: error.message,
           });
         }
       }
@@ -439,7 +494,7 @@ class APIContractTester {
       status: 'success',
       reportPath,
       results,
-      specFiles
+      specFiles,
     };
   }
 
@@ -453,14 +508,17 @@ class APIContractTester {
       summary: {
         totalSpecifications: specFiles.length,
         totalResults: results.length,
-        passed: results.filter(r => r.status === 'configured').length,
-        failed: results.filter(r => r.status === 'failed').length
+        passed: results.filter((r) => r.status === 'configured').length,
+        failed: results.filter((r) => r.status === 'failed').length,
       },
       specifications: specFiles,
-      testResults: results
+      testResults: results,
     };
 
-    const reportPath = path.join(this.reportsDir, `contract-test-report-${Date.now()}.json`);
+    const reportPath = path.join(
+      this.reportsDir,
+      `contract-test-report-${Date.now()}.json`
+    );
     fs.writeFileSync(reportPath, JSON.stringify(report, null, 2));
 
     return reportPath;
@@ -473,8 +531,14 @@ class APIContractTester {
     const issues = [];
 
     try {
-      const oldSpec = this.parseSpec(fs.readFileSync(oldSpecPath, 'utf8'), oldSpecPath);
-      const newSpec = this.parseSpec(fs.readFileSync(newSpecPath, 'utf8'), newSpecPath);
+      const oldSpec = this.parseSpec(
+        fs.readFileSync(oldSpecPath, 'utf8'),
+        oldSpecPath
+      );
+      const newSpec = this.parseSpec(
+        fs.readFileSync(newSpecPath, 'utf8'),
+        newSpecPath
+      );
 
       // Compare paths
       const oldPaths = Object.keys(oldSpec.paths || {});
@@ -493,7 +557,9 @@ class APIContractTester {
           const newOperations = newSpec.paths[path];
           for (const method of Object.keys(pathItem)) {
             if (!newOperations[method]) {
-              issues.push(`BREAKING: Operation removed: ${method.toUpperCase()} ${path}`);
+              issues.push(
+                `BREAKING: Operation removed: ${method.toUpperCase()} ${path}`
+              );
             }
           }
         }
@@ -501,7 +567,6 @@ class APIContractTester {
 
       // Check for required parameter changes
       // (simplified check - in practice this would be more comprehensive)
-
     } catch (error) {
       issues.push(`Failed to compare specifications: ${error.message}`);
     }
@@ -534,7 +599,6 @@ class APIContractTester {
           }
         }
       }
-
     } catch (error) {
       issues.push(`Failed to check compatibility: ${error.message}`);
     }
@@ -546,7 +610,8 @@ class APIContractTester {
    * Validate semantic versioning
    */
   isValidSemver(version) {
-    const semverRegex = /^(\d+)\.(\d+)\.(\d+)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?$/;
+    const semverRegex =
+      /^(\d+)\.(\d+)\.(\d+)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?$/;
     return semverRegex.test(version);
   }
 
@@ -577,7 +642,7 @@ class APIContractTester {
     return {
       status: 'detected',
       configPath: 'vitest.config.js',
-      integration: 'API contract tests can be run with vitest'
+      integration: 'API contract tests can be run with vitest',
     };
   }
 
@@ -589,7 +654,7 @@ class APIContractTester {
     return {
       status: 'detected',
       configPath: 'playwright.config.js',
-      integration: 'API contract tests can be integrated with E2E tests'
+      integration: 'API contract tests can be integrated with E2E tests',
     };
   }
 
@@ -610,17 +675,23 @@ class APIContractTester {
       const finalReport = {
         ...testResults,
         frameworkIntegrations,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       };
 
       console.log('\n✅ API Contract Testing Setup Complete!');
 
       if (testResults.status === 'success') {
         console.log(`📁 Report saved to: ${testResults.reportPath}`);
-        console.log(`📊 Specifications analyzed: ${testResults.specFiles.length}`);
+        console.log(
+          `📊 Specifications analyzed: ${testResults.specFiles.length}`
+        );
 
-        const passed = testResults.results.filter(r => r.status === 'configured').length;
-        const failed = testResults.results.filter(r => r.status === 'failed').length;
+        const passed = testResults.results.filter(
+          (r) => r.status === 'configured'
+        ).length;
+        const failed = testResults.results.filter(
+          (r) => r.status === 'failed'
+        ).length;
 
         if (passed > 0) {
           console.log(`🟢 ${passed} specification(s) configured successfully`);
@@ -635,7 +706,7 @@ class APIContractTester {
       console.error('❌ Contract testing setup failed:', error.message);
       return {
         status: 'failed',
-        error: error.message
+        error: error.message,
       };
     }
   }
@@ -709,12 +780,18 @@ async function main() {
       console.log('Usage:');
       console.log('  api-contract-tester.js test');
       console.log('  api-contract-tester.js validate <spec-file>');
-      console.log('  api-contract-tester.js breaking-changes <old-spec> <new-spec>');
+      console.log(
+        '  api-contract-tester.js breaking-changes <old-spec> <new-spec>'
+      );
       console.log('');
       console.log('Commands:');
       console.log('  test              Run full contract testing setup');
-      console.log('  validate          Validate API specification completeness');
-      console.log('  breaking-changes  Check for breaking changes between versions');
+      console.log(
+        '  validate          Validate API specification completeness'
+      );
+      console.log(
+        '  breaking-changes  Check for breaking changes between versions'
+      );
       console.log('');
       console.log('Features:');
       console.log('  • Detects and validates OpenAPI/Swagger specifications');

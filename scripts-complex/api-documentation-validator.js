@@ -11,12 +11,16 @@ require('dotenv').config();
 
 const fs = require('fs');
 const path = require('path');
-const { execSync } = require('child_process');
 
 class APIDocumentationValidator {
-  constructor() {
+  constructor(fsModule = null) {
+    this.fs = fsModule || fs;
     this.projectRoot = process.cwd();
-    this.reportsDir = path.join(this.projectRoot, 'reports', 'api-documentation');
+    this.reportsDir = path.join(
+      this.projectRoot,
+      'reports',
+      'api-documentation'
+    );
     this.setupReportsDirectory();
 
     // Quality thresholds
@@ -25,13 +29,13 @@ class APIDocumentationValidator {
       parameterDescriptionMinLength: 30,
       exampleMinCount: 1,
       responseSchemaCoverage: 0.8,
-      endpointDocumentationRatio: 0.9
+      endpointDocumentationRatio: 0.9,
     };
   }
 
   setupReportsDirectory() {
-    if (!fs.existsSync(this.reportsDir)) {
-      fs.mkdirSync(this.reportsDir, { recursive: true });
+    if (!this.fs.existsSync(this.reportsDir)) {
+      this.fs.mkdirSync(this.reportsDir, { recursive: true });
     }
   }
 
@@ -46,7 +50,7 @@ class APIDocumentationValidator {
       'openapi.json',
       'swagger.yaml',
       'swagger.yml',
-      'swagger.json'
+      'swagger.json',
     ];
 
     // Search in common locations
@@ -55,7 +59,7 @@ class APIDocumentationValidator {
       path.join(this.projectRoot, 'docs'),
       path.join(this.projectRoot, 'api'),
       path.join(this.projectRoot, 'spec'),
-      path.join(this.projectRoot, 'specs')
+      path.join(this.projectRoot, 'specs'),
     ];
 
     for (const searchPath of searchPaths) {
@@ -99,7 +103,7 @@ class APIDocumentationValidator {
         type: 'spec-version',
         severity: 'high',
         message: 'Specification must define openapi or swagger version',
-        location: specPath
+        location: specPath,
       });
     }
 
@@ -109,7 +113,7 @@ class APIDocumentationValidator {
         type: 'missing-info',
         severity: 'high',
         message: 'Specification missing info section',
-        location: specPath
+        location: specPath,
       });
     } else {
       if (!spec.info.title) {
@@ -117,7 +121,7 @@ class APIDocumentationValidator {
           type: 'missing-title',
           severity: 'medium',
           message: 'Specification missing title',
-          location: specPath
+          location: specPath,
         });
       }
 
@@ -126,7 +130,7 @@ class APIDocumentationValidator {
           type: 'missing-version',
           severity: 'medium',
           message: 'Specification missing version',
-          location: specPath
+          location: specPath,
         });
       }
 
@@ -134,8 +138,9 @@ class APIDocumentationValidator {
         issues.push({
           type: 'brief-description',
           severity: 'low',
-          message: 'Specification description should be more detailed (minimum 50 characters)',
-          location: specPath
+          message:
+            'Specification description should be more detailed (minimum 50 characters)',
+          location: specPath,
         });
       }
     }
@@ -146,7 +151,7 @@ class APIDocumentationValidator {
         type: 'missing-servers',
         severity: 'medium',
         message: 'Specification missing servers section',
-        location: specPath
+        location: specPath,
       });
     }
 
@@ -156,7 +161,7 @@ class APIDocumentationValidator {
         type: 'missing-paths',
         severity: 'high',
         message: 'Specification missing paths',
-        location: specPath
+        location: specPath,
       });
     } else {
       issues.push(...this.validatePaths(spec.paths, specPath));
@@ -184,15 +189,24 @@ class APIDocumentationValidator {
           type: 'invalid-path',
           severity: 'medium',
           message: `Path "${path}" should start with "/"`,
-          location: `${specPath}#/paths/${path}`
+          location: `${specPath}#/paths/${path}`,
         });
       }
 
       for (const [method, operation] of Object.entries(pathItem)) {
-        if (['get', 'post', 'put', 'delete', 'patch', 'head', 'options'].includes(method.toLowerCase())) {
+        if (
+          ['get', 'post', 'put', 'delete', 'patch', 'head', 'options'].includes(
+            method.toLowerCase()
+          )
+        ) {
           totalEndpoints++;
 
-          const operationIssues = this.validateOperation(operation, path, method, specPath);
+          const operationIssues = this.validateOperation(
+            operation,
+            path,
+            method,
+            specPath
+          );
           issues.push(...operationIssues);
 
           if (operationIssues.length === 0) {
@@ -203,13 +217,16 @@ class APIDocumentationValidator {
     }
 
     // Check overall documentation coverage
-    const documentationRatio = totalEndpoints > 0 ? documentedEndpoints / totalEndpoints : 0;
-    if (documentationRatio < this.qualityThresholds.endpointDocumentationRatio) {
+    const documentationRatio =
+      totalEndpoints > 0 ? documentedEndpoints / totalEndpoints : 0;
+    if (
+      documentationRatio < this.qualityThresholds.endpointDocumentationRatio
+    ) {
       issues.push({
         type: 'low-coverage',
         severity: 'medium',
         message: `Only ${Math.round(documentationRatio * 100)}% of endpoints are well-documented (target: ${Math.round(this.qualityThresholds.endpointDocumentationRatio * 100)}%)`,
-        location: specPath
+        location: specPath,
       });
     }
 
@@ -228,7 +245,7 @@ class APIDocumentationValidator {
         type: 'missing-operation-id',
         severity: 'low',
         message: `Missing operationId for ${method.toUpperCase()} ${path}`,
-        location: `${specPath}#/paths/${path}/${method}`
+        location: `${specPath}#/paths/${path}/${method}`,
       });
     }
 
@@ -238,14 +255,16 @@ class APIDocumentationValidator {
         type: 'missing-summary',
         severity: 'medium',
         message: `Missing summary for ${method.toUpperCase()} ${path}`,
-        location: `${specPath}#/paths/${path}/${method}`
+        location: `${specPath}#/paths/${path}/${method}`,
       });
-    } else if (operation.summary.length < this.qualityThresholds.descriptionMinLength) {
+    } else if (
+      operation.summary.length < this.qualityThresholds.descriptionMinLength
+    ) {
       issues.push({
         type: 'brief-summary',
         severity: 'low',
         message: `Summary too brief for ${method.toUpperCase()} ${path} (${operation.summary.length} chars, min ${this.qualityThresholds.descriptionMinLength})`,
-        location: `${specPath}#/paths/${path}/${method}`
+        location: `${specPath}#/paths/${path}/${method}`,
       });
     }
 
@@ -255,14 +274,16 @@ class APIDocumentationValidator {
         type: 'missing-description',
         severity: 'medium',
         message: `Missing description for ${method.toUpperCase()} ${path}`,
-        location: `${specPath}#/paths/${path}/${method}`
+        location: `${specPath}#/paths/${path}/${method}`,
       });
-    } else if (operation.description.length < this.qualityThresholds.descriptionMinLength) {
+    } else if (
+      operation.description.length < this.qualityThresholds.descriptionMinLength
+    ) {
       issues.push({
         type: 'brief-description',
         severity: 'low',
         message: `Description too brief for ${method.toUpperCase()} ${path} (${operation.description.length} chars, min ${this.qualityThresholds.descriptionMinLength})`,
-        location: `${specPath}#/paths/${path}/${method}`
+        location: `${specPath}#/paths/${path}/${method}`,
       });
     }
 
@@ -272,20 +293,31 @@ class APIDocumentationValidator {
         type: 'missing-responses',
         severity: 'high',
         message: `Missing responses for ${method.toUpperCase()} ${path}`,
-        location: `${specPath}#/paths/${path}/${method}`
+        location: `${specPath}#/paths/${path}/${method}`,
       });
     } else {
-      issues.push(...this.validateResponses(operation.responses, path, method, specPath));
+      issues.push(
+        ...this.validateResponses(operation.responses, path, method, specPath)
+      );
     }
 
     // Validate parameters
     if (operation.parameters) {
-      issues.push(...this.validateParameters(operation.parameters, path, method, specPath));
+      issues.push(
+        ...this.validateParameters(operation.parameters, path, method, specPath)
+      );
     }
 
     // Validate request body
     if (operation.requestBody) {
-      issues.push(...this.validateRequestBody(operation.requestBody, path, method, specPath));
+      issues.push(
+        ...this.validateRequestBody(
+          operation.requestBody,
+          path,
+          method,
+          specPath
+        )
+      );
     }
 
     // Validate security
@@ -294,7 +326,7 @@ class APIDocumentationValidator {
         type: 'missing-security',
         severity: 'low',
         message: `Missing security definition for ${method.toUpperCase()} ${path}`,
-        location: `${specPath}#/paths/${path}/${method}`
+        location: `${specPath}#/paths/${path}/${method}`,
       });
     }
 
@@ -313,7 +345,7 @@ class APIDocumentationValidator {
           type: 'missing-response-description',
           severity: 'medium',
           message: `Missing description for ${statusCode} response in ${method.toUpperCase()} ${path}`,
-          location: `${specPath}#/paths/${path}/${method}/responses/${statusCode}`
+          location: `${specPath}#/paths/${path}/${method}/responses/${statusCode}`,
         });
       }
 
@@ -327,25 +359,35 @@ class APIDocumentationValidator {
 
           if (content.schema) {
             documentedSchemaCount++;
-            issues.push(...this.validateSchema(content.schema, `${statusCode} ${contentType}`, specPath));
+            issues.push(
+              ...this.validateSchema(
+                content.schema,
+                `${statusCode} ${contentType}`,
+                specPath
+              )
+            );
           } else {
             issues.push({
               type: 'missing-schema',
               severity: 'medium',
               message: `Missing schema for ${statusCode} ${contentType} response in ${method.toUpperCase()} ${path}`,
-              location: `${specPath}#/paths/${path}/${method}/responses/${statusCode}/content/${contentType}`
+              location: `${specPath}#/paths/${path}/${method}/responses/${statusCode}/content/${contentType}`,
             });
           }
         }
 
         // Check schema documentation coverage
-        const schemaCoverage = schemaCount > 0 ? documentedSchemaCount / schemaCount : 0;
-        if (schemaCount > 0 && schemaCoverage < this.qualityThresholds.responseSchemaCoverage) {
+        const schemaCoverage =
+          schemaCount > 0 ? documentedSchemaCount / schemaCount : 0;
+        if (
+          schemaCount > 0 &&
+          schemaCoverage < this.qualityThresholds.responseSchemaCoverage
+        ) {
           issues.push({
             type: 'low-schema-coverage',
             severity: 'low',
             message: `Only ${Math.round(schemaCoverage * 100)}% of response schemas documented for ${method.toUpperCase()} ${path} (target: ${Math.round(this.qualityThresholds.responseSchemaCoverage * 100)}%)`,
-            location: `${specPath}#/paths/${path}/${method}/responses`
+            location: `${specPath}#/paths/${path}/${method}/responses`,
           });
         }
       }
@@ -366,7 +408,7 @@ class APIDocumentationValidator {
           type: 'missing-param-name',
           severity: 'high',
           message: `Parameter missing name in ${method.toUpperCase()} ${path}`,
-          location: `${specPath}#/paths/${path}/${method}/parameters`
+          location: `${specPath}#/paths/${path}/${method}/parameters`,
         });
       }
 
@@ -375,7 +417,7 @@ class APIDocumentationValidator {
           type: 'missing-param-location',
           severity: 'high',
           message: `Parameter "${param.name}" missing location (in) in ${method.toUpperCase()} ${path}`,
-          location: `${specPath}#/paths/${path}/${method}/parameters`
+          location: `${specPath}#/paths/${path}/${method}/parameters`,
         });
       }
 
@@ -384,14 +426,17 @@ class APIDocumentationValidator {
           type: 'missing-param-description',
           severity: 'medium',
           message: `Parameter "${param.name}" missing description in ${method.toUpperCase()} ${path}`,
-          location: `${specPath}#/paths/${path}/${method}/parameters`
+          location: `${specPath}#/paths/${path}/${method}/parameters`,
         });
-      } else if (param.description.length < this.qualityThresholds.parameterDescriptionMinLength) {
+      } else if (
+        param.description.length <
+        this.qualityThresholds.parameterDescriptionMinLength
+      ) {
         issues.push({
           type: 'brief-param-description',
           severity: 'low',
           message: `Parameter "${param.name}" description too brief in ${method.toUpperCase()} ${path} (${param.description.length} chars, min ${this.qualityThresholds.parameterDescriptionMinLength})`,
-          location: `${specPath}#/paths/${path}/${method}/parameters`
+          location: `${specPath}#/paths/${path}/${method}/parameters`,
         });
       }
 
@@ -400,17 +445,20 @@ class APIDocumentationValidator {
           type: 'missing-param-required',
           severity: 'medium',
           message: `Parameter "${param.name}" missing required field in ${method.toUpperCase()} ${path}`,
-          location: `${specPath}#/paths/${path}/${method}/parameters`
+          location: `${specPath}#/paths/${path}/${method}/parameters`,
         });
       }
 
       // Check for examples
-      if (!param.example && (!param.examples || Object.keys(param.examples).length === 0)) {
+      if (
+        !param.example &&
+        (!param.examples || Object.keys(param.examples).length === 0)
+      ) {
         issues.push({
           type: 'missing-param-example',
           severity: 'low',
           message: `Parameter "${param.name}" missing example in ${method.toUpperCase()} ${path}`,
-          location: `${specPath}#/paths/${path}/${method}/parameters`
+          location: `${specPath}#/paths/${path}/${method}/parameters`,
         });
       }
     }
@@ -429,20 +477,28 @@ class APIDocumentationValidator {
         type: 'missing-request-body-description',
         severity: 'medium',
         message: `Missing request body description for ${method.toUpperCase()} ${path}`,
-        location: `${specPath}#/paths/${path}/${method}/requestBody`
+        location: `${specPath}#/paths/${path}/${method}/requestBody`,
       });
     }
 
     if (requestBody.content) {
-      for (const [contentType, content] of Object.entries(requestBody.content)) {
+      for (const [contentType, content] of Object.entries(
+        requestBody.content
+      )) {
         if (content.schema) {
-          issues.push(...this.validateSchema(content.schema, `request body ${contentType}`, specPath));
+          issues.push(
+            ...this.validateSchema(
+              content.schema,
+              `request body ${contentType}`,
+              specPath
+            )
+          );
         } else {
           issues.push({
             type: 'missing-request-schema',
             severity: 'medium',
             message: `Missing schema for request body ${contentType} in ${method.toUpperCase()} ${path}`,
-            location: `${specPath}#/paths/${path}/${method}/requestBody/content/${contentType}`
+            location: `${specPath}#/paths/${path}/${method}/requestBody/content/${contentType}`,
           });
         }
       }
@@ -470,12 +526,18 @@ class APIDocumentationValidator {
   validateSchema(schema, schemaName, specPath) {
     const issues = [];
 
-    if (!schema.type && !schema.$ref && !schema.allOf && !schema.anyOf && !schema.oneOf) {
+    if (
+      !schema.type &&
+      !schema.$ref &&
+      !schema.allOf &&
+      !schema.anyOf &&
+      !schema.oneOf
+    ) {
       issues.push({
         type: 'missing-schema-type',
         severity: 'medium',
         message: `Schema "${schemaName}" missing type definition`,
-        location: specPath
+        location: specPath,
       });
     }
 
@@ -486,7 +548,7 @@ class APIDocumentationValidator {
             type: 'missing-property-type',
             severity: 'medium',
             message: `Property "${propName}" in schema "${schemaName}" missing type`,
-            location: specPath
+            location: specPath,
           });
         }
 
@@ -495,24 +557,27 @@ class APIDocumentationValidator {
             type: 'missing-property-description',
             severity: 'low',
             message: `Property "${propName}" in schema "${schemaName}" missing description`,
-            location: specPath
+            location: specPath,
           });
         } else if (prop.description.length < 20) {
           issues.push({
             type: 'brief-property-description',
             severity: 'low',
             message: `Property "${propName}" description too brief in schema "${schemaName}"`,
-            location: specPath
+            location: specPath,
           });
         }
 
         // Check for examples
-        if (!prop.example && (!prop.examples || Object.keys(prop.examples).length === 0)) {
+        if (
+          !prop.example &&
+          (!prop.examples || Object.keys(prop.examples).length === 0)
+        ) {
           issues.push({
             type: 'missing-property-example',
             severity: 'low',
             message: `Property "${propName}" missing example in schema "${schemaName}"`,
-            location: specPath
+            location: specPath,
           });
         }
       }
@@ -532,30 +597,41 @@ class APIDocumentationValidator {
     }
 
     if (components.parameters) {
-      issues.push(...this.validateParameters(Object.values(components.parameters), 'components', 'parameters', specPath));
+      issues.push(
+        ...this.validateParameters(
+          Object.values(components.parameters),
+          'components',
+          'parameters',
+          specPath
+        )
+      );
     }
 
     if (components.responses) {
-      for (const [responseName, response] of Object.entries(components.responses)) {
+      for (const [responseName, response] of Object.entries(
+        components.responses
+      )) {
         if (!response.description) {
           issues.push({
             type: 'missing-component-response-description',
             severity: 'medium',
             message: `Component response "${responseName}" missing description`,
-            location: specPath
+            location: specPath,
           });
         }
       }
     }
 
     if (components.securitySchemes) {
-      for (const [schemeName, scheme] of Object.entries(components.securitySchemes)) {
+      for (const [schemeName, scheme] of Object.entries(
+        components.securitySchemes
+      )) {
         if (!scheme.type) {
           issues.push({
             type: 'missing-security-scheme-type',
             severity: 'high',
             message: `Security scheme "${schemeName}" missing type`,
-            location: specPath
+            location: specPath,
           });
         }
       }
@@ -567,7 +643,7 @@ class APIDocumentationValidator {
   /**
    * Identify multi-step processes in documentation
    */
-  identifyMultiStepProcesses(spec, specPath) {
+  identifyMultiStepProcesses(spec) {
     const processes = [];
 
     if (!spec.paths) return processes;
@@ -577,7 +653,11 @@ class APIDocumentationValidator {
 
     for (const [path, pathItem] of Object.entries(spec.paths)) {
       for (const [method, operation] of Object.entries(pathItem)) {
-        if (['get', 'post', 'put', 'delete', 'patch'].includes(method.toLowerCase())) {
+        if (
+          ['get', 'post', 'put', 'delete', 'patch'].includes(
+            method.toLowerCase()
+          )
+        ) {
           const tags = operation.tags || ['default'];
 
           for (const tag of tags) {
@@ -590,7 +670,7 @@ class APIDocumentationValidator {
               method: method.toUpperCase(),
               operation,
               operationId: operation.operationId,
-              summary: operation.summary
+              summary: operation.summary,
             });
           }
         }
@@ -607,7 +687,8 @@ class APIDocumentationValidator {
           tag,
           operations: sortedOperations,
           complexity: sortedOperations.length,
-          documentationQuality: this.assessProcessDocumentationQuality(sortedOperations)
+          documentationQuality:
+            this.assessProcessDocumentationQuality(sortedOperations),
         });
       }
     }
@@ -621,11 +702,11 @@ class APIDocumentationValidator {
   sortOperationsBySequence(operations) {
     // Sort by common sequence patterns: create -> read -> update -> delete
     const methodOrder = {
-      'POST': 1,
-      'GET': 2,
-      'PUT': 3,
-      'PATCH': 4,
-      'DELETE': 5
+      POST: 1,
+      GET: 2,
+      PUT: 3,
+      PATCH: 4,
+      DELETE: 5,
     };
 
     return operations.sort((a, b) => {
@@ -647,7 +728,7 @@ class APIDocumentationValidator {
   formatTagName(tag) {
     return tag
       .split('-')
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
       .join(' ');
   }
 
@@ -658,11 +739,17 @@ class APIDocumentationValidator {
     let documentedSteps = 0;
 
     for (const operation of operations) {
-      if (operation.operation.summary && operation.operation.summary.length >= 20) {
+      if (
+        operation.operation.summary &&
+        operation.operation.summary.length >= 20
+      ) {
         documentedSteps++;
       }
 
-      if (operation.operation.description && operation.operation.description.length >= 50) {
+      if (
+        operation.operation.description &&
+        operation.operation.description.length >= 50
+      ) {
         documentedSteps++;
       }
     }
@@ -670,8 +757,9 @@ class APIDocumentationValidator {
     return {
       totalSteps: operations.length,
       documentedSteps,
-      documentationRatio: operations.length > 0 ? documentedSteps / (operations.length * 2) : 0,
-      isWellDocumented: documentedSteps >= operations.length
+      documentationRatio:
+        operations.length > 0 ? documentedSteps / (operations.length * 2) : 0,
+      isWellDocumented: documentedSteps >= operations.length,
     };
   }
 
@@ -688,7 +776,8 @@ class APIDocumentationValidator {
           severity: 'medium',
           message: `Process "${process.name}" lacks adequate documentation (${process.documentationQuality.documentedSteps}/${process.documentationQuality.totalSteps * 2} elements documented)`,
           process: process.name,
-          recommendation: 'Add detailed descriptions and examples for each step'
+          recommendation:
+            'Add detailed descriptions and examples for each step',
         });
       }
     }
@@ -705,24 +794,24 @@ class APIDocumentationValidator {
       specification: specPath,
       summary: {
         totalIssues: issues.length,
-        highSeverity: issues.filter(i => i.severity === 'high').length,
-        mediumSeverity: issues.filter(i => i.severity === 'medium').length,
-        lowSeverity: issues.filter(i => i.severity === 'low').length,
-        totalProcesses: processes.length
+        highSeverity: issues.filter((i) => i.severity === 'high').length,
+        mediumSeverity: issues.filter((i) => i.severity === 'medium').length,
+        lowSeverity: issues.filter((i) => i.severity === 'low').length,
+        totalProcesses: processes.length,
       },
-      issues: issues.map(issue => ({
+      issues: issues.map((issue) => ({
         type: issue.type,
         severity: issue.severity,
         message: issue.message,
         location: issue.location,
-        recommendation: issue.recommendation
+        recommendation: issue.recommendation,
       })),
-      processes: processes.map(process => ({
+      processes: processes.map((process) => ({
         name: process.name,
         complexity: process.complexity,
-        documentationQuality: process.documentationQuality
+        documentationQuality: process.documentationQuality,
       })),
-      recommendations: this.generateRecommendations(issues, processes)
+      recommendations: this.generateRecommendations(issues, processes),
     };
 
     return report;
@@ -735,44 +824,52 @@ class APIDocumentationValidator {
     const recommendations = [];
 
     // High severity issues
-    const highSeverity = issues.filter(issue => issue.severity === 'high');
+    const highSeverity = issues.filter((issue) => issue.severity === 'high');
     if (highSeverity.length > 0) {
       recommendations.push({
         priority: 'high',
         title: 'Critical Documentation Issues',
-        description: 'These issues must be addressed immediately to ensure API usability',
-        items: highSeverity.map(issue => ({
+        description:
+          'These issues must be addressed immediately to ensure API usability',
+        items: highSeverity.map((issue) => ({
           issue: issue.message,
-          recommendation: issue.recommendation || 'Fix this critical issue'
-        }))
+          recommendation: issue.recommendation || 'Fix this critical issue',
+        })),
       });
     }
 
     // Medium severity issues
-    const mediumSeverity = issues.filter(issue => issue.severity === 'medium');
+    const mediumSeverity = issues.filter(
+      (issue) => issue.severity === 'medium'
+    );
     if (mediumSeverity.length > 0) {
       recommendations.push({
         priority: 'medium',
         title: 'Documentation Improvements',
-        description: 'These improvements will enhance API clarity and usability',
-        items: mediumSeverity.map(issue => ({
+        description:
+          'These improvements will enhance API clarity and usability',
+        items: mediumSeverity.map((issue) => ({
           issue: issue.message,
-          recommendation: issue.recommendation || 'Improve documentation quality'
-        }))
+          recommendation:
+            issue.recommendation || 'Improve documentation quality',
+        })),
       });
     }
 
     // Process documentation
-    const poorlyDocumentedProcesses = processes.filter(p => !p.documentationQuality.isWellDocumented);
+    const poorlyDocumentedProcesses = processes.filter(
+      (p) => !p.documentationQuality.isWellDocumented
+    );
     if (poorlyDocumentedProcesses.length > 0) {
       recommendations.push({
         priority: 'medium',
         title: 'Process Documentation',
         description: 'Multi-step processes need better documentation',
-        items: poorlyDocumentedProcesses.map(process => ({
+        items: poorlyDocumentedProcesses.map((process) => ({
           issue: `Process "${process.name}" needs better documentation`,
-          recommendation: 'Add detailed descriptions for each step in the process'
-        }))
+          recommendation:
+            'Add detailed descriptions for each step in the process',
+        })),
       });
     }
 
@@ -787,8 +884,8 @@ class APIDocumentationValidator {
         'Document error scenarios and edge cases',
         'Provide clear descriptions of business logic',
         'Use meaningful operation IDs',
-        'Include security considerations for each endpoint'
-      ]
+        'Include security considerations for each endpoint',
+      ],
     });
 
     return recommendations;
@@ -819,7 +916,10 @@ class APIDocumentationValidator {
         const spec = this.parseSpec(specContent, specFile);
 
         // Validate specification completeness
-        const validationIssues = this.validateSpecificationCompleteness(spec, specFile);
+        const validationIssues = this.validateSpecificationCompleteness(
+          spec,
+          specFile
+        );
 
         // Identify multi-step processes
         const processes = this.identifyMultiStepProcesses(spec, specFile);
@@ -828,7 +928,11 @@ class APIDocumentationValidator {
         const allIssues = [...validationIssues, ...processIssues];
 
         // Generate quality report
-        const qualityReport = this.generateQualityReport(allIssues, processes, specFile);
+        const qualityReport = this.generateQualityReport(
+          allIssues,
+          processes,
+          specFile
+        );
 
         const result = {
           specFile,
@@ -836,7 +940,7 @@ class APIDocumentationValidator {
           validationIssues: validationIssues.length,
           processIssues: processIssues.length,
           processes: processes.length,
-          report: qualityReport
+          report: qualityReport,
         };
 
         allResults.push(result);
@@ -844,27 +948,36 @@ class APIDocumentationValidator {
         // Print summary
         if (allIssues.length > 0) {
           console.log(`⚠️  Found ${allIssues.length} issues:`);
-          const highSeverity = allIssues.filter(i => i.severity === 'high').length;
-          const mediumSeverity = allIssues.filter(i => i.severity === 'medium').length;
-          const lowSeverity = allIssues.filter(i => i.severity === 'low').length;
+          const highSeverity = allIssues.filter(
+            (i) => i.severity === 'high'
+          ).length;
+          const mediumSeverity = allIssues.filter(
+            (i) => i.severity === 'medium'
+          ).length;
+          const lowSeverity = allIssues.filter(
+            (i) => i.severity === 'low'
+          ).length;
 
-          if (highSeverity > 0) console.log(`  🔴 High severity: ${highSeverity}`);
-          if (mediumSeverity > 0) console.log(`  🟡 Medium severity: ${mediumSeverity}`);
+          if (highSeverity > 0)
+            console.log(`  🔴 High severity: ${highSeverity}`);
+          if (mediumSeverity > 0)
+            console.log(`  🟡 Medium severity: ${mediumSeverity}`);
           if (lowSeverity > 0) console.log(`  🟢 Low severity: ${lowSeverity}`);
         } else {
           console.log('✅ Specification validation passed');
         }
 
         if (processes.length > 0) {
-          console.log(`📊 Identified ${processes.length} multi-step process(es)`);
+          console.log(
+            `📊 Identified ${processes.length} multi-step process(es)`
+          );
         }
-
       } catch (error) {
         console.error(`❌ Failed to validate ${specFile}:`, error.message);
         allResults.push({
           specFile,
           status: 'failed',
-          error: error.message
+          error: error.message,
         });
       }
     }
@@ -875,7 +988,7 @@ class APIDocumentationValidator {
     return {
       status: 'success',
       reportPath,
-      results: allResults
+      results: allResults,
     };
   }
 
@@ -888,18 +1001,26 @@ class APIDocumentationValidator {
       timestamp,
       summary: {
         totalSpecifications: results.length,
-        specificationsWithIssues: results.filter(r => r.issues && r.issues > 0).length,
+        specificationsWithIssues: results.filter(
+          (r) => r.issues && r.issues > 0
+        ).length,
         totalIssues: results.reduce((sum, r) => sum + (r.issues || 0), 0),
-        totalProcesses: results.reduce((sum, r) => sum + (r.processes || 0), 0)
+        totalProcesses: results.reduce((sum, r) => sum + (r.processes || 0), 0),
       },
-      detailedResults: results
+      detailedResults: results,
     };
 
-    const reportPath = path.join(this.reportsDir, `documentation-validation-report-${Date.now()}.json`);
+    const reportPath = path.join(
+      this.reportsDir,
+      `documentation-validation-report-${Date.now()}.json`
+    );
     fs.writeFileSync(reportPath, JSON.stringify(report, null, 2));
 
     // Also generate human-readable report
-    const humanReportPath = path.join(this.reportsDir, `documentation-validation-report-${Date.now()}.md`);
+    const humanReportPath = path.join(
+      this.reportsDir,
+      `documentation-validation-report-${Date.now()}.md`
+    );
     this.generateHumanReadableReport(results, humanReportPath);
 
     return reportPath;
@@ -913,7 +1034,9 @@ class APIDocumentationValidator {
     markdown += `Generated on: ${new Date().toISOString()}\n\n`;
 
     const totalIssues = results.reduce((sum, r) => sum + (r.issues || 0), 0);
-    const specsWithIssues = results.filter(r => r.issues && r.issues > 0).length;
+    const specsWithIssues = results.filter(
+      (r) => r.issues && r.issues > 0
+    ).length;
 
     markdown += `## Summary\n\n`;
     markdown += `- Total specifications analyzed: ${results.length}\n`;
@@ -935,7 +1058,12 @@ class APIDocumentationValidator {
         if (report.issues.length > 0) {
           markdown += `### Detailed Issues\n\n`;
           for (const issue of report.issues) {
-            const emoji = issue.severity === 'high' ? '🔴' : issue.severity === 'medium' ? '🟡' : '🟢';
+            const emoji =
+              issue.severity === 'high'
+                ? '🔴'
+                : issue.severity === 'medium'
+                  ? '🟡'
+                  : '🟢';
             markdown += `${emoji} **${issue.severity.toUpperCase()}**: ${issue.message}\n\n`;
           }
         }
@@ -973,11 +1101,18 @@ class APIDocumentationValidator {
       if (results.status === 'success') {
         console.log(`📁 Validation report: ${results.reportPath}`);
 
-        const totalIssues = results.results.reduce((sum, r) => sum + (r.issues || 0), 0);
-        const specsWithIssues = results.results.filter(r => r.issues && r.issues > 0).length;
+        const totalIssues = results.results.reduce(
+          (sum, r) => sum + (r.issues || 0),
+          0
+        );
+        const specsWithIssues = results.results.filter(
+          (r) => r.issues && r.issues > 0
+        ).length;
 
         console.log(`📊 Total issues found: ${totalIssues}`);
-        console.log(`⚠️  Specifications with issues: ${specsWithIssues}/${results.results.length}`);
+        console.log(
+          `⚠️  Specifications with issues: ${specsWithIssues}/${results.results.length}`
+        );
 
         if (totalIssues === 0) {
           console.log('🟢 All specifications are well-documented!');
@@ -989,7 +1124,7 @@ class APIDocumentationValidator {
       console.error('❌ Documentation validation failed:', error.message);
       return {
         status: 'failed',
-        error: error.message
+        error: error.message,
       };
     }
   }
@@ -1021,16 +1156,26 @@ async function main() {
       console.log('  api-documentation-validator.js validate');
       console.log('');
       console.log('Commands:');
-      console.log('  validate    Validate OpenAPI 3.0+ specifications for completeness');
+      console.log(
+        '  validate    Validate OpenAPI 3.0+ specifications for completeness'
+      );
       console.log('');
       console.log('Features:');
       console.log('  • Validates OpenAPI 3.0+ specifications for completeness');
-      console.log('  • Checks that all endpoints have meaningful descriptions (≥50 words)');
-      console.log('  • Ensures all parameters have clear descriptions with examples');
+      console.log(
+        '  • Checks that all endpoints have meaningful descriptions (≥50 words)'
+      );
+      console.log(
+        '  • Ensures all parameters have clear descriptions with examples'
+      );
       console.log('  • Validates response schemas are properly documented');
-      console.log('  • Identifies multi-step processes and ensures they\'re documented');
+      console.log(
+        "  • Identifies multi-step processes and ensures they're documented"
+      );
       console.log('  • Generates quality reports with actionable feedback');
-      console.log('  • FCRA compliance validation for credit repair applications');
+      console.log(
+        '  • FCRA compliance validation for credit repair applications'
+      );
       console.log('  • Generates detailed validation reports');
       break;
   }

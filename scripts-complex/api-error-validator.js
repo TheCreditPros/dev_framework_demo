@@ -11,10 +11,10 @@ require('dotenv').config();
 
 const fs = require('fs');
 const path = require('path');
-const { execSync } = require('child_process');
 
 class APIErrorValidator {
-  constructor() {
+  constructor(fsModule = null) {
+    this.fs = fsModule || fs;
     this.projectRoot = process.cwd();
     this.reportsDir = path.join(this.projectRoot, 'reports', 'api-validation');
     this.setupReportsDirectory();
@@ -26,7 +26,7 @@ class APIErrorValidator {
       /credit\s+card\s+number/i,
       /bank\s+account/i,
       /routing\s+number/i,
-      /driver'?s?\s+license/i
+      /driver'?s?\s+license/i,
     ];
 
     // Sensitive data patterns to avoid in error responses
@@ -38,13 +38,13 @@ class APIErrorValidator {
       /password/i,
       /token/i,
       /secret/i,
-      /key/i
+      /key/i,
     ];
   }
 
   setupReportsDirectory() {
-    if (!fs.existsSync(this.reportsDir)) {
-      fs.mkdirSync(this.reportsDir, { recursive: true });
+    if (!this.fs.existsSync(this.reportsDir)) {
+      this.fs.mkdirSync(this.reportsDir, { recursive: true });
     }
   }
 
@@ -57,7 +57,7 @@ class APIErrorValidator {
 
     // Check required fields
     for (const field of requiredFields) {
-      if (!errorResponse.hasOwnProperty(field)) {
+      if (!Object.hasOwn(errorResponse, field)) {
         issues.push(`Missing required field: ${field}`);
       }
     }
@@ -77,7 +77,9 @@ class APIErrorValidator {
       if (typeof errorResponse.message !== 'string') {
         issues.push('Message field should be a string');
       } else if (errorResponse.message.length < 10) {
-        issues.push('Error message should be descriptive (minimum 10 characters)');
+        issues.push(
+          'Error message should be descriptive (minimum 10 characters)'
+        );
       }
     }
 
@@ -112,7 +114,9 @@ class APIErrorValidator {
     if (errorResponse.status && expectedStatusCode) {
       const actualStatus = errorResponse.status;
       if (actualStatus !== expectedStatusCode) {
-        issues.push(`Status code mismatch: expected ${expectedStatusCode}, got ${actualStatus}`);
+        issues.push(
+          `Status code mismatch: expected ${expectedStatusCode}, got ${actualStatus}`
+        );
       }
     }
 
@@ -120,7 +124,9 @@ class APIErrorValidator {
     if (errorResponse.status) {
       const status = errorResponse.status;
       if (status < 400 || status >= 600) {
-        issues.push(`Invalid error status code: ${status} (should be 4xx or 5xx)`);
+        issues.push(
+          `Invalid error status code: ${status} (should be 4xx or 5xx)`
+        );
       }
     }
 
@@ -141,7 +147,7 @@ class APIErrorValidator {
         /exception/i,
         /stack\s+trace/i,
         /internal\s+server\s+error/i,
-        /500/i
+        /500/i,
       ];
 
       for (const pattern of jargonPatterns) {
@@ -155,7 +161,7 @@ class APIErrorValidator {
         'error',
         'something went wrong',
         'internal error',
-        'unknown error'
+        'unknown error',
       ];
 
       const lowerMessage = message.toLowerCase();
@@ -181,14 +187,16 @@ class APIErrorValidator {
       /credit\s+score/i,
       /dispute/i,
       /account\s+number/i,
-      /member\s+number/i
+      /member\s+number/i,
     ];
 
     const responseString = JSON.stringify(errorResponse, null, 2).toLowerCase();
 
     for (const pattern of creditRepairSensitive) {
       if (pattern.test(responseString)) {
-        issues.push(`Potential FCRA compliance issue: credit-related PII exposure`);
+        issues.push(
+          `Potential FCRA compliance issue: credit-related PII exposure`
+        );
       }
     }
 
@@ -213,7 +221,7 @@ class APIErrorValidator {
           validationResults.push({
             file,
             issues,
-            severity: this.calculateSeverity(issues)
+            severity: this.calculateSeverity(issues),
           });
         }
       } catch (error) {
@@ -238,10 +246,9 @@ class APIErrorValidator {
       }
     }
 
-    return apiFiles.filter(file =>
-      file.endsWith('.js') ||
-      file.endsWith('.ts') ||
-      file.endsWith('.php')
+    return apiFiles.filter(
+      (file) =>
+        file.endsWith('.js') || file.endsWith('.ts') || file.endsWith('.php')
     );
   }
 
@@ -266,7 +273,7 @@ class APIErrorValidator {
   /**
    * Analyze error handling patterns in a file
    */
-  analyzeErrorHandlingInFile(content, filePath) {
+  analyzeErrorHandlingInFile(content, _filePath) {
     const issues = [];
 
     // Check for try-catch blocks without proper error handling
@@ -280,12 +287,16 @@ class APIErrorValidator {
     }
 
     // Check for error logging
-    if (!content.includes('console.error') && !content.includes('logger.error')) {
+    if (
+      !content.includes('console.error') &&
+      !content.includes('logger.error')
+    ) {
       issues.push('No error logging found');
     }
 
     // Check for standardized error responses
-    const errorResponsePattern = /res\.status\(\d+\)\.json\(\{[^}]*error[^}]*\}\)/i;
+    const errorResponsePattern =
+      /res\.status\(\d+\)\.json\(\{[^}]*error[^}]*\}\)/i;
     if (!errorResponsePattern.test(content)) {
       issues.push('No standardized error response format detected');
     }
@@ -297,7 +308,12 @@ class APIErrorValidator {
    * Calculate severity level based on issues
    */
   calculateSeverity(issues) {
-    const highSeverityKeywords = ['sensitive', 'fcra', 'compliance', 'exposure'];
+    const highSeverityKeywords = [
+      'sensitive',
+      'fcra',
+      'compliance',
+      'exposure',
+    ];
     const mediumSeverityKeywords = ['format', 'status', 'generic'];
 
     for (const issue of issues) {
@@ -326,14 +342,20 @@ class APIErrorValidator {
       timestamp,
       summary: {
         totalFiles: validationResults.length,
-        highSeverity: validationResults.filter(r => r.severity === 'high').length,
-        mediumSeverity: validationResults.filter(r => r.severity === 'medium').length,
-        lowSeverity: validationResults.filter(r => r.severity === 'low').length
+        highSeverity: validationResults.filter((r) => r.severity === 'high')
+          .length,
+        mediumSeverity: validationResults.filter((r) => r.severity === 'medium')
+          .length,
+        lowSeverity: validationResults.filter((r) => r.severity === 'low')
+          .length,
       },
-      details: validationResults
+      details: validationResults,
     };
 
-    const reportPath = path.join(this.reportsDir, `error-validation-report-${Date.now()}.json`);
+    const reportPath = path.join(
+      this.reportsDir,
+      `error-validation-report-${Date.now()}.json`
+    );
     fs.writeFileSync(reportPath, JSON.stringify(report, null, 2));
 
     return reportPath;
@@ -357,8 +379,12 @@ class APIErrorValidator {
       console.log(`📊 Files analyzed: ${fileResults.length}`);
 
       // Print summary
-      const highSeverity = fileResults.filter(r => r.severity === 'high').length;
-      const mediumSeverity = fileResults.filter(r => r.severity === 'medium').length;
+      const highSeverity = fileResults.filter(
+        (r) => r.severity === 'high'
+      ).length;
+      const mediumSeverity = fileResults.filter(
+        (r) => r.severity === 'medium'
+      ).length;
 
       if (highSeverity > 0) {
         console.log(`🔴 High severity issues: ${highSeverity}`);
@@ -374,13 +400,13 @@ class APIErrorValidator {
       return {
         status: 'success',
         reportPath,
-        results: fileResults
+        results: fileResults,
       };
     } catch (error) {
       console.error('❌ Error validation failed:', error.message);
       return {
         status: 'failed',
-        error: error.message
+        error: error.message,
       };
     }
   }

@@ -18,7 +18,7 @@ describe('APIContractTester', () => {
     mockProjectRoot = '/mock/project';
     process.cwd = vi.fn().mockReturnValue(mockProjectRoot);
 
-    tester = new APIContractTester();
+    tester = new APIContractTester(fs);
 
     // Mock fs operations
     fs.existsSync.mockImplementation((filePath) => {
@@ -32,8 +32,10 @@ describe('APIContractTester', () => {
 
     fs.readdirSync.mockImplementation((dirPath) => {
       if (dirPath === mockProjectRoot) return ['openapi.yaml'];
-      if (dirPath === path.join(mockProjectRoot, 'docs')) return ['swagger.json'];
-      if (dirPath === path.join(mockProjectRoot, 'spec')) return ['api-spec.yml'];
+      if (dirPath === path.join(mockProjectRoot, 'docs'))
+        return ['swagger.json'];
+      if (dirPath === path.join(mockProjectRoot, 'spec'))
+        return ['api-spec.yml'];
       return [];
     });
 
@@ -91,6 +93,15 @@ components:
       }
       return '{}';
     });
+
+    // Mock mkdirSync to avoid directory creation issues
+    fs.mkdirSync.mockImplementation((path, options) => {
+      // Handle recursive directory creation
+      if (options && options.recursive) {
+        return path;
+      }
+      return undefined;
+    });
   });
 
   afterEach(() => {
@@ -101,8 +112,12 @@ components:
     it('should find API specification files in common locations', () => {
       const specFiles = tester.findAPISpecifications();
       expect(specFiles).toHaveLength(3);
-      expect(specFiles.some(file => file.includes('openapi.yaml'))).toBe(true);
-      expect(specFiles.some(file => file.includes('swagger.json'))).toBe(true);
+      expect(specFiles.some((file) => file.includes('openapi.yaml'))).toBe(
+        true
+      );
+      expect(specFiles.some((file) => file.includes('swagger.json'))).toBe(
+        true
+      );
     });
 
     it('should return empty array when no spec files found', () => {
@@ -123,33 +138,37 @@ components:
     });
 
     it('should detect missing required fields in specification', () => {
-      fs.readFileSync.mockImplementation(() => `
+      fs.readFileSync.mockImplementation(
+        () => `
 openapi: 3.0.0
 paths:
   /users:
     get:
       responses: {}
-`);
+`
+      );
 
       const specPath = '/mock/project/bad-spec.yaml';
       const issues = tester.validateAPISpecification(specPath);
 
       expect(issues.length).toBeGreaterThan(0);
-      expect(issues.some(issue => issue.includes('missing'))).toBe(true);
+      expect(issues.some((issue) => issue.includes('missing'))).toBe(true);
     });
 
     it('should validate specification version compliance', () => {
-      fs.readFileSync.mockImplementation(() => `
+      fs.readFileSync.mockImplementation(
+        () => `
 swagger: 2.0
 info:
   title: Old API
   version: 1.0.0
-`);
+`
+      );
 
       const specPath = '/mock/project/old-spec.yaml';
       const issues = tester.validateAPISpecification(specPath);
 
-      expect(issues.some(issue => issue.includes('version'))).toBe(true);
+      expect(issues.some((issue) => issue.includes('version'))).toBe(true);
     });
   });
 
@@ -187,9 +206,12 @@ paths:
         return '{}';
       });
 
-      const issues = tester.checkBreakingChanges('/mock/old-spec.yaml', '/mock/new-spec.yaml');
+      const issues = tester.checkBreakingChanges(
+        '/mock/old-spec.yaml',
+        '/mock/new-spec.yaml'
+      );
       expect(issues.length).toBeGreaterThan(0);
-      expect(issues.some(issue => issue.includes('removed'))).toBe(true);
+      expect(issues.some((issue) => issue.includes('removed'))).toBe(true);
     });
 
     it('should detect field type changes as breaking changes', () => {
@@ -221,7 +243,10 @@ components:
         return '{}';
       });
 
-      const issues = tester.checkBreakingChanges('/mock/old-spec.yaml', '/mock/new-spec.yaml');
+      const issues = tester.checkBreakingChanges(
+        '/mock/old-spec.yaml',
+        '/mock/new-spec.yaml'
+      );
       expect(issues.length).toBeGreaterThan(0);
     });
 
@@ -256,31 +281,41 @@ components:
         return '{}';
       });
 
-      const issues = tester.checkBreakingChanges('/mock/old-spec.yaml', '/mock/new-spec.yaml');
+      const issues = tester.checkBreakingChanges(
+        '/mock/old-spec.yaml',
+        '/mock/new-spec.yaml'
+      );
       expect(issues).toHaveLength(0);
     });
   });
 
   describe('ensureBackwardCompatibility', () => {
     it('should validate semantic versioning compliance', () => {
-      const issues = tester.ensureBackwardCompatibility('/mock/project/openapi.yaml');
+      const issues = tester.ensureBackwardCompatibility(
+        '/mock/project/openapi.yaml'
+      );
       expect(issues).toHaveLength(0);
     });
 
     it('should detect invalid semantic versioning', () => {
-      fs.readFileSync.mockImplementation(() => `
+      fs.readFileSync.mockImplementation(
+        () => `
 openapi: 3.0.0
 info:
   title: Test API
   version: 1.0
-`);
+`
+      );
 
-      const issues = tester.ensureBackwardCompatibility('/mock/project/bad-version.yaml');
-      expect(issues.some(issue => issue.includes('semver'))).toBe(true);
+      const issues = tester.ensureBackwardCompatibility(
+        '/mock/project/bad-version.yaml'
+      );
+      expect(issues.some((issue) => issue.includes('semver'))).toBe(true);
     });
 
     it('should detect deprecated endpoints', () => {
-      fs.readFileSync.mockImplementation(() => `
+      fs.readFileSync.mockImplementation(
+        () => `
 openapi: 3.0.0
 info:
   title: Test API
@@ -292,10 +327,13 @@ paths:
       responses:
         '200':
           description: Success
-`);
+`
+      );
 
-      const issues = tester.ensureBackwardCompatibility('/mock/project/deprecated-spec.yaml');
-      expect(issues.some(issue => issue.includes('deprecated'))).toBe(true);
+      const issues = tester.ensureBackwardCompatibility(
+        '/mock/project/deprecated-spec.yaml'
+      );
+      expect(issues.some((issue) => issue.includes('deprecated'))).toBe(true);
     });
   });
 
@@ -313,13 +351,17 @@ paths:
     });
 
     it('should generate contract test files for Vitest', () => {
-      const testFiles = tester.generateVitestContractTests('/mock/project/openapi.yaml');
+      const testFiles = tester.generateVitestContractTests(
+        '/mock/project/openapi.yaml'
+      );
       expect(Array.isArray(testFiles)).toBe(true);
       expect(testFiles.length).toBeGreaterThan(0);
     });
 
     it('should generate contract test files for Playwright', () => {
-      const testFiles = tester.generatePlaywrightContractTests('/mock/project/openapi.yaml');
+      const testFiles = tester.generatePlaywrightContractTests(
+        '/mock/project/openapi.yaml'
+      );
       expect(Array.isArray(testFiles)).toBe(true);
       expect(testFiles.length).toBeGreaterThan(0);
     });
@@ -335,7 +377,8 @@ paths:
     });
 
     it('should detect schema validation errors', () => {
-      fs.readFileSync.mockImplementation(() => `
+      fs.readFileSync.mockImplementation(
+        () => `
 openapi: 3.0.0
 components:
   schemas:
@@ -344,18 +387,22 @@ components:
       properties:
         id:
           type: invalid_type
-`);
+`
+      );
 
-      const validation = tester.validateSchemaMatching(tester.parseSpec(
-        fs.readFileSync('/mock/project/bad-schema.yaml', 'utf8'),
-        '/mock/project/bad-schema.yaml'
-      ));
+      const validation = tester.validateSchemaMatching(
+        tester.parseSpec(
+          fs.readFileSync('/mock/project/bad-schema.yaml', 'utf8'),
+          '/mock/project/bad-schema.yaml'
+        )
+      );
 
       expect(validation.issues.length).toBeGreaterThan(0);
     });
 
     it('should validate required field constraints', () => {
-      fs.readFileSync.mockImplementation(() => `
+      fs.readFileSync.mockImplementation(
+        () => `
 openapi: 3.0.0
 components:
   schemas:
@@ -369,7 +416,8 @@ components:
           type: string
         email:
           type: string
-`);
+`
+      );
 
       const spec = tester.parseSpec(
         fs.readFileSync('/mock/project/user-schema.yaml', 'utf8'),
@@ -388,7 +436,9 @@ components:
       const result = await tester.testAll();
 
       expect(result.status).toBe('success');
-      expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('API Contract Testing Setup Complete'));
+      expect(consoleSpy).toHaveBeenCalledWith(
+        expect.stringContaining('API Contract Testing Setup Complete')
+      );
 
       consoleSpy.mockRestore();
     });
@@ -405,7 +455,8 @@ components:
   describe('Performance Tests', () => {
     it('should handle large API specifications efficiently', async () => {
       // Mock a large specification
-      let largeSpec = 'openapi: 3.0.0\ninfo:\n  title: Large API\n  version: 1.0.0\npaths:\n';
+      let largeSpec =
+        'openapi: 3.0.0\ninfo:\n  title: Large API\n  version: 1.0.0\npaths:\n';
 
       // Generate many paths
       for (let i = 0; i < 100; i++) {
@@ -446,7 +497,8 @@ components:
     });
 
     it('should validate specifications with circular references', () => {
-      fs.readFileSync.mockImplementation(() => `
+      fs.readFileSync.mockImplementation(
+        () => `
 openapi: 3.0.0
 components:
   schemas:
@@ -455,16 +507,20 @@ components:
       properties:
         friend:
           $ref: '#/components/schemas/User'
-`);
+`
+      );
 
-      const issues = tester.validateAPISpecification('/mock/circular-spec.yaml');
+      const issues = tester.validateAPISpecification(
+        '/mock/circular-spec.yaml'
+      );
       expect(Array.isArray(issues)).toBe(true);
     });
   });
 
   describe('Security Validation', () => {
     it('should validate security scheme definitions', () => {
-      fs.readFileSync.mockImplementation(() => `
+      fs.readFileSync.mockImplementation(
+        () => `
 openapi: 3.0.0
 components:
   securitySchemes:
@@ -472,14 +528,18 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
-`);
+`
+      );
 
-      const issues = tester.validateAPISpecification('/mock/security-spec.yaml');
+      const issues = tester.validateAPISpecification(
+        '/mock/security-spec.yaml'
+      );
       expect(Array.isArray(issues)).toBe(true);
     });
 
     it('should detect missing security definitions', () => {
-      fs.readFileSync.mockImplementation(() => `
+      fs.readFileSync.mockImplementation(
+        () => `
 openapi: 3.0.0
 paths:
   /users:
@@ -488,14 +548,18 @@ paths:
       responses:
         '200':
           description: Success
-`);
+`
+      );
 
-      const issues = tester.validateAPISpecification('/mock/no-security-spec.yaml');
-      expect(issues.some(issue => issue.includes('security'))).toBe(true);
+      const issues = tester.validateAPISpecification(
+        '/mock/no-security-spec.yaml'
+      );
+      expect(issues.some((issue) => issue.includes('security'))).toBe(true);
     });
 
     it('should validate OAuth2 security configurations', () => {
-      fs.readFileSync.mockImplementation(() => `
+      fs.readFileSync.mockImplementation(
+        () => `
 openapi: 3.0.0
 components:
   securitySchemes:
@@ -507,7 +571,8 @@ components:
           tokenUrl: https://example.com/oauth/token
           scopes:
             read:users: Read user information
-`);
+`
+      );
 
       const issues = tester.validateAPISpecification('/mock/oauth-spec.yaml');
       expect(Array.isArray(issues)).toBe(true);

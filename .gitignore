@@ -35,4 +35,17 @@ node_modules/
 *.swo
 
 # OS generated files
-Thumbs.db.eslintcache/
+Thumbs.db
+
+# Generated reports and cache files
+.eslintcache/
+reports/
+test-results/
+validation-results-*/
+*.log
+coverage/
+
+# Build artifacts
+dist/
+build/
+*.tsbuildinfo

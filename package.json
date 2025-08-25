@@ -1,6 +1,6 @@
 {
   "name": "ai-sdlc-framework",
-  "version": "3.2.1",
+  "version": "3.2.2",
   "description": "AI-Powered SDLC Framework for The Credit Pros",
   "main": "index.js",
   "scripts": {

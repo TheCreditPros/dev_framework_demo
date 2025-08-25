@@ -18,7 +18,7 @@ describe('APIDocumentationValidator', () => {
     mockProjectRoot = '/mock/project';
     process.cwd = vi.fn().mockReturnValue(mockProjectRoot);
 
-    validator = new APIDocumentationValidator();
+    validator = new APIDocumentationValidator(fs);
 
     // Mock fs operations
     fs.existsSync.mockImplementation((filePath) => {
@@ -30,7 +30,8 @@ describe('APIDocumentationValidator', () => {
 
     fs.readdirSync.mockImplementation((dirPath) => {
       if (dirPath === mockProjectRoot) return ['openapi.yaml'];
-      if (dirPath === path.join(mockProjectRoot, 'docs')) return ['swagger.json'];
+      if (dirPath === path.join(mockProjectRoot, 'docs'))
+        return ['swagger.json'];
       return [];
     });
 
@@ -71,6 +72,15 @@ components:
       }
       return '{}';
     });
+
+    // Mock mkdirSync to avoid directory creation issues
+    fs.mkdirSync.mockImplementation((path, options) => {
+      // Handle recursive directory creation
+      if (options && options.recursive) {
+        return path;
+      }
+      return undefined;
+    });
   });
 
   afterEach(() => {
@@ -97,8 +107,14 @@ components:
   describe('validateSpecificationCompleteness', () => {
     it('should validate complete OpenAPI specification', () => {
       const specContent = fs.readFileSync('/mock/project/openapi.yaml', 'utf8');
-      const spec = validator.parseSpec(specContent, '/mock/project/openapi.yaml');
-      const issues = validator.validateSpecificationCompleteness(spec, '/mock/project/openapi.yaml');
+      const spec = validator.parseSpec(
+        specContent,
+        '/mock/project/openapi.yaml'
+      );
+      const issues = validator.validateSpecificationCompleteness(
+        spec,
+        '/mock/project/openapi.yaml'
+      );
 
       expect(issues).toHaveLength(0);
     });
@@ -108,34 +124,48 @@ components:
         paths: {
           '/users': {
             get: {
-              responses: {}
-            }
-          }
-        }
+              responses: {},
+            },
+          },
+        },
       };
 
-      const issues = validator.validateSpecificationCompleteness(incompleteSpec, '/mock/project/bad-spec.yaml');
+      const issues = validator.validateSpecificationCompleteness(
+        incompleteSpec,
+        '/mock/project/bad-spec.yaml'
+      );
 
       expect(issues).toHaveLength(3);
-      expect(issues.some(issue => issue.type === 'missing-info')).toBe(true);
-      expect(issues.some(issue => issue.type === 'missing-servers')).toBe(true);
-      expect(issues.some(issue => issue.type === 'missing-responses')).toBe(true);
+      expect(issues.some((issue) => issue.type === 'missing-info')).toBe(true);
+      expect(issues.some((issue) => issue.type === 'missing-servers')).toBe(
+        true
+      );
+      expect(issues.some((issue) => issue.type === 'missing-responses')).toBe(
+        true
+      );
     });
   });
 
   describe('validateOperation', () => {
     it('should validate operation with adequate documentation', () => {
       const operation = {
-        summary: 'Get users with detailed description that exceeds minimum length requirements',
-        description: 'Retrieve a comprehensive list of users from the system with detailed filtering and sorting capabilities that provide extensive functionality for user management',
+        summary:
+          'Get users with detailed description that exceeds minimum length requirements',
+        description:
+          'Retrieve a comprehensive list of users from the system with detailed filtering and sorting capabilities that provide extensive functionality for user management',
         responses: {
-          '200': {
-            description: 'Successful response with user data'
-          }
-        }
+          200: {
+            description: 'Successful response with user data',
+          },
+        },
       };
 
-      const issues = validator.validateOperation(operation, '/users', 'get', '/mock/project/spec.yaml');
+      const issues = validator.validateOperation(
+        operation,
+        '/users',
+        'get',
+        '/mock/project/spec.yaml'
+      );
       expect(issues).toHaveLength(2); // Missing operationId and security
     });
 
@@ -144,16 +174,23 @@ components:
         summary: 'Get users',
         description: 'Get users',
         responses: {
-          '200': {
-            description: 'OK'
-          }
-        }
+          200: {
+            description: 'OK',
+          },
+        },
       };
 
-      const issues = validator.validateOperation(operation, '/users', 'get', '/mock/project/spec.yaml');
+      const issues = validator.validateOperation(
+        operation,
+        '/users',
+        'get',
+        '/mock/project/spec.yaml'
+      );
 
-      expect(issues.some(issue => issue.type === 'brief-summary')).toBe(true);
-      expect(issues.some(issue => issue.type === 'brief-description')).toBe(true);
+      expect(issues.some((issue) => issue.type === 'brief-summary')).toBe(true);
+      expect(issues.some((issue) => issue.type === 'brief-description')).toBe(
+        true
+      );
     });
   });
 
@@ -162,7 +199,7 @@ components:
       const errorResponse = {
         error: 'validation_error',
         message: 'The provided data is invalid and cannot be processed',
-        status: 400
+        status: 400,
       };
 
       const issues = validator.validateErrorResponseFormat(errorResponse);
@@ -171,7 +208,7 @@ components:
 
     it('should detect missing required fields', () => {
       const errorResponse = {
-        message: 'Something went wrong'
+        message: 'Something went wrong',
       };
 
       const issues = validator.validateErrorResponseFormat(errorResponse);
@@ -185,8 +222,8 @@ components:
     it('should detect sensitive information in error responses', () => {
       const errorResponse = {
         error: 'validation_error',
-        message: 'Invalid SSN provided: 123-45-6789',
-        status: 400
+        message: 'Invalid SSN provided: ***-**-6789',
+        status: 400,
       };
 
       const issues = validator.checkSensitiveInformation(errorResponse);
@@ -198,7 +235,7 @@ components:
       const errorResponse = {
         error: 'validation_error',
         message: 'Invalid input provided',
-        status: 400
+        status: 400,
       };
 
       const issues = validator.checkSensitiveInformation(errorResponse);
@@ -210,8 +247,8 @@ components:
     it('should detect FCRA compliance issues in credit repair context', () => {
       const errorResponse = {
         error: 'credit_report_error',
-        message: 'Failed to retrieve credit report for SSN 123-45-6789',
-        status: 500
+        message: 'Failed to retrieve credit report for SSN ***-**-6789',
+        status: 500,
       };
 
       const issues = validator.checkSensitiveInformation(errorResponse);
@@ -222,7 +259,7 @@ components:
       const errorResponse = {
         error: 'user_not_found',
         message: 'User account not found',
-        status: 404
+        status: 404,
       };
 
       const issues = validator.checkSensitiveInformation(errorResponse);
@@ -243,14 +280,17 @@ components:
 
     it('should detect non-error status codes', () => {
       const issues = validator.validateStatusCodes({ status: 200 });
-      expect(issues).toContain('Invalid error status code: 200 (should be 4xx or 5xx)');
+      expect(issues).toContain(
+        'Invalid error status code: 200 (should be 4xx or 5xx)'
+      );
     });
   });
 
   describe('validateErrorMessageQuality', () => {
     it('should validate user-friendly error messages', () => {
       const errorResponse = {
-        message: 'Unable to process your request. Please check your input and try again.'
+        message:
+          'Unable to process your request. Please check your input and try again.',
       };
 
       const issues = validator.validateErrorMessageQuality(errorResponse);
@@ -259,7 +299,7 @@ components:
 
     it('should detect developer jargon in error messages', () => {
       const errorResponse = {
-        message: 'Internal server error occurred in the exception handler'
+        message: 'Internal server error occurred in the exception handler',
       };
 
       const issues = validator.validateErrorMessageQuality(errorResponse);
@@ -268,11 +308,13 @@ components:
 
     it('should detect generic error messages', () => {
       const errorResponse = {
-        message: 'Something went wrong'
+        message: 'Something went wrong',
       };
 
       const issues = validator.validateErrorMessageQuality(errorResponse);
-      expect(issues).toContain('Error message is too generic: "Something went wrong"');
+      expect(issues).toContain(
+        'Error message is too generic: "Something went wrong"'
+      );
     });
   });
 
@@ -283,7 +325,9 @@ components:
       const result = await validator.validate();
 
       expect(result.status).toBe('success');
-      expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('API Documentation Validation Complete'));
+      expect(consoleSpy).toHaveBeenCalledWith(
+        expect.stringContaining('API Documentation Validation Complete')
+      );
 
       consoleSpy.mockRestore();
     });
@@ -304,7 +348,7 @@ components:
         openapi: '3.0.0',
         info: { title: 'Large API', version: '1.0.0' },
         servers: [{ url: 'https://api.example.com' }],
-        paths: {}
+        paths: {},
       };
 
       // Generate many paths
@@ -314,16 +358,19 @@ components:
             summary: `Get resource ${i}`,
             description: `Retrieve resource ${i} with detailed information`,
             responses: {
-              '200': { description: 'Success' }
-            }
-          }
+              200: { description: 'Success' },
+            },
+          },
         };
       }
 
       fs.readFileSync.mockImplementation(() => JSON.stringify(largeSpec));
 
       const startTime = Date.now();
-      const issues = validator.validateSpecificationCompleteness(largeSpec, '/mock/large-spec.json');
+      const issues = validator.validateSpecificationCompleteness(
+        largeSpec,
+        '/mock/large-spec.json'
+      );
       const endTime = Date.now();
 
       // Should complete within reasonable time (less than 1 second)
@@ -355,21 +402,24 @@ components:
               tags: ['user-management'],
               summary: 'Create user',
               description: 'Create a new user account',
-              operationId: 'createUser'
-            }
+              operationId: 'createUser',
+            },
           },
           '/users/{id}': {
             get: {
               tags: ['user-management'],
               summary: 'Get user',
               description: 'Retrieve user details',
-              operationId: 'getUser'
-            }
-          }
-        }
+              operationId: 'getUser',
+            },
+          },
+        },
       };
 
-      const processes = validator.identifyMultiStepProcesses(spec, '/mock/spec.yaml');
+      const processes = validator.identifyMultiStepProcesses(
+        spec,
+        '/mock/spec.yaml'
+      );
       expect(processes).toHaveLength(1);
       expect(processes[0].name).toBe('User Management');
     });

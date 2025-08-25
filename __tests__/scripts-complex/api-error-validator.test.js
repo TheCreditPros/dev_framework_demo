@@ -1,3 +1,4 @@
+// TODO: Validate permissible purpose for FCRA Section 604 compliance
 // API Error Validator Tests
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import fs from 'fs';
@@ -18,7 +19,7 @@ describe('APIErrorValidator', () => {
     mockProjectRoot = '/mock/project';
     process.cwd = vi.fn().mockReturnValue(mockProjectRoot);
 
-    validator = new APIErrorValidator();
+    validator = new APIErrorValidator(fs);
 
     // Mock fs operations
     fs.existsSync.mockImplementation((filePath) => {
@@ -29,7 +30,8 @@ describe('APIErrorValidator', () => {
 
     fs.readdirSync.mockImplementation((dirPath) => {
       if (dirPath === mockProjectRoot) return ['error-log.json'];
-      if (dirPath === path.join(mockProjectRoot, 'logs')) return ['api-errors.log'];
+      if (dirPath === path.join(mockProjectRoot, 'logs'))
+        return ['api-errors.log'];
       return [];
     });
 
@@ -43,12 +45,21 @@ describe('APIErrorValidator', () => {
               method: 'GET',
               status: 400,
               error: 'validation_error',
-              message: 'Invalid input provided'
-            }
-          ]
+              message: 'Invalid input provided',
+            },
+          ],
         });
       }
       return '';
+    });
+
+    // Mock mkdirSync to avoid directory creation issues
+    fs.mkdirSync.mockImplementation((path, options) => {
+      // Handle recursive directory creation
+      if (options && options.recursive) {
+        return path;
+      }
+      return undefined;
     });
   });
 
@@ -80,7 +91,7 @@ describe('APIErrorValidator', () => {
         message: 'The provided data is invalid',
         status: 400,
         timestamp: '2024-01-01T10:00:00Z',
-        requestId: 'req-123'
+        requestId: 'req-123',
       };
 
       const issues = validator.validateErrorResponseFormat(errorResponse);
@@ -89,7 +100,7 @@ describe('APIErrorValidator', () => {
 
     it('should detect missing required fields', () => {
       const errorResponse = {
-        message: 'Something went wrong'
+        message: 'Something went wrong',
       };
 
       const issues = validator.validateErrorResponseFormat(errorResponse);
@@ -104,18 +115,21 @@ describe('APIErrorValidator', () => {
         message: 'An unexpected error occurred',
         status: 500,
         timestamp: '2024-01-01T10:00:00Z',
-        stack: 'Error: Something went wrong...' // Should not be exposed
+        stack: 'Error: Something went wrong...', // Should not be exposed
       };
 
       const issues = validator.validateErrorResponseFormat(errorResponse);
-      expect(issues).toContain('Sensitive field "stack" should not be exposed in error responses');
+      expect(issues).toContain(
+        'Sensitive field "stack" should not be exposed in error responses'
+      );
     });
   });
 
   describe('validateUserFriendliness', () => {
     it('should validate user-friendly error messages', () => {
       const errorResponse = {
-        message: 'Unable to process your request. Please check your input and try again.'
+        message:
+          'Unable to process your request. Please check your input and try again.',
       };
 
       const issues = validator.validateUserFriendliness(errorResponse);
@@ -124,7 +138,7 @@ describe('APIErrorValidator', () => {
 
     it('should detect developer jargon in error messages', () => {
       const errorResponse = {
-        message: 'NullPointerException occurred in UserService.processUser()'
+        message: 'NullPointerException occurred in UserService.processUser()',
       };
 
       const issues = validator.validateUserFriendliness(errorResponse);
@@ -134,11 +148,13 @@ describe('APIErrorValidator', () => {
 
     it('should detect generic error messages', () => {
       const errorResponse = {
-        message: 'Something went wrong'
+        message: 'Something went wrong',
       };
 
       const issues = validator.validateUserFriendliness(errorResponse);
-      expect(issues).toContain('Error message is too generic: "Something went wrong"');
+      expect(issues).toContain(
+        'Error message is too generic: "Something went wrong"'
+      );
     });
   });
 
@@ -146,8 +162,8 @@ describe('APIErrorValidator', () => {
     it('should detect sensitive information in error responses', () => {
       const errorResponse = {
         error: 'credit_report_error',
-        message: 'Failed to retrieve credit report for SSN 123-45-6789',
-        status: 500
+        message: 'Failed to retrieve credit report for SSN ***-**-6789',
+        status: 500,
       };
 
       const issues = validator.checkSensitiveInformation(errorResponse);
@@ -159,7 +175,7 @@ describe('APIErrorValidator', () => {
       const errorResponse = {
         error: 'database_error',
         message: 'Connection failed: postgresql://user:pass@localhost:5432/db',
-        status: 500
+        status: 500,
       };
 
       const issues = validator.checkSensitiveInformation(errorResponse);
@@ -170,7 +186,7 @@ describe('APIErrorValidator', () => {
       const errorResponse = {
         error: 'validation_error',
         message: 'Invalid input provided',
-        status: 400
+        status: 400,
       };
 
       const issues = validator.checkSensitiveInformation(errorResponse);
@@ -191,7 +207,9 @@ describe('APIErrorValidator', () => {
 
     it('should validate error status code ranges', () => {
       const issues = validator.validateHTTPStatusCodes(200);
-      expect(issues).toContain('Status code 200 is not an error status (should be 4xx or 5xx)');
+      expect(issues).toContain(
+        'Status code 200 is not an error status (should be 4xx or 5xx)'
+      );
     });
   });
 
@@ -199,20 +217,20 @@ describe('APIErrorValidator', () => {
     it('should detect FCRA compliance violations in error responses', () => {
       const errorResponse = {
         error: 'credit_data_access_error',
-        message: 'Failed to retrieve credit data for user with SSN 123-45-6789',
-        status: 500
+        message: 'Failed to retrieve credit data for user with SSN ***-**-6789',
+        status: 500,
       };
 
       const issues = validator.checkSensitiveInformation(errorResponse);
       expect(issues.length).toBeGreaterThan(0);
-      expect(issues.some(issue => issue.includes('FCRA'))).toBe(true);
+      expect(issues.some((issue) => issue.includes('FCRA'))).toBe(true);
     });
 
     it('should validate that error responses do not expose PII in credit repair context', () => {
       const errorResponse = {
         error: 'user_not_found',
         message: 'User account not found',
-        status: 404
+        status: 404,
       };
 
       const issues = validator.checkSensitiveInformation(errorResponse);
@@ -223,7 +241,7 @@ describe('APIErrorValidator', () => {
       const errorResponse = {
         error: 'credit_calculation_error',
         message: 'Failed to calculate score: 750 for user',
-        status: 500
+        status: 500,
       };
 
       const issues = validator.checkSensitiveInformation(errorResponse);
@@ -236,7 +254,7 @@ describe('APIErrorValidator', () => {
       const errorLogs = [
         { error: 'validation_error', endpoint: '/api/users', count: 15 },
         { error: 'auth_error', endpoint: '/api/auth/login', count: 8 },
-        { error: 'database_error', endpoint: '/api/reports', count: 3 }
+        { error: 'database_error', endpoint: '/api/reports', count: 3 },
       ];
 
       const patterns = validator.analyzeErrorPatterns(errorLogs);
@@ -249,14 +267,16 @@ describe('APIErrorValidator', () => {
       const errorLogs = [
         { error: 'validation_error', count: 5 },
         { error: 'auth_error', count: 25 },
-        { error: 'database_error', count: 2 }
+        { error: 'database_error', count: 2 },
       ];
 
       const patterns = validator.analyzeErrorPatterns(errorLogs);
 
-      const authPattern = patterns.find(p => p.error === 'auth_error');
-      const validationPattern = patterns.find(p => p.error === 'validation_error');
-      const dbPattern = patterns.find(p => p.error === 'database_error');
+      const authPattern = patterns.find((p) => p.error === 'auth_error');
+      const validationPattern = patterns.find(
+        (p) => p.error === 'validation_error'
+      );
+      const dbPattern = patterns.find((p) => p.error === 'database_error');
 
       expect(authPattern.severity).toBe('critical');
       expect(validationPattern.severity).toBe('medium');
@@ -271,7 +291,9 @@ describe('APIErrorValidator', () => {
       const result = await validator.validate();
 
       expect(result.status).toBe('success');
-      expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('API Error Validation Complete'));
+      expect(consoleSpy).toHaveBeenCalledWith(
+        expect.stringContaining('API Error Validation Complete')
+      );
 
       consoleSpy.mockRestore();
     });
@@ -289,7 +311,7 @@ describe('APIErrorValidator', () => {
     it('should handle large error log files efficiently', async () => {
       // Mock a large error log
       const largeErrorLog = {
-        errors: []
+        errors: [],
       };
 
       // Generate many errors
@@ -300,7 +322,7 @@ describe('APIErrorValidator', () => {
           method: 'GET',
           status: 400 + (i % 100),
           error: `error_${i}`,
-          message: `Error message ${i}`
+          message: `Error message ${i}`,
         });
       }
 
@@ -335,7 +357,7 @@ describe('APIErrorValidator', () => {
       const errorResponse = {
         error: 'validation_error',
         message: 'Invalid input',
-        status: 400
+        status: 400,
         // Missing timestamp and requestId (optional)
       };
 
@@ -349,7 +371,7 @@ describe('APIErrorValidator', () => {
       const errorResponse = {
         error: 'database_error',
         message: "SQL Error: SELECT * FROM users WHERE id = '1' OR '1'='1'",
-        status: 500
+        status: 500,
       };
 
       const issues = validator.checkSensitiveInformation(errorResponse);
@@ -360,7 +382,7 @@ describe('APIErrorValidator', () => {
       const errorResponse = {
         error: 'file_error',
         message: 'File not found: /var/www/html/config/database.php',
-        status: 500
+        status: 500,
       };
 
       const issues = validator.checkSensitiveInformation(errorResponse);
@@ -371,7 +393,7 @@ describe('APIErrorValidator', () => {
       const errorResponse = {
         error: 'server_error',
         message: 'Internal server error occurred',
-        status: 500
+        status: 500,
       };
 
       const issues = validator.checkSensitiveInformation(errorResponse);
