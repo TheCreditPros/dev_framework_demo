@@ -1,0 +1,1514 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Enterprise AI-Powered Development Automation | Open-Source PR-Agent | $70,200+ Annual Savings | TCP Credit Repair Compliance">
+      
+      
+        <meta name="author" content="Damon DeCrescenzo, CTO - The Credit Pros">
+      
+      
+      
+      
+      
+      <link rel="icon" href="https://creditrepaircash.com/wp-content/uploads/2023/09/TheCreditPros-Full-White-2048x651.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.18">
+    
+    
+      
+        <title>MCP Server Reference Guide - The Credit Pros - AI-SDLC Framework</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.7e37652d.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Poppins";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../stylesheets/extra.css">
+    
+      <link rel="stylesheet" href="../stylesheets/navigation.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="deep-orange">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#mcp-server-reference-guide" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="The Credit Pros - AI-SDLC Framework" class="md-header__button md-logo" aria-label="The Credit Pros - AI-SDLC Framework" data-md-component="logo">
+      
+  <img src="https://creditrepaircash.com/wp-content/uploads/2023/09/TheCreditPros-Full-White-2048x651.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            The Credit Pros - AI-SDLC Framework
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              MCP Server Reference Guide
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="deep-orange"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="deep-orange"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+          <a href="javascript:void(0)" class="md-search__icon md-icon" title="Share" aria-label="Share" data-clipboard data-clipboard-text="" data-md-component="search-share" tabindex="-1">
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9a3 3 0 0 0-3 3 3 3 0 0 0 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.15c-.05.21-.08.43-.08.66 0 1.61 1.31 2.91 2.92 2.91s2.92-1.3 2.92-2.91A2.92 2.92 0 0 0 18 16.08"/></svg>
+          </a>
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/nydamon/ai-sdlc" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path fill="currentColor" d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../navigation-index/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  📂 Browse All Docs
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../quick-start-simple/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  🚀 Quick Start Guide
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../implementation-guide-managers/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  📋 Manager Implementation Guide
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../VALIDATION_TESTING_REPORT.md" class="md-tabs__link">
+        
+  
+  
+    
+  
+  🧪 Validation Testing Report
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../troubleshooting-simple/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  🔧 Troubleshooting
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../scripts-download/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  📦 Scripts & Downloads
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../enhanced-claude-code-guidelines/" class="md-tabs__link">
+          
+  
+  
+  Advanced Configuration
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="The Credit Pros - AI-SDLC Framework" class="md-nav__button md-logo" aria-label="The Credit Pros - AI-SDLC Framework" data-md-component="logo">
+      
+  <img src="https://creditrepaircash.com/wp-content/uploads/2023/09/TheCreditPros-Full-White-2048x651.png" alt="logo">
+
+    </a>
+    The Credit Pros - AI-SDLC Framework
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/nydamon/ai-sdlc" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path fill="currentColor" d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../navigation-index/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    📂 Browse All Docs
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../quick-start-simple/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    🚀 Quick Start Guide
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../implementation-guide-managers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    📋 Manager Implementation Guide
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../VALIDATION_TESTING_REPORT.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    🧪 Validation Testing Report
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../troubleshooting-simple/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    🔧 Troubleshooting
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scripts-download/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    📦 Scripts & Downloads
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Advanced Configuration
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            Advanced Configuration
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../enhanced-claude-code-guidelines/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    💻 Claude Code + Cline Guidelines
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mcp-server-setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    🔌 MCP Server Setup Guide
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../centralized-ruleset-management/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    🏢 Centralized Ruleset Management
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../implementation-status/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    🎯 Implementation Status
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#complete-mcp-server-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      🔌 Complete MCP Server Documentation
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quick-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      📋 Quick Reference
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#playwright-automation-mcp" class="md-nav__link">
+    <span class="md-ellipsis">
+      🎭 Playwright Automation MCP
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#github-integration-mcp" class="md-nav__link">
+    <span class="md-ellipsis">
+      🐙 GitHub Integration MCP
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#secure-filesystem-mcp" class="md-nav__link">
+    <span class="md-ellipsis">
+      📁 Secure Filesystem MCP
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#postgresql-enhanced-mcp" class="md-nav__link">
+    <span class="md-ellipsis">
+      🗄️ PostgreSQL Enhanced MCP
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#web-content-fetch-mcp" class="md-nav__link">
+    <span class="md-ellipsis">
+      🌐 Web Content Fetch MCP
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#everything-server-mcp" class="md-nav__link">
+    <span class="md-ellipsis">
+      🔧 Everything Server MCP
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ai-sdlc-toolkit-mcp" class="md-nav__link">
+    <span class="md-ellipsis">
+      🛠️ AI-SDLC Toolkit MCP
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#credit-compliance-mcp" class="md-nav__link">
+    <span class="md-ellipsis">
+      ⚖️ Credit Compliance MCP
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#test-automation-mcp" class="md-nav__link">
+    <span class="md-ellipsis">
+      🧪 Test Automation MCP
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#database-automation-mcp" class="md-nav__link">
+    <span class="md-ellipsis">
+      🗃️ Database Automation MCP
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#installation-and-setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      🚀 Installation and Setup
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      🔧 Troubleshooting
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#performance-optimization" class="md-nav__link">
+    <span class="md-ellipsis">
+      📈 Performance Optimization
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="mcp-server-reference-guide">MCP Server Reference Guide<a class="headerlink" href="#mcp-server-reference-guide" title="Permanent link">&para;</a></h1>
+<h2 id="complete-mcp-server-documentation">🔌 Complete MCP Server Documentation<a class="headerlink" href="#complete-mcp-server-documentation" title="Permanent link">&para;</a></h2>
+<p>This document provides comprehensive details about all 10 MCP (Model Context Protocol) servers included in the AI-SDLC framework, optimized for credit repair development workflows.</p>
+<h2 id="quick-reference">📋 Quick Reference<a class="headerlink" href="#quick-reference" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Server Name</th>
+<th>Type</th>
+<th>Package/Script</th>
+<th>Capabilities</th>
+<th>Domain</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>🎭 Playwright Automation</td>
+<td>Official</td>
+<td><code>@playwright/mcp</code></td>
+<td>tools, resources, prompts</td>
+<td>E2E Testing</td>
+</tr>
+<tr>
+<td>🐙 GitHub Integration</td>
+<td>Custom</td>
+<td><code>./scripts-complex/github-mcp-server.js</code></td>
+<td>tools, resources</td>
+<td>Repository Management</td>
+</tr>
+<tr>
+<td>📁 Secure Filesystem</td>
+<td>Official</td>
+<td><code>@modelcontextprotocol/server-filesystem</code></td>
+<td>resources, tools</td>
+<td>Security</td>
+</tr>
+<tr>
+<td>🗄️ PostgreSQL Enhanced</td>
+<td>Official</td>
+<td><code>@modelcontextprotocol/server-postgres</code></td>
+<td>tools, resources</td>
+<td>Database</td>
+</tr>
+<tr>
+<td>🌐 Web Content Fetch</td>
+<td>Custom</td>
+<td><code>./scripts-complex/web-fetch-mcp-server.js</code></td>
+<td>resources</td>
+<td>Research</td>
+</tr>
+<tr>
+<td>🔧 Everything Server</td>
+<td>Official</td>
+<td><code>@modelcontextprotocol/server-everything</code></td>
+<td>resources, tools, prompts</td>
+<td>Development</td>
+</tr>
+<tr>
+<td>🛠️ AI-SDLC Toolkit</td>
+<td>Custom</td>
+<td><code>./scripts-complex/mcp-server.js</code></td>
+<td>resources, tools, prompts</td>
+<td>Framework</td>
+</tr>
+<tr>
+<td>⚖️ Credit Compliance</td>
+<td>Custom</td>
+<td><code>./qodo-agents/credit-compliance-agent.js</code></td>
+<td>tools, resources</td>
+<td>Compliance</td>
+</tr>
+<tr>
+<td>🧪 Test Automation</td>
+<td>Custom</td>
+<td><code>./scripts-complex/real-ai-test-generator.js</code></td>
+<td>tools, prompts</td>
+<td>Testing</td>
+</tr>
+<tr>
+<td>🗃️ Database Automation</td>
+<td>Configuration</td>
+<td>Server config only</td>
+<td>tools, resources</td>
+<td>Database Management</td>
+</tr>
+</tbody>
+</table>
+<h2 id="playwright-automation-mcp">🎭 Playwright Automation MCP<a class="headerlink" href="#playwright-automation-mcp" title="Permanent link">&para;</a></h2>
+<p><strong>Purpose</strong>: Browser automation for E2E testing with AI-driven test generation</p>
+<p><strong>Package</strong>: <code>@playwright/mcp</code><br />
+<strong>Reference URL</strong>: https://npmjs.com/package/@playwright/mcp<br />
+<strong>GitHub</strong>: https://github.com/executeautomation/playwright-mcp-server</p>
+<p><strong>Capabilities</strong>: tools, resources, prompts</p>
+<p><strong>Features</strong>:</p>
+<ul>
+<li>Automatic browser installation (Chrome, Firefox, Safari)</li>
+<li>AI-driven test generation with natural language</li>
+<li>Credit repair domain patterns (dispute forms, credit reports, customer portals)</li>
+<li>Visual regression testing capabilities</li>
+<li>Automatic screenshot/video capture on failures</li>
+</ul>
+<p><strong>Configuration</strong>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="p">{</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">  </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;npx&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">  </span><span class="nt">&quot;args&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;-y&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;@playwright/mcp&quot;</span><span class="p">],</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">  </span><span class="nt">&quot;env&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">    </span><span class="nt">&quot;PLAYWRIGHT_BROWSERS_PATH&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;${PLAYWRIGHT_BROWSERS_PATH}&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">    </span><span class="nt">&quot;HEADLESS&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;${HEADLESS:-true}&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="w">    </span><span class="nt">&quot;DOMAIN_PATTERNS&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;credit_repair,dispute_portal,customer_dashboard&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="w">    </span><span class="nt">&quot;TCP_E2E_PATTERNS&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;true&quot;</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="w">  </span><span class="p">}</span>
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="p">}</span>
+</code></pre></div>
+<p><strong>Usage Examples</strong>:</p>
+<ul>
+<li>Generate E2E tests for dispute form submission</li>
+<li>Test credit report viewing workflows</li>
+<li>Validate customer portal authentication</li>
+<li>Test admin dashboard functionality</li>
+</ul>
+<h2 id="github-integration-mcp">🐙 GitHub Integration MCP<a class="headerlink" href="#github-integration-mcp" title="Permanent link">&para;</a></h2>
+<p><strong>Purpose</strong>: Repository management and CI/CD automation with compliance checking</p>
+<p><strong>Implementation</strong>: Custom script (<code>./scripts-complex/github-mcp-server.js</code>)<br />
+<strong>Reference URL</strong>: Custom AI-SDLC implementation</p>
+<p><strong>Capabilities</strong>: tools, resources</p>
+<p><strong>Features</strong>:</p>
+<ul>
+<li>Automated PR reviews with FCRA compliance checking</li>
+<li>PII detection in code changes</li>
+<li>Credit repair domain pattern validation</li>
+<li>Issue tracking and management</li>
+<li>Compliance automation workflows</li>
+<li>Repository security scanning</li>
+</ul>
+<p><strong>Configuration</strong>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="p">{</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">  </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;node&quot;</span><span class="p">,</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">  </span><span class="nt">&quot;args&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;./scripts-complex/github-mcp-server.js&quot;</span><span class="p">],</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">  </span><span class="nt">&quot;env&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">    </span><span class="nt">&quot;GITHUB_TOKEN&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;${GITHUB_TOKEN}&quot;</span><span class="p">,</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">    </span><span class="nt">&quot;GITHUB_REPOSITORY&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;${GITHUB_REPOSITORY:-auto-detect}&quot;</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="w">  </span><span class="p">}</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="p">}</span>
+</code></pre></div>
+<p><strong>Usage Examples</strong>:</p>
+<ul>
+<li>Automatic PR compliance review</li>
+<li>PII exposure prevention</li>
+<li>FCRA regulation adherence checking</li>
+<li>Automated issue creation for compliance violations</li>
+</ul>
+<h2 id="secure-filesystem-mcp">📁 Secure Filesystem MCP<a class="headerlink" href="#secure-filesystem-mcp" title="Permanent link">&para;</a></h2>
+<p><strong>Purpose</strong>: PII-safe file operations with built-in credit data protection</p>
+<p><strong>Package</strong>: <code>@modelcontextprotocol/server-filesystem</code><br />
+<strong>Reference URL</strong>: https://github.com/modelcontextprotocol/servers/tree/main/src/filesystem<br />
+<strong>Documentation</strong>: https://modelcontextprotocol.io/servers/filesystem</p>
+<p><strong>Capabilities</strong>: resources, tools</p>
+<p><strong>Features</strong>:</p>
+<ul>
+<li>Automatic PII filtering and detection</li>
+<li>Secure file handling for credit data</li>
+<li>Audit trail logging for file operations</li>
+<li>Encrypted storage for sensitive configurations</li>
+<li>Access control and permission management</li>
+</ul>
+<p><strong>Configuration</strong>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="p">{</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">  </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;npx&quot;</span><span class="p">,</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">  </span><span class="nt">&quot;args&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;-y&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;@modelcontextprotocol/server-filesystem&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;/secure/path&quot;</span><span class="p">],</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">  </span><span class="nt">&quot;env&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">    </span><span class="nt">&quot;ALLOWED_EXTENSIONS&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;js,ts,json,md,yml,yaml&quot;</span><span class="p">,</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="w">    </span><span class="nt">&quot;PII_PROTECTION&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;true&quot;</span><span class="p">,</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="w">    </span><span class="nt">&quot;AUDIT_LOGGING&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;true&quot;</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="w">  </span><span class="p">}</span>
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="p">}</span>
+</code></pre></div>
+<p><strong>Usage Examples</strong>:</p>
+<ul>
+<li>Safe handling of customer data files</li>
+<li>Secure configuration management</li>
+<li>Audit trail for compliance reporting</li>
+<li>Encrypted storage for sensitive documents</li>
+</ul>
+<h2 id="postgresql-enhanced-mcp">🗄️ PostgreSQL Enhanced MCP<a class="headerlink" href="#postgresql-enhanced-mcp" title="Permanent link">&para;</a></h2>
+<p><strong>Purpose</strong>: Database operations with FCRA audit trails and compliance logging</p>
+<p><strong>Package</strong>: <code>@modelcontextprotocol/server-postgres</code><br />
+<strong>Reference URL</strong>: https://github.com/modelcontextprotocol/servers/tree/main/src/postgres<br />
+<strong>Documentation</strong>: https://modelcontextprotocol.io/servers/postgres</p>
+<p><strong>Capabilities</strong>: tools, resources</p>
+<p><strong>Features</strong>:</p>
+<ul>
+<li>FCRA audit trail logging for all database operations</li>
+<li>PII encryption and decryption capabilities</li>
+<li>Schema validation for compliance</li>
+<li>Automated compliance reporting</li>
+<li>Query optimization for credit data operations</li>
+</ul>
+<p><strong>Configuration</strong>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="p">{</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">  </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;npx&quot;</span><span class="p">,</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">  </span><span class="nt">&quot;args&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;-y&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;@modelcontextprotocol/server-postgres&quot;</span><span class="p">],</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="w">  </span><span class="nt">&quot;env&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="w">    </span><span class="nt">&quot;POSTGRES_CONNECTION_STRING&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;${DATABASE_URL}&quot;</span><span class="p">,</span>
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="w">    </span><span class="nt">&quot;FCRA_AUDIT_MODE&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;true&quot;</span><span class="p">,</span>
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="w">    </span><span class="nt">&quot;PII_ENCRYPTION&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;true&quot;</span><span class="p">,</span>
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="w">    </span><span class="nt">&quot;COMPLIANCE_LOGGING&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;true&quot;</span>
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a><span class="w">  </span><span class="p">}</span>
+<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="p">}</span>
+</code></pre></div>
+<p><strong>Usage Examples</strong>:</p>
+<ul>
+<li>FCRA-compliant database queries</li>
+<li>Automated audit trail generation</li>
+<li>PII-encrypted data storage</li>
+<li>Compliance reporting for regulatory audits</li>
+</ul>
+<h2 id="web-content-fetch-mcp">🌐 Web Content Fetch MCP<a class="headerlink" href="#web-content-fetch-mcp" title="Permanent link">&para;</a></h2>
+<p><strong>Purpose</strong>: Safe content fetching for compliance documentation and research</p>
+<p><strong>Implementation</strong>: Custom script (<code>./scripts-complex/web-fetch-mcp-server.js</code>)<br />
+<strong>Reference URL</strong>: Custom AI-SDLC implementation</p>
+<p><strong>Capabilities</strong>: resources</p>
+<p><strong>Features</strong>:</p>
+<ul>
+<li>Rate-limited content fetching</li>
+<li>Trusted source validation (CFPB, FTC, credit bureaus)</li>
+<li>Content filtering and safety checks</li>
+<li>Compliance documentation caching</li>
+<li>Regulation update monitoring</li>
+</ul>
+<p><strong>Configuration</strong>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="p">{</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">  </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;node&quot;</span><span class="p">,</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">  </span><span class="nt">&quot;args&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;./scripts-complex/web-fetch-mcp-server.js&quot;</span><span class="p">],</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="w">  </span><span class="nt">&quot;env&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="w">    </span><span class="nt">&quot;RATE_LIMIT&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;100&quot;</span><span class="p">,</span>
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="w">    </span><span class="nt">&quot;TRUSTED_DOMAINS&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;cfpb.gov,ftc.gov,experian.com,equifax.com,transunion.com&quot;</span><span class="p">,</span>
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="w">    </span><span class="nt">&quot;CONTENT_FILTERING&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;true&quot;</span>
+<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="w">  </span><span class="p">}</span>
+<a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a><span class="p">}</span>
+</code></pre></div>
+<p><strong>Usage Examples</strong>:</p>
+<ul>
+<li>Fetch CFPB regulation updates</li>
+<li>Research credit bureau API documentation</li>
+<li>Monitor compliance requirement changes</li>
+<li>Cache regulatory guidance documents</li>
+</ul>
+<h2 id="everything-server-mcp">🔧 Everything Server MCP<a class="headerlink" href="#everything-server-mcp" title="Permanent link">&para;</a></h2>
+<p><strong>Purpose</strong>: Comprehensive development utilities and testing</p>
+<p><strong>Package</strong>: <code>@modelcontextprotocol/server-everything</code><br />
+<strong>Reference URL</strong>: https://github.com/modelcontextprotocol/servers/tree/main/src/everything<br />
+<strong>Documentation</strong>: https://modelcontextprotocol.io/servers/everything</p>
+<p><strong>Capabilities</strong>: resources, tools, prompts</p>
+<p><strong>Features</strong>:</p>
+<ul>
+<li>Complete MCP feature testing</li>
+<li>Development debugging utilities</li>
+<li>Multi-capability integration testing</li>
+<li>Tool discovery and validation</li>
+<li>Development environment diagnostics</li>
+</ul>
+<p><strong>Configuration</strong>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="p">{</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="w">  </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;npx&quot;</span><span class="p">,</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">  </span><span class="nt">&quot;args&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;-y&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;@modelcontextprotocol/server-everything&quot;</span><span class="p">],</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="w">  </span><span class="nt">&quot;env&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="w">    </span><span class="nt">&quot;DEBUG_MODE&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;true&quot;</span><span class="p">,</span>
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="w">    </span><span class="nt">&quot;FEATURE_TESTING&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;true&quot;</span>
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="w">  </span><span class="p">}</span>
+<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="p">}</span>
+</code></pre></div>
+<p><strong>Usage Examples</strong>:</p>
+<ul>
+<li>Test MCP functionality during development</li>
+<li>Debug MCP server interactions</li>
+<li>Validate tool integrations</li>
+<li>Development environment diagnostics</li>
+</ul>
+<h2 id="ai-sdlc-toolkit-mcp">🛠️ AI-SDLC Toolkit MCP<a class="headerlink" href="#ai-sdlc-toolkit-mcp" title="Permanent link">&para;</a></h2>
+<p><strong>Purpose</strong>: Framework-specific automation with credit repair domain expertise</p>
+<p><strong>Implementation</strong>: Custom script (<code>./scripts-complex/mcp-server.js</code>)<br />
+<strong>Reference URL</strong>: Custom AI-SDLC implementation</p>
+<p><strong>Capabilities</strong>: resources, tools, prompts</p>
+<p><strong>Features</strong>:</p>
+<ul>
+<li>AI-SDLC framework automation</li>
+<li>Credit repair domain-specific utilities</li>
+<li>Custom workflow automation</li>
+<li>Framework-specific tools and helpers</li>
+<li>Integration with existing AI-SDLC commands</li>
+</ul>
+<p><strong>Configuration</strong>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="p">{</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="w">  </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;node&quot;</span><span class="p">,</span>
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="w">  </span><span class="nt">&quot;args&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;./scripts-complex/mcp-server.js&quot;</span><span class="p">],</span>
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="w">  </span><span class="nt">&quot;env&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="w">    </span><span class="nt">&quot;AI_SDLC_MODE&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;true&quot;</span><span class="p">,</span>
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="w">    </span><span class="nt">&quot;CREDIT_REPAIR_DOMAIN&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;true&quot;</span><span class="p">,</span>
+<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="w">    </span><span class="nt">&quot;FRAMEWORK_VERSION&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;3.0.0&quot;</span>
+<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a><span class="w">  </span><span class="p">}</span>
+<a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a><span class="p">}</span>
+</code></pre></div>
+<p><strong>Usage Examples</strong>:</p>
+<ul>
+<li>Automate AI-SDLC framework tasks</li>
+<li>Generate credit repair specific code patterns</li>
+<li>Framework configuration management</li>
+<li>Custom workflow execution</li>
+</ul>
+<h2 id="credit-compliance-mcp">⚖️ Credit Compliance MCP<a class="headerlink" href="#credit-compliance-mcp" title="Permanent link">&para;</a></h2>
+<p><strong>Purpose</strong>: FCRA/FACTA validation with regulatory expertise</p>
+<p><strong>Implementation</strong>: Custom script (<code>./qodo-agents/credit-compliance-agent.js</code>)<br />
+<strong>Reference URL</strong>: Custom AI-SDLC implementation</p>
+<p><strong>Capabilities</strong>: tools, resources</p>
+<p><strong>Features</strong>:</p>
+<ul>
+<li>FCRA Section 604 permissible purpose validation</li>
+<li>PII pattern detection and protection</li>
+<li>Regulatory compliance checking</li>
+<li>Automated compliance reporting</li>
+<li>Credit repair domain expertise</li>
+</ul>
+<p><strong>Configuration</strong>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="p">{</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="w">  </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;node&quot;</span><span class="p">,</span>
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="w">  </span><span class="nt">&quot;args&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;./qodo-agents/credit-compliance-agent.js&quot;</span><span class="p">],</span>
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="w">  </span><span class="nt">&quot;env&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="w">    </span><span class="nt">&quot;FCRA_COMPLIANCE_MODE&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;true&quot;</span><span class="p">,</span>
+<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="w">    </span><span class="nt">&quot;PII_DETECTION&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;true&quot;</span><span class="p">,</span>
+<a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a><span class="w">    </span><span class="nt">&quot;REGULATORY_CHECKS&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;true&quot;</span>
+<a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a><span class="w">  </span><span class="p">}</span>
+<a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a><span class="p">}</span>
+</code></pre></div>
+<p><strong>Usage Examples</strong>:</p>
+<ul>
+<li>Validate FCRA compliance in code</li>
+<li>Detect PII exposure risks</li>
+<li>Generate compliance reports</li>
+<li>Automated regulatory audit preparation</li>
+</ul>
+<h2 id="test-automation-mcp">🧪 Test Automation MCP<a class="headerlink" href="#test-automation-mcp" title="Permanent link">&para;</a></h2>
+<p><strong>Purpose</strong>: AI-powered test generation with domain awareness</p>
+<p><strong>Implementation</strong>: Custom script (<code>./scripts-complex/real-ai-test-generator.js</code>)<br />
+<strong>Reference URL</strong>: Custom AI-SDLC implementation</p>
+<p><strong>Capabilities</strong>: tools, prompts</p>
+<p><strong>Features</strong>:</p>
+<ul>
+<li>AI-powered test generation</li>
+<li>Credit repair domain-aware patterns</li>
+<li>100% test coverage targeting</li>
+<li>Intelligent test case creation</li>
+<li>Integration with existing test frameworks</li>
+</ul>
+<p><strong>Configuration</strong>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="p">{</span>
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="w">  </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;node&quot;</span><span class="p">,</span>
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="w">  </span><span class="nt">&quot;args&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;./scripts-complex/real-ai-test-generator.js&quot;</span><span class="p">],</span>
+<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="w">  </span><span class="nt">&quot;env&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="w">    </span><span class="nt">&quot;TEST_GENERATION_MODE&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;true&quot;</span><span class="p">,</span>
+<a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a><span class="w">    </span><span class="nt">&quot;DOMAIN_PATTERNS&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;credit_repair&quot;</span><span class="p">,</span>
+<a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a><span class="w">    </span><span class="nt">&quot;COVERAGE_TARGET&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;100&quot;</span>
+<a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a><span class="w">  </span><span class="p">}</span>
+<a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a><span class="p">}</span>
+</code></pre></div>
+<p><strong>Usage Examples</strong>:</p>
+<ul>
+<li>Generate comprehensive test suites automatically</li>
+<li>Create domain-specific test patterns</li>
+<li>Achieve 100% test coverage goals</li>
+<li>Intelligent edge case generation</li>
+</ul>
+<h2 id="database-automation-mcp">🗃️ Database Automation MCP<a class="headerlink" href="#database-automation-mcp" title="Permanent link">&para;</a></h2>
+<p><strong>Purpose</strong>: PostgreSQL integration for automated database operations</p>
+<p><strong>Implementation</strong>: Server configuration only (leverages postgresql_enhanced)<br />
+<strong>Reference URL</strong>: Uses PostgreSQL Enhanced MCP capabilities</p>
+<p><strong>Capabilities</strong>: tools, resources</p>
+<p><strong>Features</strong>:</p>
+<ul>
+<li>Automated database setup and migrations</li>
+<li>Performance tuning and optimization</li>
+<li>Backup automation and management</li>
+<li>Database health monitoring</li>
+<li>Integration with PostgreSQL Enhanced MCP</li>
+</ul>
+<p><strong>Configuration</strong>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="p">{</span>
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="w">  </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Automated database operations and management&quot;</span><span class="p">,</span>
+<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="w">  </span><span class="nt">&quot;transport&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;stdio&quot;</span><span class="p">,</span>
+<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="w">  </span><span class="nt">&quot;capabilities&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;tools&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;resources&quot;</span><span class="p">],</span>
+<a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a><span class="w">  </span><span class="nt">&quot;dependencies&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;postgresql_enhanced&quot;</span><span class="p">]</span>
+<a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a><span class="p">}</span>
+</code></pre></div>
+<p><strong>Usage Examples</strong>:</p>
+<ul>
+<li>Automated database migrations</li>
+<li>Performance optimization tasks</li>
+<li>Backup and recovery automation</li>
+<li>Database health monitoring</li>
+</ul>
+<h2 id="installation-and-setup">🚀 Installation and Setup<a class="headerlink" href="#installation-and-setup" title="Permanent link">&para;</a></h2>
+<p>All MCP servers are automatically installed and configured when you run:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>./auto-setup.sh
+</code></pre></div>
+<p><strong>Manual MCP Setup:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="c1"># Complete MCP setup</span>
+<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>npm<span class="w"> </span>run<span class="w"> </span>mcp:setup
+<a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>
+<a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="c1"># Validate installation</span>
+<a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a>npm<span class="w"> </span>run<span class="w"> </span>mcp:validate
+<a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a>
+<a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a><span class="c1"># Check status</span>
+<a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a>npm<span class="w"> </span>run<span class="w"> </span>mcp:status
+</code></pre></div>
+<p><strong>Configuration File Location</strong>: <code>.mcp.json</code> in project root</p>
+<p><strong>Generated Documentation</strong>:</p>
+<ul>
+<li><code>MCP-SETUP-GUIDE.md</code> - Setup instructions</li>
+<li><code>MCP-VALIDATION-REPORT.md</code> - Validation results</li>
+<li><code>MCP-QUICK-START.md</code> - Quick start guide</li>
+</ul>
+<h2 id="troubleshooting">🔧 Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">&para;</a></h2>
+<p><strong>Common Issues:</strong></p>
+<ol>
+<li><strong>Missing Environment Variables</strong>: Add required variables to <code>.env</code> file</li>
+<li><strong>Package Not Found</strong>: Some packages may not exist in npm registry - uses custom implementations</li>
+<li><strong>Permission Issues</strong>: Ensure proper file permissions for custom scripts</li>
+<li><strong>Claude Code Integration</strong>: Run <code>claude mcp add --config ./.mcp.json</code> to integrate with Claude Code</li>
+</ol>
+<p><strong>Support Resources:</strong></p>
+<ul>
+<li><strong>MCP Protocol Documentation</strong>: https://modelcontextprotocol.io/</li>
+<li><strong>Claude Code MCP Guide</strong>: https://docs.anthropic.com/en/docs/claude-code/mcp</li>
+<li><strong>AI-SDLC Framework Documentation</strong>: https://nydamon.github.io/ai-sdlc-docs/</li>
+</ul>
+<h2 id="performance-optimization">📈 Performance Optimization<a class="headerlink" href="#performance-optimization" title="Permanent link">&para;</a></h2>
+<p><strong>Best Practices:</strong></p>
+<ol>
+<li><strong>Environment Variables</strong>: Configure all optional environment variables for optimal performance</li>
+<li><strong>Resource Management</strong>: MCP servers use minimal resources when not actively used</li>
+<li><strong>Selective Usage</strong>: Use specific MCP servers for targeted tasks</li>
+<li><strong>Monitoring</strong>: Regular validation ensures optimal performance</li>
+</ol>
+<p><strong>Performance Metrics:</strong></p>
+<ul>
+<li><strong>Installation Time</strong>: ~2-3 minutes (including Playwright browsers)</li>
+<li><strong>Memory Usage</strong>: ~50-100MB per active server</li>
+<li><strong>Response Time</strong>: &lt;200ms for most operations</li>
+<li><strong>Validation Time</strong>: ~30 seconds for all servers</li>
+</ul>
+<hr />
+<p><strong>Framework Version</strong>: AI-SDLC v3.2.0<br />
+<strong>Last Updated</strong>: August 2025<br />
+<strong>MCP Protocol Version</strong>: 1.0.0</p>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  <form class="md-feedback" name="feedback" hidden>
+    <fieldset>
+      <legend class="md-feedback__title">
+        Was this page helpful?
+      </legend>
+      <div class="md-feedback__inner">
+        <div class="md-feedback__list">
+          
+            <button class="md-feedback__icon md-icon" type="submit" title="This page was helpful" data-md-value="1">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M5 9v12H1V9zm4 12a2 2 0 0 1-2-2V9c0-.55.22-1.05.59-1.41L14.17 1l1.06 1.06c.27.27.44.64.44 1.05l-.03.32L14.69 8H21a2 2 0 0 1 2 2v2c0 .26-.05.5-.14.73l-3.02 7.05C19.54 20.5 18.83 21 18 21zm0-2h9.03L21 12v-2h-8.79l1.13-5.32L9 9.03z"/></svg>
+            </button>
+          
+            <button class="md-feedback__icon md-icon" type="submit" title="This page could be improved" data-md-value="0">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 15V3h4v12zM15 3a2 2 0 0 1 2 2v10c0 .55-.22 1.05-.59 1.41L9.83 23l-1.06-1.06c-.27-.27-.44-.64-.44-1.06l.03-.31.95-4.57H3a2 2 0 0 1-2-2v-2c0-.26.05-.5.14-.73l3.02-7.05C4.46 3.5 5.17 3 6 3zm0 2H5.97L3 12v2h8.78l-1.13 5.32L15 14.97z"/></svg>
+            </button>
+          
+        </div>
+        <div class="md-feedback__note">
+          
+            <div data-md-value="1" hidden>
+              
+              
+                
+              
+              
+              
+                
+                
+              
+              Thanks for your feedback!
+            </div>
+          
+            <div data-md-value="0" hidden>
+              
+              
+                
+              
+              
+              
+                
+                
+              
+              Thanks for your feedback! Help us improve by creating an issue on GitHub.
+            </div>
+          
+        </div>
+      </div>
+    </fieldset>
+  </form>
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      &copy; 2025 <a href="https://thecreditpros.com" style="color: #ff902a; text-decoration: none;">The Credit Pros</a>. All rights reserved.<br>
+<strong style="color: #ff902a;">Enterprise AI-SDLC Framework by Damon DeCrescenzo, CTO - The Credit Pros</strong><br>
+<em style="color: #fffffe;">AI-Powered Development • $70,200+ Annual Savings • Production Ready</em><br>
+<strong style="color: #ff902a;">Version: v3.2.1 | Updated: August 7, 2025</strong>
+
+    </div>
+  
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/nydamon/ai-sdlc-docs" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path fill="currentColor" d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://www.linkedin.com/company/thecreditpros" target="_blank" rel="noopener" title="www.linkedin.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path fill="currentColor" d="M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3M135.4 416H69V202.2h66.5V416zM102.2 96a38.5 38.5 0 1 1 0 77 38.5 38.5 0 1 1 0-77m282.1 320h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9z"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://thecreditpros.com" target="_blank" rel="noopener" title="thecreditpros.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path fill="currentColor" d="M351.9 280H161c2.9 64.5 17.2 123.9 37.5 167.4 11.4 24.5 23.7 41.8 35.1 52.4 11.2 10.5 18.9 12.2 22.9 12.2s11.7-1.7 22.9-12.2c11.4-10.6 23.7-28 35.1-52.4 20.3-43.5 34.6-102.9 37.5-167.4zm-191-48h190.9c-2.8-64.5-17.1-123.9-37.4-167.4-11.4-24.4-23.7-41.8-35.1-52.4C268.1 1.7 260.4 0 256.4 0s-11.7 1.7-22.9 12.2c-11.4 10.6-23.7 28-35.1 52.4-20.3 43.5-34.6 102.9-37.5 167.4m-48 0c3.5-85.6 25.6-165.1 57.9-217.3C78.7 47.3 10.9 131.2 1.5 232zM1.5 280c9.4 100.8 77.2 184.7 169.3 217.3-32.3-52.2-54.4-131.7-57.9-217.3zm398.4 0c-3.5 85.6-25.6 165.1-57.9 217.3 92.1-32.7 159.9-116.5 169.3-217.3zm111.4-48C501.9 131.2 434.1 47.3 342 14.7c32.3 52.2 54.4 131.7 57.9 217.3z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight", "search.share", "content.code.copy", "content.code.annotate", "header.autohide"], "search": "../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"cost": "$150", "framework": "v3.2.1", "name": "Claude Code + Cline Enterprise Platform with MCP Integration", "platform": "Comprehensive AI Development Suite - 10 MCP Servers", "provider": "mike", "roi": "4,680%", "savings": "$70,200+", "updated": "August 7, 2025"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.92b07e13.min.js"></script>
+      
+        <script src="https://unpkg.com/mermaid@10.6.1/dist/mermaid.min.js"></script>
+      
+    
+  </body>
+</html>

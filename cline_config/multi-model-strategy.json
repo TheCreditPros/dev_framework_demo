@@ -1,0 +1,303 @@
+{
+  "aiModelStrategy": {
+    "version": "2.0.0",
+    "lastUpdated": "2025-08-07",
+    "description": "Multi-model AI strategy for cost optimization and enhanced capabilities",
+
+    "models": {
+      "primary": {
+        "name": "gpt-4o-mini",
+        "provider": "openai",
+        "usage": "80% of tasks - cost optimized",
+        "costPerToken": 0.00015,
+        "maxTokens": 128000,
+        "temperature": 0.1,
+        "capabilities": [
+          "code_generation",
+          "test_creation",
+          "documentation",
+          "pattern_implementation",
+          "bug_fixes"
+        ],
+        "apiEndpoint": "https://api.openai.com/v1/chat/completions",
+        "rateLimits": {
+          "requestsPerMinute": 500,
+          "tokensPerMinute": 200000
+        }
+      },
+
+      "complex": {
+        "name": "claude-3.5-sonnet",
+        "provider": "anthropic",
+        "usage": "15% of tasks - complex analysis",
+        "costPerToken": 0.003,
+        "maxTokens": 200000,
+        "temperature": 0.2,
+        "capabilities": [
+          "architecture_design",
+          "complex_analysis",
+          "compliance_review",
+          "multi_file_refactoring",
+          "advanced_problem_solving"
+        ],
+        "apiEndpoint": "https://api.anthropic.com/v1/messages",
+        "rateLimits": {
+          "requestsPerMinute": 50,
+          "tokensPerMinute": 40000
+        }
+      },
+
+      "planning": {
+        "name": "deepseek-r1",
+        "provider": "deepseek",
+        "usage": "3% of tasks - strategic planning",
+        "costPerToken": 0.000055,
+        "costReduction": "97%",
+        "maxTokens": 32768,
+        "temperature": 0.3,
+        "capabilities": [
+          "project_planning",
+          "requirement_analysis",
+          "risk_assessment",
+          "strategic_thinking",
+          "resource_planning"
+        ],
+        "apiEndpoint": "https://api.deepseek.com/v1/chat/completions",
+        "rateLimits": {
+          "requestsPerMinute": 60,
+          "tokensPerMinute": 10000
+        }
+      },
+
+      "fallback": {
+        "name": "template-based",
+        "provider": "local",
+        "usage": "2% of tasks - offline scenarios",
+        "costPerToken": 0,
+        "capabilities": [
+          "pattern_templates",
+          "code_scaffolding",
+          "basic_completions"
+        ]
+      }
+    },
+
+    "routingStrategy": {
+      "taskClassification": {
+        "simple": {
+          "description": "Routine tasks with established patterns",
+          "examples": [
+            "Standard React component creation",
+            "Basic API endpoint implementation",
+            "Simple test case generation",
+            "Documentation updates",
+            "Formatting and linting fixes"
+          ],
+          "assignedModel": "primary",
+          "maxComplexityScore": 3
+        },
+
+        "complex": {
+          "description": "Tasks requiring deep analysis and reasoning",
+          "examples": [
+            "System architecture decisions",
+            "Complex business logic implementation",
+            "Multi-component refactoring",
+            "Performance optimization",
+            "Security vulnerability analysis"
+          ],
+          "assignedModel": "complex",
+          "minComplexityScore": 7
+        },
+
+        "planning": {
+          "description": "Strategic and planning-focused tasks",
+          "examples": [
+            "Project roadmap creation",
+            "Feature specification analysis",
+            "Risk assessment and mitigation",
+            "Resource allocation planning",
+            "Long-term technical strategy"
+          ],
+          "assignedModel": "planning",
+          "keywords": ["plan", "strategy", "roadmap", "assessment", "analysis"]
+        }
+      },
+
+      "contextFactors": {
+        "fileCount": {
+          "single": "primary",
+          "few": "primary",
+          "many": "complex"
+        },
+        "domainComplexity": {
+          "standard": "primary",
+          "financial": "complex",
+          "compliance": "complex"
+        },
+        "userExperience": {
+          "beginner": "complex",
+          "intermediate": "primary",
+          "expert": "primary"
+        }
+      }
+    },
+
+    "costOptimization": {
+      "smartCaching": {
+        "enabled": true,
+        "cacheDuration": 3600,
+        "cacheTypes": [
+          "code_patterns",
+          "test_templates",
+          "common_responses",
+          "compliance_rules"
+        ],
+        "estimatedSavings": "40%"
+      },
+
+      "contextCompression": {
+        "enabled": true,
+        "algorithms": [
+          "duplicate_removal",
+          "relevance_filtering",
+          "semantic_chunking"
+        ],
+        "estimatedSavings": "25%"
+      },
+
+      "batchProcessing": {
+        "enabled": true,
+        "batchSize": 5,
+        "applicableTasks": [
+          "test_generation",
+          "documentation_updates",
+          "code_formatting"
+        ],
+        "estimatedSavings": "30%"
+      },
+
+      "totalEstimatedSavings": "73%",
+      "monthlyBudget": {
+        "total": 500,
+        "primary": 250,
+        "complex": 200,
+        "planning": 50
+      }
+    },
+
+    "qualityMetrics": {
+      "successRates": {
+        "primary": 0.85,
+        "complex": 0.92,
+        "planning": 0.88
+      },
+
+      "responseTime": {
+        "primary": "2-5 seconds",
+        "complex": "10-15 seconds",
+        "planning": "5-10 seconds"
+      },
+
+      "accuracyScores": {
+        "codeGeneration": {
+          "primary": 0.87,
+          "complex": 0.93
+        },
+        "testGeneration": {
+          "primary": 0.82,
+          "complex": 0.89
+        },
+        "compliance": {
+          "complex": 0.95,
+          "planning": 0.91
+        }
+      }
+    },
+
+    "monitoring": {
+      "metrics": [
+        "usage_distribution",
+        "cost_per_task",
+        "success_rates",
+        "response_times",
+        "error_rates"
+      ],
+
+      "alerts": {
+        "costThreshold": {
+          "warning": 400,
+          "critical": 480
+        },
+        "errorRateThreshold": {
+          "warning": 0.15,
+          "critical": 0.25
+        },
+        "responseTimeThreshold": {
+          "warning": 30000,
+          "critical": 60000
+        }
+      },
+
+      "reporting": {
+        "frequency": "weekly",
+        "recipients": ["tech-lead", "project-manager"],
+        "metrics": [
+          "cost_breakdown",
+          "model_performance",
+          "task_distribution",
+          "optimization_opportunities"
+        ]
+      }
+    }
+  },
+
+  "integrationSettings": {
+    "clineConfiguration": {
+      "defaultModel": "primary",
+      "planModeModel": "planning",
+      "actModeModel": "primary",
+      "complexTaskModel": "complex",
+
+      "taskDetection": {
+        "enabled": true,
+        "confidenceThreshold": 0.8,
+        "fallbackModel": "primary"
+      },
+
+      "contextManagement": {
+        "maxContextTokens": 32000,
+        "prioritizeRecent": true,
+        "includeMemoryBank": true,
+        "compressionEnabled": true
+      }
+    },
+
+    "apiConfiguration": {
+      "timeout": 30000,
+      "retryAttempts": 3,
+      "retryDelay": 1000,
+      "circuitBreaker": {
+        "enabled": true,
+        "failureThreshold": 5,
+        "resetTimeout": 60000
+      }
+    },
+
+    "security": {
+      "apiKeyRotation": {
+        "enabled": true,
+        "rotationFrequency": "monthly"
+      },
+      "requestLogging": {
+        "enabled": true,
+        "excludePII": true,
+        "retentionDays": 30
+      },
+      "rateLimit": {
+        "enabled": true,
+        "adaptive": true
+      }
+    }
+  }
+}

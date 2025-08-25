@@ -1,0 +1,183 @@
+{
+  "postgres_automation": {
+    "version": "1.0.0",
+    "description": "PostgreSQL automation configuration for Credit Repair AI-SDLC",
+    "credit_repair_compliance": true,
+    "fcra_enabled": true
+  },
+  "database_connections": {
+    "primary": {
+      "driver": "pgsql",
+      "host": "localhost",
+      "port": 5432,
+      "database": "credit_repair_db",
+      "username": "credit_repair_user",
+      "password": "",
+      "charset": "utf8",
+      "prefix": "",
+      "schema": "public",
+      "sslmode": "prefer"
+    },
+    "testing": {
+      "driver": "pgsql",
+      "host": "localhost",
+      "port": 5432,
+      "database": "credit_repair_test_db",
+      "username": "credit_repair_user",
+      "password": "",
+      "charset": "utf8",
+      "prefix": "",
+      "schema": "public",
+      "sslmode": "prefer"
+    }
+  },
+  "fcra_compliance": {
+    "audit_logging": {
+      "enabled": true,
+      "table": "fcra_audit_log",
+      "required_fields": [
+        "consumer_id",
+        "action_type",
+        "table_name",
+        "fcra_section",
+        "user_id",
+        "ip_address",
+        "created_at"
+      ]
+    },
+    "credit_report_access": {
+      "table": "credit_report_access_log",
+      "consent_required": true,
+      "disclosure_required": true,
+      "permissible_purposes": [
+        "account_review",
+        "dispute_investigation",
+        "credit_repair_analysis",
+        "account_monitoring",
+        "employment_screening"
+      ]
+    },
+    "dispute_processing": {
+      "table": "dispute_processing_log",
+      "max_processing_days": 30,
+      "required_stages": [
+        "filed",
+        "investigation_started",
+        "bureau_contacted",
+        "investigation_complete",
+        "consumer_notified"
+      ]
+    },
+    "data_retention": {
+      "table": "data_retention_policy",
+      "default_retention_years": 7,
+      "auto_delete_enabled": true,
+      "retention_periods": {
+        "credit_reports": 7,
+        "dispute_records": 7,
+        "payment_history": 7,
+        "consumer_communications": 3,
+        "audit_logs": 10
+      }
+    }
+  },
+  "performance_optimization": {
+    "indexes": {
+      "fcra_audit_log": [
+        "consumer_id_created_at_idx",
+        "action_type_created_at_idx",
+        "fcra_section_idx"
+      ],
+      "credit_report_access_log": [
+        "consumer_id_access_timestamp_idx",
+        "access_purpose_timestamp_idx"
+      ],
+      "dispute_processing_log": [
+        "consumer_id_processing_timestamp_idx",
+        "dispute_id_processing_stage_idx"
+      ],
+      "data_retention_policy": ["expires_at_auto_delete_idx"]
+    },
+    "query_optimization": {
+      "enable_query_caching": true,
+      "slow_query_threshold_ms": 100,
+      "explain_analyze_enabled": true
+    }
+  },
+  "testing_configuration": {
+    "test_data_seed": {
+      "consumers_count": 1000,
+      "audit_records_per_consumer": 5,
+      "disputes_per_consumer": 2,
+      "access_logs_per_consumer": 3
+    },
+    "performance_benchmarks": {
+      "consumer_lookup_max_ms": 50,
+      "audit_trail_query_max_ms": 100,
+      "dispute_search_max_ms": 75,
+      "compliance_report_max_ms": 200
+    },
+    "compliance_tests": [
+      "fcra_section_604_access_logging",
+      "fcra_section_611_dispute_timeline",
+      "credit_score_validation",
+      "pii_data_encryption",
+      "audit_trail_integrity",
+      "data_retention_compliance"
+    ]
+  },
+  "automation_commands": {
+    "full_automation": "./scripts-complex/postgres-automation.sh all",
+    "setup_only": "./scripts-complex/postgres-automation.sh setup",
+    "test_only": "./scripts-complex/postgres-automation.sh test",
+    "backup_only": "./scripts-complex/postgres-automation.sh backup",
+    "compliance_report": "./scripts-complex/postgres-automation.sh report"
+  },
+  "integration": {
+    "laravel": {
+      "config_file": "config/database.php",
+      "migration_path": "database/migrations",
+      "test_path": "tests/Feature/Database",
+      "test_file": "scripts-complex/laravel-postgres-testing.php"
+    },
+    "ai_sdlc": {
+      "hooks_integration": true,
+      "pre_commit_db_tests": true,
+      "automated_compliance_check": true,
+      "performance_monitoring": true
+    }
+  },
+  "monitoring": {
+    "health_checks": {
+      "connection_test": "pg_isready -h localhost -p 5432",
+      "table_existence": "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public'",
+      "index_usage": "SELECT schemaname, tablename, indexname FROM pg_indexes WHERE schemaname = 'public'"
+    },
+    "alerts": {
+      "slow_queries": true,
+      "failed_compliance_tests": true,
+      "disk_space_low": true,
+      "connection_failures": true
+    }
+  },
+  "security": {
+    "ssl_required": false,
+    "connection_encryption": true,
+    "audit_user_access": true,
+    "pii_field_encryption": [
+      "ssn",
+      "phone_number",
+      "email_address",
+      "full_address"
+    ],
+    "data_masking": {
+      "enabled": true,
+      "fields": ["ssn", "phone_number", "email_address"],
+      "masking_patterns": {
+        "ssn": "XXX-XX-####",
+        "phone": "XXX-XXX-####",
+        "email": "#***@domain.com"
+      }
+    }
+  }
+}

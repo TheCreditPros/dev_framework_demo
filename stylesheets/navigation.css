@@ -1,0 +1,197 @@
+/* AI-SDLC v2.8.1 Enhanced Navigation & Accessibility */
+
+/* Breadcrumb Navigation */
+.md-nav--secondary .md-nav__title {
+    font-size: 0.7rem;
+    font-weight: 400;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--md-default-fg-color--light);
+}
+
+/* Enhanced Table of Contents */
+.md-nav--secondary .md-nav__list .md-nav__item {
+    margin: 0.25rem 0;
+}
+
+.md-nav--secondary .md-nav__link {
+    padding: 0.125rem 0.75rem;
+    border-radius: 0.1rem;
+    transition: background-color 0.25s;
+}
+
+.md-nav--secondary .md-nav__link:hover {
+    background-color: var(--md-default-fg-color--lightest);
+}
+
+/* Page Navigation Improvements */
+.md-content__button {
+    margin-top: 0.5rem;
+    margin-right: 0.5rem;
+}
+
+/* Search Enhancements */
+.md-search__form {
+    position: relative;
+}
+
+.md-search__input {
+    font-size: 0.8rem;
+}
+
+.md-search__suggest {
+    font-size: 0.7rem;
+    color: var(--md-default-fg-color--light);
+}
+
+/* Navigation Icons */
+.md-nav__icon {
+    margin-right: 0.5rem;
+}
+
+/* Team Workflow Guides Styling */
+.md-nav__item .md-nav__item[data-md-level="2"] {
+    margin-left: 1rem;
+}
+
+/* Technical Guides Section */
+.md-nav__item[data-md-level="1"] .md-nav__link[href*="technical"] {
+    font-weight: 500;
+    color: var(--md-accent-fg-color);
+}
+
+/* Enterprise Platform Highlighting */
+.md-nav__link[href*="claude-code"],
+.md-nav__link[href*="cline"],
+.md-nav__link[href*="centralized-ruleset"] {
+    border-left: 2px solid var(--md-accent-fg-color);
+    padding-left: calc(0.75rem - 2px);
+}
+
+/* Quick Access Links */
+.quick-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 1rem 0;
+    padding: 1rem;
+    background-color: var(--md-default-bg-color--light);
+    border-radius: 0.2rem;
+}
+
+.quick-nav-item {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.5rem;
+    background-color: var(--md-accent-fg-color--transparent);
+    border-radius: 0.1rem;
+    text-decoration: none;
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: var(--md-accent-fg-color);
+    transition: all 0.2s;
+}
+
+.quick-nav-item:hover {
+    background-color: var(--md-accent-fg-color);
+    color: var(--md-accent-bg-color);
+    text-decoration: none;
+}
+
+/* Mobile Navigation Improvements */
+@media screen and (max-width: 76.1875em) {
+    .md-nav--primary .md-nav__title[for="__drawer"] {
+        background-color: var(--md-primary-fg-color);
+        color: var(--md-primary-bg-color);
+    }
+    
+    .md-nav--primary .md-nav__item--nested > .md-nav__link {
+        font-weight: 500;
+    }
+}
+
+/* Print Styles for Documentation */
+@media print {
+    .md-nav,
+    .md-search,
+    .md-tabs,
+    .md-footer {
+        display: none !important;
+    }
+    
+    .md-content {
+        margin: 0 !important;
+    }
+}
+
+/* Accessibility Improvements */
+.md-nav__link:focus {
+    outline: 2px solid var(--md-accent-fg-color);
+    outline-offset: 2px;
+}
+
+/* Skip Links */
+.skip-link {
+    position: absolute;
+    top: -40px;
+    left: 6px;
+    background: var(--md-accent-fg-color);
+    color: var(--md-accent-bg-color);
+    padding: 8px;
+    text-decoration: none;
+    border-radius: 4px;
+    z-index: 1000;
+}
+
+.skip-link:focus {
+    top: 6px;
+}
+
+/* Status Indicators */
+.status-indicator {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 0.5rem;
+}
+
+.status-indicator.ready {
+    background-color: #4caf50;
+}
+
+.status-indicator.updated {
+    background-color: #ff9800;
+}
+
+.status-indicator.new {
+    background-color: #2196f3;
+}
+
+/* Version Badge */
+.version-badge {
+    display: inline-block;
+    padding: 0.125rem 0.25rem;
+    font-size: 0.6rem;
+    font-weight: 500;
+    background-color: var(--md-accent-fg-color);
+    color: var(--md-accent-bg-color);
+    border-radius: 0.1rem;
+    margin-left: 0.5rem;
+    vertical-align: middle;
+}
+
+/* Enterprise Badge for v2.8.1 Features */
+.enterprise-badge {
+    display: inline-block;
+    padding: 0.125rem 0.25rem;
+    font-size: 0.6rem;
+    font-weight: 500;
+    background: linear-gradient(45deg, #ff6b35, #ff902a);
+    color: white;
+    border-radius: 0.1rem;
+    margin-left: 0.5rem;
+    vertical-align: middle;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}

@@ -1,0 +1,178 @@
+{
+  "existing_database_mapping": {
+    "description": "Maps AI-SDLC PostgreSQL automation to your existing Credit Pros database schema",
+    "database_info": {
+      "note": "⚠️ IMPORTANT: This framework integrates with your EXISTING PostgreSQL database",
+      "existing_database": "Your current credit repair database",
+      "existing_tables": "Maps to tables you already have in production",
+      "no_new_tables": "Does not create new tables - only adds testing and automation"
+    }
+  },
+  "table_mapping": {
+    "audit_logging": {
+      "framework_expects": "fcra_audit_log",
+      "map_to_existing": "YOUR_EXISTING_AUDIT_TABLE",
+      "instructions": "Replace 'YOUR_EXISTING_AUDIT_TABLE' with your actual audit table name",
+      "required_columns": [
+        "consumer_id (or equivalent customer/client ID)",
+        "action_type (or equivalent activity/event type)",
+        "table_name (or equivalent entity name)",
+        "user_id (or equivalent staff/user ID)",
+        "created_at (or equivalent timestamp)",
+        "ip_address (optional - for compliance tracking)"
+      ],
+      "example_mapping": {
+        "if_your_table_is": "audit_logs",
+        "update_config": "fcra_audit_log -> audit_logs"
+      }
+    },
+    "credit_report_access": {
+      "framework_expects": "credit_report_access_log",
+      "map_to_existing": "YOUR_EXISTING_CREDIT_ACCESS_TABLE",
+      "instructions": "Replace with your table that tracks credit bureau API calls/access",
+      "required_columns": [
+        "consumer_id (or client_id/customer_id)",
+        "bureau_name (Equifax/Experian/TransUnion)",
+        "access_purpose (reason for access)",
+        "access_timestamp (when accessed)",
+        "consumer_consent (boolean - FCRA requirement)",
+        "fcra_disclosure_provided (boolean - compliance)"
+      ],
+      "example_mapping": {
+        "if_your_table_is": "credit_bureau_requests",
+        "update_config": "credit_report_access_log -> credit_bureau_requests"
+      }
+    },
+    "dispute_processing": {
+      "framework_expects": "dispute_processing_log",
+      "map_to_existing": "YOUR_EXISTING_DISPUTES_TABLE",
+      "instructions": "Replace with your disputes/workflow table",
+      "required_columns": [
+        "consumer_id (or client_id)",
+        "dispute_id (or case_id/workflow_id)",
+        "processing_stage (current status)",
+        "days_to_complete (for FCRA 30-day compliance)",
+        "processing_timestamp (status change date)",
+        "fcra_compliant (boolean - meets timeline)"
+      ],
+      "example_mapping": {
+        "if_your_table_is": "dispute_workflows",
+        "update_config": "dispute_processing_log -> dispute_workflows"
+      }
+    },
+    "consumer_data": {
+      "framework_expects": "consumers",
+      "map_to_existing": "YOUR_EXISTING_CONSUMER_TABLE",
+      "instructions": "Replace with your main customer/client table",
+      "required_columns": [
+        "id (primary key)",
+        "ssn (or encrypted equivalent)",
+        "phone_number",
+        "email_address",
+        "created_at"
+      ],
+      "example_mapping": {
+        "if_your_table_is": "clients",
+        "update_config": "consumers -> clients"
+      }
+    }
+  },
+  "column_mapping": {
+    "description": "Map framework column names to your existing column names",
+    "consumer_id_variations": [
+      "consumer_id",
+      "client_id",
+      "customer_id",
+      "user_id"
+    ],
+    "timestamp_variations": [
+      "created_at",
+      "date_created",
+      "timestamp",
+      "created_date"
+    ],
+    "action_type_variations": [
+      "action_type",
+      "event_type",
+      "activity_type",
+      "operation_type"
+    ]
+  },
+  "configuration_steps": {
+    "step_1": {
+      "title": "Identify Your Existing Tables",
+      "description": "List your current PostgreSQL tables that handle:",
+      "tables_to_identify": [
+        "Audit/activity logging table",
+        "Credit bureau access/API calls table",
+        "Disputes/workflows table",
+        "Main consumer/client table"
+      ],
+      "command": "psql -d your_database -c \"\\dt\" | grep -E '(audit|credit|dispute|consumer|client)'"
+    },
+    "step_2": {
+      "title": "Update Configuration File",
+      "description": "Edit postgres-config.json to map to your existing tables",
+      "file_to_edit": "scripts-complex/postgres-config.json",
+      "what_to_change": [
+        "Replace 'fcra_audit_log' with your audit table name",
+        "Replace 'credit_report_access_log' with your credit access table",
+        "Replace 'dispute_processing_log' with your disputes table",
+        "Update column names to match your schema"
+      ]
+    },
+    "step_3": {
+      "title": "Update Environment Variables",
+      "description": "Set your existing database connection details",
+      "variables": [
+        "DB_NAME=your_existing_database_name",
+        "DB_USER=your_existing_database_user",
+        "DB_HOST=your_database_host",
+        "DB_PASSWORD=your_database_password"
+      ]
+    },
+    "step_4": {
+      "title": "Test Mapping",
+      "description": "Verify the framework can connect to your existing tables",
+      "command": "./scripts-complex/postgres-automation.sh test",
+      "expected_result": "Should connect to YOUR existing tables, not create new ones"
+    }
+  },
+  "common_existing_schemas": {
+    "laravel_default": {
+      "audit_table": "activity_log",
+      "consumer_table": "users",
+      "timestamp_column": "created_at",
+      "id_column": "id"
+    },
+    "credit_repair_typical": {
+      "audit_table": "audit_logs",
+      "consumer_table": "clients",
+      "disputes_table": "dispute_workflows",
+      "credit_access_table": "credit_bureau_requests"
+    },
+    "custom_naming": {
+      "note": "Your tables may have different names - that's fine!",
+      "instruction": "Just update the mapping configuration to point to YOUR table names"
+    }
+  },
+  "validation_queries": {
+    "check_existing_tables": {
+      "description": "Run these queries to see your existing schema",
+      "queries": [
+        "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public';",
+        "SELECT column_name, data_type FROM information_schema.columns WHERE table_name = 'YOUR_AUDIT_TABLE';",
+        "SELECT COUNT(*) FROM your_consumer_table;",
+        "SELECT COUNT(*) FROM your_disputes_table;"
+      ]
+    },
+    "test_mapping": {
+      "description": "Test that mapped tables work with framework",
+      "test_commands": [
+        "./postgres-automation.sh test",
+        "npm run db:test",
+        "./postgres-automation.sh report"
+      ]
+    }
+  }
+}

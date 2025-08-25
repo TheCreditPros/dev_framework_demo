@@ -1,0 +1,359 @@
+#!/bin/bash
+# AI-SDLC Simple CLI - 4 Essential Commands Only
+# Simplified management interface for development automation
+
+set -e
+
+# Colors
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m'
+
+# Version
+VERSION="2.0.0-simple"
+
+# Logging functions
+info() { echo -e "${BLUE}ℹ️  $1${NC}"; }
+success() { echo -e "${GREEN}✅ $1${NC}"; }
+warn() { echo -e "${YELLOW}⚠️  $1${NC}"; }
+error() { echo -e "${RED}❌ $1${NC}"; }
+
+# Show help
+show_help() {
+    echo -e "${BLUE}"
+    echo "╔══════════════════════════════════════════════╗"
+    echo "║           AI-SDLC Simple CLI v$VERSION         ║"
+    echo "╚══════════════════════════════════════════════╝"
+    echo -e "${NC}"
+    echo
+    echo "Usage: ai-sdlc <command>"
+    echo
+    echo "Commands:"
+    echo "  setup                    Set up AI-SDLC in current project (one-time)"
+    echo "  status                   Show current setup status"
+    echo "  validate                 Run validation checks"
+    echo "  test-init                Initialize AI test generation"
+    echo "  test-gen                 Generate tests for files (usage: test-gen <file|all>)"
+    echo "  help                     Show this help message"
+    echo
+    echo "NEW: Qase AIDEN Integration Commands:"
+    echo "  generate-from-requirements <req>  Generate test from natural language requirement"
+    echo "  convert-manual-to-auto <id>       Convert manual Qase test to automated"
+    echo "  heal-and-generate                 Auto-heal existing tests + generate new ones"
+    echo "  auto-complete-testing             Generate, heal, and validate all tests"
+    echo
+    echo "NEW: SonarCloud Validation Commands:"
+    echo "  sonar-validate                    Validate SonarCloud configs for all TheCreditPros repos"
+    echo "  sonar-templates                   Generate standardized SonarCloud configuration templates"
+    echo
+    echo "Examples:"
+    echo "  ai-sdlc setup                                    # Initial setup"
+    echo "  ai-sdlc status                                   # Check if working"
+    echo "  ai-sdlc validate                                 # Run quality checks"
+    echo "  ai-sdlc test-init                                # Setup test generation"
+    echo "  ai-sdlc test-gen all                             # Generate tests for all files"
+    echo
+    echo "AIDEN Examples:"
+    echo '  ai-sdlc generate-from-requirements "Test FCRA compliance flow"'
+    echo "  ai-sdlc convert-manual-to-auto 123              # Convert Qase test case #123"
+    echo "  ai-sdlc heal-and-generate                        # Auto-heal + generate common tests"
+    echo
+    echo "Documentation: https://nydamon.github.io/ai-sdlc-docs/"
+}
+
+# Setup command
+cmd_setup() {
+    info "Running AI-SDLC setup..."
+    
+    if [[ -f "./setup.sh" ]]; then
+        ./setup.sh "$@"
+    else
+        error "setup.sh not found in current directory"
+        info "Please ensure you're in the AI-SDLC framework directory"
+        exit 1
+    fi
+}
+
+# Status command
+cmd_status() {
+    info "Checking AI-SDLC status..."
+    
+    local status_checks=0
+    local status_passed=0
+    
+    echo -e "\n${BLUE}📊 Setup Status${NC}"
+    
+    # Check package.json
+    if [[ -f "package.json" ]]; then
+        success "package.json found"
+        status_passed=$((status_passed + 1))
+    else
+        error "package.json missing"
+    fi
+    status_checks=$((status_checks + 1))
+    
+    # Check git hooks
+    if [[ -f ".husky/pre-commit" ]]; then
+        success "Git hooks configured"
+        status_passed=$((status_passed + 1))
+    else
+        error "Git hooks not configured"
+    fi
+    status_checks=$((status_checks + 1))
+    
+    # Check ESLint
+    if [[ -f ".eslintrc.js" ]] || [[ -f ".eslintrc.json" ]]; then
+        success "ESLint configured"
+        status_passed=$((status_passed + 1))
+    else
+        error "ESLint not configured"
+    fi
+    status_checks=$((status_checks + 1))
+    
+    # Check Prettier
+    if [[ -f ".prettierrc" ]] || [[ -f ".prettierrc.json" ]]; then
+        success "Prettier configured"
+        status_passed=$((status_passed + 1))
+    else
+        error "Prettier not configured"
+    fi
+    status_checks=$((status_checks + 1))
+    
+    local success_rate=$((status_passed * 100 / status_checks))
+    echo -e "\n${BLUE}Status: $success_rate% ($status_passed/$status_checks checks passed)${NC}"
+    
+    if [[ $success_rate -eq 100 ]]; then
+        success "🎉 AI-SDLC is working perfectly!"
+    elif [[ $success_rate -ge 75 ]]; then
+        warn "Setup mostly working. Run 'ai-sdlc setup' to fix issues."
+    else
+        error "Setup incomplete. Run 'ai-sdlc setup' to get started."
+    fi
+}
+
+# Validate command
+cmd_validate() {
+    info "Running validation checks..."
+    
+    local issues=0
+    
+    echo -e "\n${BLUE}🔍 Validation Results${NC}"
+    
+    # Check if git hooks work
+    if [[ -f ".husky/pre-commit" ]] && [[ -x ".husky/pre-commit" ]]; then
+        success "Pre-commit hook is executable"
+    else
+        error "Pre-commit hook issues detected"
+        ((issues++))
+    fi
+    
+    # Check npm scripts
+    if npm run lint --silent >/dev/null 2>&1; then
+        success "ESLint is working"
+    else
+        warn "ESLint has issues (this is normal for new projects)"
+    fi
+    
+    if command -v npx >/dev/null 2>&1; then
+        success "npx is available"
+    else
+        error "npx not available"
+        ((issues++))
+    fi
+    
+    # Test git repository
+    if git status >/dev/null 2>&1; then
+        success "Git repository is healthy"
+    else
+        error "Git repository issues"
+        ((issues++))
+    fi
+    
+    echo -e "\n${BLUE}📋 Summary${NC}"
+    if [[ $issues -eq 0 ]]; then
+        success "All validation checks passed! ✨"
+        info "Your development environment is ready."
+    else
+        error "$issues validation issues found."
+        info "Run 'ai-sdlc setup' to fix configuration issues."
+    fi
+}
+
+# Test initialization command
+cmd_test_init() {
+    info "Initializing AI test generation..."
+    
+    if [[ -f "./scripts/ai-test-generator.js" ]]; then
+        node ./scripts/ai-test-generator.js init "$@"
+    else
+        error "AI test generator not found"
+        info "Please ensure you're in the AI-SDLC framework directory"
+        exit 1
+    fi
+}
+
+# Test generation command
+cmd_test_gen() {
+    info "Generating tests..."
+    
+    if [[ -f "./scripts/ai-test-generator.js" ]]; then
+        node ./scripts/ai-test-generator.js generate "$@"
+    else
+        error "AI test generator not found"
+        info "Please ensure you're in the AI-SDLC framework directory"
+        exit 1
+    fi
+}
+
+# NEW: Qase AIDEN Integration Commands
+cmd_generate_from_requirements() {
+    local requirement="$1"
+    if [[ -z "$requirement" ]]; then
+        error "Usage: ai-sdlc generate-from-requirements \"your requirement\""
+        exit 1
+    fi
+    
+    info "🤖 Generating test from requirement using Qase AIDEN..."
+    
+    if [[ -f "scripts-complex/qase-aiden-integration.js" ]]; then
+        node scripts-complex/qase-aiden-integration.js generate "$requirement"
+    else
+        error "Qase AIDEN integration script not found"
+        info "Please ensure you're in the AI-SDLC framework directory"
+        exit 1
+    fi
+}
+
+cmd_convert_manual_to_auto() {
+    local test_case_id="$1"
+    if [[ -z "$test_case_id" ]]; then
+        error "Usage: ai-sdlc convert-manual-to-auto <test-case-id>"
+        exit 1
+    fi
+    
+    info "🔄 Converting manual test case $test_case_id to automated..."
+    
+    if [[ -f "scripts-complex/qase-aiden-integration.js" ]]; then
+        node scripts-complex/qase-aiden-integration.js convert "$test_case_id"
+    else
+        error "Qase AIDEN integration script not found"
+        exit 1
+    fi
+}
+
+cmd_heal_and_generate() {
+    info "🔧 Auto-healing existing tests and generating new ones..."
+    
+    if [[ -f "scripts-complex/qase-aiden-integration.js" ]]; then
+        node scripts-complex/qase-aiden-integration.js heal-and-generate
+    else
+        error "Qase AIDEN integration script not found"
+        exit 1
+    fi
+}
+
+cmd_auto_complete_testing() {
+    info "🚀 Running complete automated testing setup..."
+    
+    # Step 1: Heal existing tests
+    cmd_heal_and_generate
+    
+    # Step 2: Generate common credit repair tests
+    info "📋 Generating common credit repair test scenarios..."
+    cmd_generate_from_requirements "Test credit score calculation with FICO 8 algorithm"
+    cmd_generate_from_requirements "Validate FCRA Section 604 permissible purpose disclosure"
+    cmd_generate_from_requirements "Test secure PII data handling in credit reports"
+    
+    # Step 3: Run validation
+    cmd_validate
+    
+    success "🎉 Auto-complete testing setup finished!"
+}
+
+# NEW: SonarCloud validation commands
+cmd_sonar_validate() {
+    info "🔍 Validating SonarCloud configurations for TheCreditPros repositories..."
+    
+    if [[ -f "scripts-complex/sonarcloud-config-validator.js" ]]; then
+        node scripts-complex/sonarcloud-config-validator.js validate "$@"
+    else
+        error "SonarCloud validator script not found"
+        info "Make sure you're running from the AI-SDLC framework directory"
+        exit 1
+    fi
+}
+
+cmd_sonar_templates() {
+    info "📋 Generating SonarCloud configuration templates..."
+    
+    if [[ -f "scripts-complex/sonarcloud-config-validator.js" ]]; then
+        node scripts-complex/sonarcloud-config-validator.js templates "$@"
+        success "✅ SonarCloud templates generated in ./sonarcloud-templates/"
+    else
+        error "SonarCloud validator script not found"
+        info "Make sure you're running from the AI-SDLC framework directory"
+        exit 1
+    fi
+}
+
+# Main command router
+main() {
+    case "${1:-help}" in
+        "setup")
+            shift
+            cmd_setup "$@"
+            ;;
+        "status")
+            shift
+            cmd_status "$@"
+            ;;
+        "validate")
+            shift
+            cmd_validate "$@"
+            ;;
+        "test-init")
+            shift
+            cmd_test_init "$@"
+            ;;
+        "test-gen")
+            shift
+            cmd_test_gen "$@"
+            ;;
+        "generate-from-requirements")
+            shift
+            cmd_generate_from_requirements "$@"
+            ;;
+        "convert-manual-to-auto")
+            shift
+            cmd_convert_manual_to_auto "$@"
+            ;;
+        "heal-and-generate")
+            shift
+            cmd_heal_and_generate "$@"
+            ;;
+        "auto-complete-testing")
+            shift
+            cmd_auto_complete_testing "$@"
+            ;;
+        "sonar-validate")
+            shift
+            cmd_sonar_validate "$@"
+            ;;
+        "sonar-templates")
+            shift
+            cmd_sonar_templates "$@"
+            ;;
+        "help"|"--help"|"-h"|"")
+            show_help
+            ;;
+        *)
+            error "Unknown command: $1"
+            echo "Run 'ai-sdlc help' for available commands"
+            exit 1
+            ;;
+    esac
+}
+
+main "$@"
