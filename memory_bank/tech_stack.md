@@ -110,6 +110,7 @@
 - **FCRA compliance validation** patterns
 - **PII encryption** at rest and in transit
 - **Audit trail logging** for all credit data access
+- **API quality gates** for credit repair domain validation
 
 ### Credit Bureau Integration
 

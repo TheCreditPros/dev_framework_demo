@@ -28,7 +28,7 @@
 ### 🔄 **Automatic E2E Tests for Every Front-End Change**
 
 When developers modify components, buttons, or UI elements, the framework automatically:
-- ✅ **Detects changes** in `.tsx`, `.jsx`, `.ts`, `.js` files  
+- ✅ **Detects changes** in `.tsx`, `.jsx`, `.ts`, `.js` files
 - ✅ **Generates Playwright tests** for interactions, clicks, forms
 - ✅ **Runs tests** in CI/CD pipeline automatically
 - ✅ **Self-healing tests** adapt when selectors change
@@ -68,7 +68,7 @@ This AI-SDLC framework is designed for implementation across TheCreditPros devel
 **Automatically detects and configures:**
 
 - ✅ **React, Vue, Laravel, Node.js** - Popular frameworks supported
-- ✅ **TypeScript, JavaScript, PHP** - Language-specific optimizations  
+- ✅ **TypeScript, JavaScript, PHP** - Language-specific optimizations
 - ✅ **Your existing tools** - Integrates with current setup
 - 🤖 **Auto-detection** - No manual configuration needed
 
@@ -175,13 +175,14 @@ The AI-SDLC framework is available as a **public GitHub repository**:
 
 # Essential commands
 ./ai-sdlc status     # Check if setup worked
+./ai-sdlc explain "your error"  # NEW: Get detailed help for any issue
 ./ai-sdlc help       # Show all available commands
 ```
 
 ## 🤖 **What You Get Automatically**
 
 - **100% test coverage** - AI writes tests for you
-- **Automatic E2E tests** - Generated when you change UI components  
+- **Automatic E2E tests** - Generated when you change UI components
 - **Code formatting** - Professional standards on every commit
 - **Quality gates** - Prevents bad code from being committed
 - **Credit repair compliance** - FCRA/FACTA patterns built-in
@@ -192,7 +193,7 @@ The AI-SDLC framework is available as a **public GitHub repository**:
 
 1. **Detects your project** automatically
 2. **Installs essential tools** (ESLint, Prettier, Husky)
-3. **Sets up git hooks** to run automatically  
+3. **Sets up git hooks** to run automatically
 4. **Creates working configs** - no editing required
 5. **AI generates tests** when you add API keys
 
@@ -282,7 +283,7 @@ See [Git Hooks Automation](git-hooks-automation.md) for technical details.
 - [🚀 Quick Start Guide](quick-start-simple.md) - 5-minute setup
 - [Troubleshooting Guide](troubleshooting-simple.md) - Common issues and fixes
 
-**For Managers:**  
+**For Managers:**
 - [Implementation Guide for Managers](implementation-guide-managers.md) - Team rollout plan
 
 ---
@@ -301,7 +302,7 @@ cd ai-sdlc
 
 ## 👨‍💻 **Created by**
 
-**Damon DeCrescenzo**  
+**Damon DeCrescenzo**
 Chief Technology Officer, The Credit Pros
 
 _"After 20+ years in fintech, I've seen too many teams waste 15-25 hours per week on manual code quality processes. This framework eliminates that overhead while delivering professional results that scale."_
@@ -310,8 +311,8 @@ _"After 20+ years in fintech, I've seen too many teams waste 15-25 hours per wee
 
 ### 📞 **Questions? Let's Talk Business**
 
-**For Executives:** Schedule a 15-minute ROI discussion  
-**For Managers:** Get implementation timeline and team impact analysis  
+**For Executives:** Schedule a 15-minute ROI discussion
+**For Managers:** Get implementation timeline and team impact analysis
 **For Developers:** See live demo of the 5-minute setup process
 
 **Advanced Features Available:** The full enterprise AI-SDLC framework with Docker, monitoring, security scanning, and advanced AI integrations is available in the [complete documentation](https://nydamon.github.io/ai-sdlc-docs/). This simplified version delivers 80% of the value with 20% of the complexity.

@@ -1,0 +1,208 @@
+openapi: 3.0.0
+info:
+  title: Credit Repair API
+  description: API for credit repair services with FCRA compliance
+  version: 1.0.0
+  contact:
+    name: The Credit Pros
+    email: support@thecreditpros.com
+
+servers:
+  - url: https://api.thecreditpros.com/v1
+    description: Production server
+  - url: https://staging-api.thecreditpros.com/v1
+    description: Staging server
+
+paths:
+  /credit-reports:
+    post:
+      summary: Retrieve credit report with FCRA compliance
+      description: |
+        Retrieves a client's credit report from bureau with full FCRA compliance.
+        This endpoint ensures proper audit trail logging and permissible purpose validation
+        before accessing credit data. The process includes authentication, purpose validation,
+        bureau access, and audit logging.
+      operationId: retrieveCreditReport
+      tags:
+        - Credit Reports
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - clientId
+                - purpose
+              properties:
+                clientId:
+                  type: string
+                  description: Unique identifier for the client
+                  example: "client_12345"
+                purpose:
+                  type: string
+                  description: FCRA permissible purpose for credit access
+                  enum:
+                    - "credit-review"
+                    - "account-review"
+                    - "employment-screening"
+                    - "insurance-underwriting"
+                  example: "credit-review"
+                bureau:
+                  type: string
+                  description: Credit bureau to query
+                  enum:
+                    - "experian"
+                    - "equifax"
+                    - "transunion"
+                  default: "experian"
+      responses:
+        '200':
+          description: Credit report retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  reportId:
+                    type: string
+                    description: Unique identifier for the retrieved report
+                  clientId:
+                    type: string
+                    description: Client identifier
+                  bureau:
+                    type: string
+                    description: Credit bureau queried
+                  reportDate:
+                    type: string
+                    format: date-time
+                    description: Date and time when report was retrieved
+                  auditTrailId:
+                    type: string
+                    description: Reference to audit trail entry
+        '400':
+          description: Invalid request parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Authentication required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Permissible purpose not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /disputes:
+    post:
+      summary: Submit credit dispute
+      description: |
+        Submits a credit dispute to the appropriate bureau for resolution.
+        This process includes dispute validation, bureau submission, and tracking setup.
+        All disputes are logged with full audit trails for compliance.
+      operationId: submitDispute
+      tags:
+        - Disputes
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - clientId
+                - reportId
+                - disputeItems
+              properties:
+                clientId:
+                  type: string
+                  description: Client identifier
+                reportId:
+                  type: string
+                  description: Credit report identifier
+                disputeItems:
+                  type: array
+                  description: Items to dispute
+                  items:
+                    type: object
+                    required:
+                      - accountId
+                      - disputeReason
+                    properties:
+                      accountId:
+                        type: string
+                        description: Account identifier from credit report
+                      disputeReason:
+                        type: string
+                        description: Reason for dispute
+                        enum:
+                          - "incorrect-information"
+                          - "unauthorized-account"
+                          - "duplicate-account"
+                          - "incorrect-balance"
+                          - "incorrect-payment-history"
+                      additionalDetails:
+                        type: string
+                        description: Additional details about the dispute
+      responses:
+        '201':
+          description: Dispute submitted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  disputeId:
+                    type: string
+                    description: Unique identifier for the dispute
+                  status:
+                    type: string
+                    description: Current status of the dispute
+                    enum:
+                      - "submitted"
+                      - "in-review"
+                      - "resolved"
+        '400':
+          description: Invalid dispute data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Error message
+        code:
+          type: string
+          description: Error code
+        timestamp:
+          type: string
+          format: date-time
+          description: When the error occurred
+      required:
+        - error
+        - code
+        - timestamp

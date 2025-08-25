@@ -1,258 +1,365 @@
-# Open-Source PR-Agent Configuration for TheCreditPros - v2.8.1
-# Optimized for Credit Repair Compliance (FCRA/FACTA) & Cost Efficiency
-
 [config]
-# Model configuration - optimize for cost and quality
-model = "gpt-4o-mini"           # Most cost-effective GPT-4 class model
-fallback_models = ["gpt-3.5-turbo", "gpt-4"]
-temperature = 0.2               # Consistent, focused responses
-max_tokens = 2048              # Reasonable limit for detailed analysis
-verbosity_level = 1            # Concise but comprehensive
+model = "gpt-4o-mini"
+model_turbo = "gpt-4o-mini"
+fallback_models = ["claude-3-5-sonnet-20241022"]
+git_provider = "github"
+publish_output = true
+publish_output_progress = true
+verbosity_level = 2
+use_repo_settings_file = true
+enable_help_text = true
 
-[pr_description]
-# Enhanced PR description generation
-publish_description = true
-add_original_user_description = true
-keep_original_user_title = true
-use_description_markers = true
-include_generated_by_tag = false
-enable_pr_type = true
-enable_summary = true 
-enable_walkthrough = true
-enable_labels = true
-
-# TCP Credit Repair specific instructions
-extra_instructions = """
-CREDIT REPAIR DOMAIN FOCUS:
-
-🏦 COMPLIANCE PRIORITY (CRITICAL):
-- FCRA Section 604: Verify permissible purpose for credit data access
-- FCRA Section 607: Ensure accuracy requirements in credit score handling
-- FCRA Section 615: Validate proper adverse action disclosures
-- FACTA compliance: Identity theft prevention measures
-- SOC-2 controls: Data handling and audit trail requirements
-
-🔐 SECURITY REQUIREMENTS (CRITICAL):
-- PII encryption validation (SSN, credit scores, account numbers)
-- Customer data access logging and audit trails
-- Input validation for credit-related data
-- SQL injection prevention in database queries
-- XSS prevention in customer-facing interfaces
-
-💳 PAYMENT PROCESSING (HIGH PRIORITY):
-- PCI-DSS compliance verification
-- Credit card data handling security
-- Payment flow error handling
-- Fraud detection implementation
-
-📊 BUSINESS LOGIC (HIGH PRIORITY):
-- Credit score validation (300-850 range enforcement)
-- Consumer dispute workflow compliance
-- Timeline tracking for regulatory requirements
-- Customer communication automation
-"""
+[github]
+# GitHub configuration
+user_token = ""  # Set via environment variable GITHUB_TOKEN
+deployment_type = "user"
+ratelimit_retries = 5
+base_url = "https://api.github.com"
 
 [pr_reviewer]
-# Comprehensive code review with compliance focus
-enable_review = true
+# Comprehensive AI-powered code review with repository-wide analysis
 require_focused_review = true
-require_score = true
-require_tests = true
-require_security = true
-num_code_suggestions = 5       # More suggestions for quality
-inline_code_comments = true
-persistent_comment_per_line = true
-enable_help_text = true
-
-# Credit repair specific review priorities
+require_score_review = true
+require_tests_review = true
+require_estimate_effort_to_review = true
+require_security_review = true
+enable_review_labels_effort = true
+enable_review_labels_security = true
+maximal_review_effort = 5
 extra_instructions = """
-TCP CODE REVIEW PRIORITIES:
+REPOSITORY CONTEXT ANALYSIS:
+This is a multi-stack development automation framework. Analyze changes in context of:
 
-🚨 CRITICAL SECURITY CHECKS:
-1. PII data patterns: SSN, credit_score, bank_account, routing_number
-   - Must be encrypted at rest and in transit
-   - Require proper access logging
-2. Credit bureau API calls: Validate permissible purpose
-3. Customer authentication: Verify session management
-4. Database queries: Check for SQL injection vulnerabilities
-5. Payment processing: Ensure PCI compliance
+1. REPOSITORY STRUCTURE AWARENESS:
+   - Multi-stack architecture (Laravel + React hybrid support)
+   - Automation scripts in scripts-complex/ directory
+   - CI/CD pipeline configuration in .github/workflows/
+   - Documentation structure in docs/ directory
+   - Testing infrastructure across multiple languages
 
-⚡ PERFORMANCE REQUIREMENTS:
-1. Credit report processing: Must complete <2 seconds
-2. Database optimization: Large customer datasets
-3. API response times: Customer-facing endpoints <1 second
-4. Memory management: Credit data processing efficiency
-5. Caching: Frequently accessed credit information
+2. ARCHITECTURE IMPACT ASSESSMENT:
+   - How changes affect overall system design and patterns
+   - Integration points between different technology stacks
+   - Compatibility with existing automation and quality gates
+   - Impact on multi-stack project detection logic
+   - Effect on CI/CD pipeline and quality monitoring
 
-🏗️ ARCHITECTURE PATTERNS:
-1. Laravel best practices: Eloquent, Services, Jobs
-2. React optimization: useMemo, useCallback, component structure  
-3. Error handling: User-friendly messaging for consumers
-4. API versioning: Backward compatibility for mobile apps
-5. Event-driven: Dispute workflow state management
+3. CODE QUALITY & STANDARDS:
+   - Consistency with established coding patterns
+   - Adherence to language-specific best practices
+   - Integration with existing linting and formatting tools
+   - Compatibility with quality gates (ESLint, PHPStan, etc.)
+   - Test coverage and testing strategy alignment
 
-🧪 TESTING REQUIREMENTS:
-1. Unit tests: All credit calculation and scoring logic
-2. Integration tests: Credit bureau API interactions
-3. Security tests: PII handling and encryption
-4. E2E tests: Complete customer dispute workflows
-5. Compliance tests: FCRA/FACTA requirement validation
+4. SECURITY & COMPLIANCE:
+   - General security best practices (not domain-specific)
+   - Input validation and sanitization
+   - Authentication and authorization patterns
+   - Error handling and information disclosure prevention
+   - Dependency security and vulnerability assessment
+
+5. PERFORMANCE & SCALABILITY:
+   - Code efficiency and optimization opportunities
+   - Database query optimization and indexing
+   - API performance and caching strategies
+   - Frontend performance and bundle optimization
+   - Memory usage and resource management
+
+6. TESTING & VALIDATION:
+   - Test coverage adequacy and quality
+   - Testing strategy consistency across stacks
+   - Integration test completeness
+   - E2E test coverage for critical workflows
+   - Mock and fixture quality and maintainability
+
+DOMAIN-SPECIFIC CONSIDERATIONS (when applicable):
+- For financial/credit applications: FCRA compliance, PII protection, audit trails
+- For healthcare applications: HIPAA compliance, PHI protection
+- For e-commerce: PCI compliance, payment security
+- For general applications: GDPR compliance, data protection
 """
 
+[pr_reviewer.incremental]
+enable_incremental_review = true
+require_all_thresholds = false
+
 [pr_code_suggestions]
-# Enhanced code improvement suggestions
-enable_suggestions = true
-num_code_suggestions = 3
-rank_suggestions = true
-enable_help_text = true
-commitable_code_suggestions = false  # Safety: no auto-commits
-
-# Focus areas for TCP development
+enable_code_suggestions = true
+commitable_code_suggestions = true
 extra_instructions = """
-CODE IMPROVEMENT PRIORITIES:
+COMPREHENSIVE IMPROVEMENT SUGGESTIONS:
 
-🔐 SECURITY ENHANCEMENTS:
-1. Replace plain text storage with encryption for PII
-2. Add input validation for credit-related fields
-3. Implement proper access controls for customer data
-4. Add audit logging for sensitive operations
-5. Enhance error handling without exposing sensitive info
+1. CODE QUALITY IMPROVEMENTS:
+   - Refactoring opportunities for better maintainability
+   - Performance optimizations and efficiency gains
+   - Design pattern improvements and architectural enhancements
+   - Code duplication elimination and DRY principle application
+   - Error handling and edge case coverage improvements
 
-📈 PERFORMANCE OPTIMIZATIONS:
-1. Optimize database queries for customer/credit data
-2. Implement caching for frequently accessed information
-3. Reduce API call latency for credit bureau requests
-4. Improve memory usage in credit processing algorithms
-5. Add pagination for large dataset operations
+2. SECURITY ENHANCEMENTS:
+   - Input validation and sanitization improvements
+   - Authentication and authorization strengthening
+   - Dependency security updates and vulnerability fixes
+   - Information disclosure prevention
+   - Secure coding practice implementation
 
-💡 CODE QUALITY:
-1. TypeScript strict mode enforcement
-2. Proper error boundaries in React components
-3. Consistent naming conventions across codebase
-4. Documentation for complex business logic
-5. Unit test coverage for critical functions
+3. TESTING IMPROVEMENTS:
+   - Missing test coverage identification
+   - Test quality and effectiveness enhancements
+   - Integration and E2E test suggestions
+   - Mock and fixture improvements
+   - Testing strategy optimization
+
+4. PERFORMANCE OPTIMIZATIONS:
+   - Database query optimization
+   - API response time improvements
+   - Frontend bundle size reduction
+   - Memory usage optimization
+   - Caching strategy implementation
+
+5. DOCUMENTATION ENHANCEMENTS:
+   - Code documentation and commenting improvements
+   - API documentation completeness
+   - README and setup instruction clarity
+   - Architecture decision documentation
+   - Troubleshooting guide improvements
+
+AVOID SUGGESTING:
+- Breaking changes to existing APIs without migration strategy
+- Modifications that could impact production stability
+- Changes that break existing automation or CI/CD pipeline
+- Alterations to security measures without proper justification
+"""
+
+[pr_description]
+enable_pr_description = true
+publish_description_as_comment = false
+add_original_user_description = true
+keep_original_user_title = true
+extra_instructions = """
+COMPREHENSIVE PR DESCRIPTION GENERATION:
+
+Include comprehensive analysis covering:
+
+1. CHANGE SUMMARY:
+   - Clear overview of what was changed and why
+   - Impact on different parts of the system
+   - Breaking changes and migration requirements
+   - Dependencies and related changes
+
+2. TECHNICAL IMPACT:
+   - Architecture and design pattern changes
+   - Performance implications and optimizations
+   - Security considerations and improvements
+   - Database schema changes and migrations
+   - API changes and backward compatibility
+
+3. TESTING & VALIDATION:
+   - Test coverage changes and improvements
+   - New test scenarios and edge cases covered
+   - Integration and E2E test updates
+   - Quality gate compliance and validation
+   - Manual testing requirements
+
+4. DEPLOYMENT CONSIDERATIONS:
+   - Environment-specific configuration changes
+   - Deployment sequence and dependencies
+   - Rollback procedures and risk mitigation
+   - Monitoring and alerting updates
+   - Documentation updates required
+
+5. QUALITY METRICS:
+   - Code quality improvements and metrics
+   - Performance benchmarks and comparisons
+   - Security scan results and improvements
+   - Test coverage statistics and trends
+   - Technical debt reduction achievements
+
+6. STAKEHOLDER IMPACT:
+   - User experience improvements
+   - Developer experience enhancements
+   - Operations and maintenance considerations
+   - Business value and feature delivery
+   - Risk assessment and mitigation
 """
 
 [pr_questions]
-# Interactive Q&A for developers
-enable_help_text = true
+enable_pr_questions = true
 extra_instructions = """
-Help developers understand:
-1. Credit repair business logic and regulatory requirements
-2. FCRA/FACTA compliance implementation patterns
-3. Security best practices for PII handling
-4. Testing strategies for compliance validation
-5. Performance optimization techniques for credit data
+INTELLIGENT QUESTIONING STRATEGY:
+
+Ask relevant questions about:
+
+1. IMPLEMENTATION APPROACH:
+   - Alternative implementation strategies considered
+   - Trade-offs and decision rationale
+   - Scalability and future-proofing considerations
+   - Integration with existing systems and patterns
+
+2. TESTING & VALIDATION:
+   - Test coverage adequacy for edge cases
+   - Integration testing strategy and completeness
+   - Performance testing and benchmarking approach
+   - Security testing and vulnerability assessment
+
+3. ARCHITECTURE & DESIGN:
+   - Design pattern consistency and appropriateness
+   - Separation of concerns and modularity
+   - Dependency management and coupling
+   - Extensibility and maintainability considerations
+
+4. SECURITY & COMPLIANCE:
+   - Security review and threat modeling
+   - Compliance requirements and validation
+   - Data protection and privacy considerations
+   - Access control and authorization strategy
+
+5. PERFORMANCE & SCALABILITY:
+   - Performance impact assessment and optimization
+   - Scalability considerations and bottleneck identification
+   - Resource usage and efficiency improvements
+   - Caching and optimization strategies
+
+6. OPERATIONAL CONSIDERATIONS:
+   - Monitoring and alerting requirements
+   - Deployment and rollback procedures
+   - Documentation and knowledge transfer needs
+   - Maintenance and support considerations
 """
 
-[pr_test]
-# Test generation assistance
-enable_test_generation = true
-testing_framework = "auto"      # Auto-detect Jest, Vitest, PHPUnit
-coverage_threshold = 80         # Minimum test coverage
+[pr_add_docs]
+enable_pr_add_docs = true
+docs_style = "google"
 extra_instructions = """
-GENERATE TESTS FOR:
+COMPREHENSIVE DOCUMENTATION GENERATION:
 
-🏦 COMPLIANCE CRITICAL:
-1. Credit score validation (300-850 range)
-2. Permissible purpose verification
-3. Consumer consent tracking
-4. Adverse action disclosure timing
-5. Identity verification workflows
+Focus on creating documentation that covers:
 
-🔐 SECURITY CRITICAL:
-1. PII encryption/decryption functions
-2. Access control and authorization
-3. Input validation and sanitization
-4. Session management and timeout
-5. Audit logging completeness
+1. TECHNICAL DOCUMENTATION:
+   - API documentation with examples and usage patterns
+   - Architecture decisions and design rationale
+   - Configuration options and environment setup
+   - Integration guides and best practices
+   - Troubleshooting and debugging information
 
-💳 BUSINESS LOGIC:
-1. Payment processing flows
-2. Dispute workflow state machines
-3. Credit bureau API integration
-4. Customer notification systems
-5. Report generation and delivery
+2. DEVELOPER GUIDES:
+   - Setup and installation instructions
+   - Development workflow and contribution guidelines
+   - Testing strategies and quality standards
+   - Code review and approval processes
+   - Deployment and release procedures
+
+3. OPERATIONAL DOCUMENTATION:
+   - Monitoring and alerting configuration
+   - Performance tuning and optimization guides
+   - Security considerations and compliance requirements
+   - Backup and disaster recovery procedures
+   - Maintenance and support workflows
+
+4. USER DOCUMENTATION:
+   - Feature descriptions and usage examples
+   - Configuration and customization options
+   - Best practices and recommended workflows
+   - FAQ and common issues resolution
+   - Migration guides and upgrade procedures
 """
 
 [pr_update_changelog]
-# Automated changelog management
-enable_changelog = true
-changelog_path = "CHANGELOG.md"
-changelog_format = "semantic"
-include_breaking_changes = true
-include_security_fixes = true
+enable_pr_update_changelog = true
+changelog_file = "CHANGELOG.md"
+extra_instructions = """
+STRUCTURED CHANGELOG UPDATES:
 
-[github]
-# GitHub integration settings
-publish_review_comment = true
-publish_inline_comments = true
-add_line_comments_single_suggestions = true
-enable_pr_labels = true
-persistent_comment_header = "## 🤖 TCP AI Code Review"
-enable_auto_approval = false   # Always require human approval
+Categorize changes comprehensively:
 
-# TCP-specific custom labels
-custom_labels = [
-    "🏦 fcra-compliance",      # FCRA regulation compliance
-    "🔐 facta-compliance",     # FACTA regulation compliance  
-    "👤 pii-handling",         # Personal information handling
-    "💳 payment-processing",   # Payment and billing
-    "🔒 security-critical",    # Security vulnerabilities
-    "⚡ performance-impact",   # Performance implications
-    "🗄️ database-changes",     # Database schema/query changes
-    "📊 business-logic",       # Core business rule changes
-    "🧪 testing-required",     # Needs comprehensive testing
-    "🚨 breaking-change",      # Breaking API or interface changes
-    "👥 customer-facing",      # Customer-visible changes
-    "📱 mobile-impact",        # Affects mobile app functionality
-    "🔍 audit-trail",          # Audit logging and compliance
-    "🏗️ architecture",         # Architectural changes
-    "📚 documentation"         # Documentation updates
-]
+- **Features**: New functionality and capabilities
+- **Enhancements**: Improvements to existing features
+- **Bug Fixes**: Issue resolutions and corrections
+- **Security**: Security improvements and vulnerability fixes
+- **Performance**: Optimization and efficiency improvements
+- **Testing**: Test coverage and quality improvements
+- **Documentation**: Documentation updates and improvements
+- **Infrastructure**: CI/CD, deployment, and tooling changes
+- **Dependencies**: Library and framework updates
+- **Breaking Changes**: API changes requiring migration
+- **Deprecations**: Features marked for future removal
+- **Compliance**: Regulatory and standards compliance updates
+"""
 
+[pr_analyze]
+enable_pr_analyze = true
+extra_instructions = """
+COMPREHENSIVE REPOSITORY ANALYSIS:
+
+Perform thorough analysis covering:
+
+1. ARCHITECTURE & DESIGN:
+   - Overall system architecture and design patterns
+   - Code organization and modularity assessment
+   - Separation of concerns and coupling analysis
+   - Design principle adherence (SOLID, DRY, KISS)
+   - Architectural debt and improvement opportunities
+
+2. CODE QUALITY ASSESSMENT:
+   - Code complexity and maintainability metrics
+   - Coding standards and convention adherence
+   - Code duplication and refactoring opportunities
+   - Error handling and edge case coverage
+   - Documentation quality and completeness
+
+3. SECURITY ANALYSIS:
+   - Security vulnerability identification
+   - Authentication and authorization review
+   - Input validation and sanitization assessment
+   - Dependency security and update requirements
+   - Information disclosure and privacy protection
+
+4. PERFORMANCE EVALUATION:
+   - Performance bottleneck identification
+   - Database query optimization opportunities
+   - API response time and efficiency analysis
+   - Frontend performance and optimization potential
+   - Resource usage and memory management
+
+5. TESTING STRATEGY REVIEW:
+   - Test coverage analysis and gap identification
+   - Testing strategy effectiveness and completeness
+   - Integration and E2E test adequacy
+   - Test maintainability and reliability assessment
+   - Quality gate compliance and validation
+
+6. OPERATIONAL READINESS:
+   - Deployment and rollback procedure adequacy
+   - Monitoring and alerting coverage
+   - Documentation completeness and accuracy
+   - Configuration management and environment setup
+   - Maintenance and support considerations
+
+7. REPOSITORY-WIDE IMPACT:
+   - Cross-component dependency analysis
+   - Integration point validation and testing
+   - Configuration file consistency and management
+   - CI/CD pipeline impact and optimization
+   - Development workflow and tooling effectiveness
+"""
+
+[pr_similar_issue]
+enable_pr_similar_issue = true
+skip_comments = false
+
+[pr_help]
+enable_pr_help = true
+
+[pr_config]
+enable_pr_config = true
+
+[local]
+# Local development settings
+description_path = ""
+review_path = ""
+
+[litellm]
 # Cost optimization settings
-[cost_optimization]
-# Use faster models for simple tasks
-simple_tasks_model = "gpt-3.5-turbo"     # For labels, basic descriptions
-complex_tasks_model = "gpt-4o-mini"      # For reviews, suggestions
-max_files_for_review = 20                # Limit review scope
-enable_smart_review = true               # Only review changed sections
-
-# TCP-specific compliance patterns
-[tcp_patterns]
-# PII patterns to flag for special handling
-pii_indicators = [
-    "ssn", "social_security_number", "social_security",
-    "credit_score", "fico_score", "vantage_score",
-    "bank_account", "routing_number", "account_number",
-    "credit_card", "cc_number", "card_number",
-    "customer_id", "consumer_id", "client_id",
-    "date_of_birth", "dob", "birth_date",
-    "phone_number", "telephone", "mobile_number",
-    "address", "street_address", "home_address",
-    "email_address", "email", "personal_email",
-    "driver_license", "dl_number", "license_number",
-    "passport", "passport_number"
-]
-
-# Compliance-sensitive file patterns
-compliance_files = [
-    "**/models/Customer*",
-    "**/models/Credit*", 
-    "**/models/Consumer*",
-    "**/controllers/Credit*",
-    "**/controllers/Payment*",
-    "**/services/Credit*",
-    "**/services/Bureau*",
-    "**/api/credit/**",
-    "**/api/payment/**",
-    "**/components/Credit*",
-    "**/components/Customer*"
-]
-
-# Business-critical paths requiring extra scrutiny
-critical_paths = [
-    "auth/", "payment/", "credit/", "dispute/",
-    "bureau/", "compliance/", "security/", "admin/"
-]
+drop_params = true
+max_tokens = 8000
+temperature = 0.1

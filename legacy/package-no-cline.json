@@ -1,0 +1,95 @@
+{
+  "name": "ai-sdlc-framework",
+  "version": "3.2.1",
+  "description": "AI-Powered SDLC Framework for The Credit Pros",
+  "main": "index.js",
+  "scripts": {
+    "test": "vitest",
+    "prepare": "husky",
+    "lint": "eslint . --cache --cache-location .eslintcache/",
+    "format": "prettier --write .",
+    "test:watch": "vitest --watch",
+    "test:coverage": "vitest --coverage",
+    "test:e2e": "playwright test",
+    "test:unit": "vitest run tests/unit/",
+    "test:changed": "vitest run --changed HEAD~1 --reporter=verbose",
+    "test:smart": "node scripts-complex/smart-test-selector.js",
+    "test:watch-coverage": "vitest --coverage --watch",
+    "test:e2e-headed": "playwright test --headed",
+    "ci:test-fast": "npm run lint && npm run test:changed",
+    "lint:fix": "eslint . --cache --cache-location .eslintcache/ --fix",
+    "type-check": "tsc --noEmit",
+    "build": "echo 'Build completed successfully'",
+    "dev": "echo 'Development server would start here'",
+    "validate": "node validate-setup.js",
+    "ai:generate-tests": "node scripts-complex/real-ai-test-generator.js generate",
+    "ai:generate-e2e": "node scripts-complex/ai-e2e-generator.js generate",
+    "ai:test-init": "./ai-sdlc test-init",
+    "ai:validate": "node implementation-tracker.js",
+    "coverage": "vitest --coverage",
+    "test:ci": "vitest --run --coverage",
+    "mcp:server": "node scripts-complex/mcp-server.js",
+    "mcp:setup": "node scripts-complex/mcp-installer.js",
+    "mcp:validate": "node scripts-complex/mcp-validator.js",
+    "mcp:install-servers": "node scripts-complex/mcp-installer.js",
+    "mcp:status": "echo \"Check MCP servers: claude mcp list\""
+  },
+  "keywords": [
+    "ai",
+    "sdlc",
+    "automation",
+    "laravel",
+    "react",
+    "typescript"
+  ],
+  "author": "Damon DeCrescenzo <damon@thecreditpros.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "@babel/preset-env": "^7.28.0",
+    "@babel/preset-react": "^7.27.1",
+    "@babel/preset-typescript": "^7.27.1",
+    "@commitlint/cli": "^19.8.1",
+    "@commitlint/config-conventional": "^19.8.1",
+    "@eslint/js": "^9.32.0",
+    "@playwright/test": "^1.54.2",
+    "@testing-library/jest-dom": "^6.6.4",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^14.6.1",
+    "@typescript-eslint/eslint-plugin": "^8.39.0",
+    "@typescript-eslint/parser": "^8.39.0",
+    "@vitejs/plugin-react": "^4.7.0",
+    "commitlint": "^19.8.1",
+    "dotenv": "^17.2.1",
+    "eslint": "^9.32.0",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "husky": "^9.1.7",
+    "jsdom": "^26.1.0",
+    "lint-staged": "^16.1.2",
+    "prettier": "^3.6.2",
+    "prop-types": "^15.8.1",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "typescript": "^5.9.2",
+    "vitest": "^3.2.4",
+    "playwright-qase-reporter": "^2.1.4"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.php": [
+      "bash -c 'if [ -f ./vendor/bin/pint ] && [[ \"$0\" != *\".template.php\" ]]; then ./vendor/bin/pint \"$0\"; fi'"
+    ],
+    "*.{json,md,yml,yaml}": [
+      "prettier --write"
+    ]
+  },
+  "dependencies": {
+    "@esbuild/darwin-arm64": "^0.25.8",
+    "@rollup/rollup-darwin-arm64": "^4.46.2",
+    "express": "^4.18.2",
+    "posthog-js": "^1.258.5"
+  }
+}

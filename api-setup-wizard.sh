@@ -50,7 +50,7 @@ if [[ "$configure_apis" == "y" ]]; then
         sed -i.bak "s/OPENAI_API_KEY=.*/OPENAI_API_KEY=$openai_key/" .env
         echo "✅ OpenAI API key configured"
     fi
-    
+
     echo
     echo "🧪 Qase API Key (for test management)"
     echo "Get yours at: https://app.qase.io/user/api/token"
@@ -59,7 +59,7 @@ if [[ "$configure_apis" == "y" ]]; then
         sed -i.bak "s/QASE_API_KEY=.*/QASE_API_KEY=$qase_key/" .env
         echo "✅ Qase API key configured"
     fi
-    
+
     echo
     echo "🔍 SonarQube Token (for code analysis)"
     echo "Get yours from your SonarQube instance: User > My Account > Security > Tokens"
@@ -75,6 +75,35 @@ echo "🎉 API setup complete!"
 echo "✅ Configuration saved to .env file"
 echo "ℹ️  You can always edit .env manually to update API keys"
 echo
+echo "🧪 API Quality Gate Validation"
+echo "=============================="
+echo "The AI-SDLC Framework now includes comprehensive API quality gates:"
+echo "  • API Documentation Validation (OpenAPI 3.0+)"
+echo "  • Error Handling Consistency Validation"
+echo "  • API Contract Testing"
+echo "  • Multi-Step Process Analysis"
+echo
+echo "Run individual validations:"
+echo "  npm run api:validate-docs     # Validate API documentation"
+echo "  npm run api:validate-errors   # Validate error handling"
+echo "  npm run api:test-contracts    # Test API contracts"
+echo "  npm run api:analyze-processes # Analyze API processes"
+echo
+echo "Run all validations:"
+echo "  npm run api:validate-all      # Run all API quality gates"
+echo
+echo "Integration with Graduated Setup Levels:"
+echo "  • Minimal: Basic documentation validation"
+echo "  • Standard: Full contract testing and error validation"
+echo "  • Enterprise: Complete security and compliance validation"
+echo
+echo "Credit Repair Domain Compliance:"
+echo "  • FCRA Section 604 permissible purpose validation"
+echo "  • PII data protection and encryption"
+echo "  • Audit trail logging for all credit data access"
+echo "  • Credit score calculations (300-850 FICO range)"
+echo
 echo "Next steps:"
 echo "  ./ai-sdlc validate    # Test your setup"
 echo "  npm run ai:validate   # Run implementation tracker"
+echo "  npm run api:validate-all # Run API quality gates"

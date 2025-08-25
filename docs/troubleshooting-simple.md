@@ -7,6 +7,16 @@
 ```bash
 ./ai-sdlc status    # Shows what's broken
 ```
+**NEW: Get instant help with explain command**
+
+```bash
+./ai-sdlc explain "your specific error or issue"
+# Examples:
+./ai-sdlc explain "ESLint parsing error"
+./ai-sdlc explain "pre-commit hook failed"
+./ai-sdlc explain "Husky not working"
+```
+
 
 **Tests not generating automatically?**
 

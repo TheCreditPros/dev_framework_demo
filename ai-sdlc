@@ -34,6 +34,7 @@ show_help() {
     echo "  setup                    Set up AI-SDLC in current project (one-time)"
     echo "  status                   Show current setup status"
     echo "  validate                 Run validation checks"
+    echo "  explain <error>          Get detailed explanation for any error or issue"
     echo "  test-init                Initialize AI test generation"
     echo "  test-gen                 Generate tests for files (usage: test-gen <file|all>)"
     echo "  help                     Show this help message"
@@ -66,7 +67,7 @@ show_help() {
 # Setup command
 cmd_setup() {
     info "Running AI-SDLC setup..."
-    
+
     if [[ -f "./auto-setup.sh" ]]; then
         ./auto-setup.sh "$@"
     else
@@ -79,12 +80,12 @@ cmd_setup() {
 # Status command
 cmd_status() {
     info "Checking AI-SDLC status..."
-    
+
     local status_checks=0
     local status_passed=0
-    
+
     echo -e "\n${BLUE}📊 Setup Status${NC}"
-    
+
     # Check package.json
     if [[ -f "package.json" ]]; then
         success "package.json found"
@@ -93,7 +94,7 @@ cmd_status() {
         error "package.json missing"
     fi
     status_checks=$((status_checks + 1))
-    
+
     # Check git hooks
     if [[ -f ".husky/pre-commit" ]]; then
         success "Git hooks configured"
@@ -102,7 +103,7 @@ cmd_status() {
         error "Git hooks not configured"
     fi
     status_checks=$((status_checks + 1))
-    
+
     # Check ESLint (support both legacy and modern formats)
     if [[ -f ".eslintrc.js" ]] || [[ -f ".eslintrc.json" ]] || [[ -f "eslint.config.js" ]] || [[ -f "eslint.config.mjs" ]]; then
         success "ESLint configured"
@@ -111,7 +112,7 @@ cmd_status() {
         error "ESLint not configured"
     fi
     status_checks=$((status_checks + 1))
-    
+
     # Check Prettier
     if [[ -f ".prettierrc" ]] || [[ -f ".prettierrc.json" ]]; then
         success "Prettier configured"
@@ -120,10 +121,10 @@ cmd_status() {
         error "Prettier not configured"
     fi
     status_checks=$((status_checks + 1))
-    
+
     local success_rate=$((status_passed * 100 / status_checks))
     echo -e "\n${BLUE}Status: $success_rate% ($status_passed/$status_checks checks passed)${NC}"
-    
+
     if [[ $success_rate -eq 100 ]]; then
         success "🎉 AI-SDLC is working perfectly!"
     elif [[ $success_rate -ge 75 ]]; then
@@ -136,11 +137,11 @@ cmd_status() {
 # Validate command
 cmd_validate() {
     info "Running validation checks..."
-    
+
     local issues=0
-    
+
     echo -e "\n${BLUE}🔍 Validation Results${NC}"
-    
+
     # Check if git hooks work
     if [[ -f ".husky/pre-commit" ]] && [[ -x ".husky/pre-commit" ]]; then
         success "Pre-commit hook is executable"
@@ -148,21 +149,21 @@ cmd_validate() {
         error "Pre-commit hook issues detected"
         ((issues++))
     fi
-    
+
     # Check npm scripts
     if npm run lint --silent >/dev/null 2>&1; then
         success "ESLint is working"
     else
         warn "ESLint has issues (this is normal for new projects)"
     fi
-    
+
     if command -v npx >/dev/null 2>&1; then
         success "npx is available"
     else
         error "npx not available"
         ((issues++))
     fi
-    
+
     # Test git repository
     if git status >/dev/null 2>&1; then
         success "Git repository is healthy"
@@ -170,7 +171,7 @@ cmd_validate() {
         error "Git repository issues"
         ((issues++))
     fi
-    
+
     echo -e "\n${BLUE}📋 Summary${NC}"
     if [[ $issues -eq 0 ]]; then
         success "All validation checks passed! ✨"
@@ -178,13 +179,80 @@ cmd_validate() {
     else
         error "$issues validation issues found."
         info "Run 'ai-sdlc setup' to fix configuration issues."
+# NEW: Explain command for detailed error guidance
+cmd_explain() {
+    local query="$1"
+    if [[ -z "$query" ]]; then
+        error "Usage: ai-sdlc explain \"your error or issue\""
+        echo
+        echo "Examples:"
+        echo "  ai-sdlc explain \"ESLint parsing error\""
+        echo "  ai-sdlc explain \"pre-commit hook failed\""
+        echo "  ai-sdlc explain \"Husky not working\""
+        exit 1
+    fi
+
+    info "🔍 Analyzing: $query"
+    echo
+
+    # Common error explanations with solutions
+    case "$query" in
+        *"ESLint"*|*"eslint"*|*"parsing"*)
+            echo -e "${YELLOW}📋 ESLint Issues Explanation:${NC}"
+            echo
+            echo "Common ESLint problems and solutions:"
+            echo
+            echo "1. ${BLUE}Parsing Error:${NC}"
+            echo "   - Cause: Using legacy .eslintrc.js with modern ESLint v9+"
+            echo "   - Solution: Update to eslint.config.js flat config format"
+            echo "   - Fix: Run './ai-sdlc setup' to auto-generate modern config"
+            echo
+            echo "2. ${BLUE}Module Resolution Error:${NC}"
+            echo "   - Cause: Missing TypeScript ESLint plugins"
+            echo "   - Solution: Install @typescript-eslint/parser and @typescript-eslint/eslint-plugin"
+            echo "   - Fix: Run 'npm install --save-dev @typescript-eslint/parser @typescript-eslint/eslint-plugin'"
+            ;;
+        *"pre-commit"*|*"hook"*|*"husky"*)
+            echo -e "${YELLOW}🪝 Git Hooks Issues Explanation:${NC}"
+            echo
+            echo "Common Git hooks problems and solutions:"
+            echo
+            echo "1. ${BLUE}Pre-commit Hook Not Running:${NC}"
+            echo "   - Cause: Hook file not executable or missing"
+            echo "   - Solution: Fix permissions and recreate hook"
+            echo "   - Fix: Run 'chmod +x .husky/pre-commit' or './ai-sdlc setup'"
+            echo
+            echo "2. ${BLUE}Husky Not Initialized:${NC}"
+            echo "   - Cause: Husky not properly set up"
+            echo "   - Solution: Initialize Husky with modern v9+ format"
+            echo "   - Fix: Run 'npx husky init' then './ai-sdlc setup'"
+            ;;
+        *)
+            echo -e "${YELLOW}🔍 General Troubleshooting:${NC}"
+            echo
+            echo "For issue: \"$query\""
+            echo
+            echo "Common troubleshooting steps:"
+            echo "1. Run './ai-sdlc validate' for detailed diagnostics"
+            echo "2. Run './ai-sdlc status' to check current state"
+            echo "3. Run './ai-sdlc setup' to fix configuration issues"
+            echo "4. Check documentation: https://nydamon.github.io/ai-sdlc-docs/"
+            ;;
+    esac
+
+    echo
+    echo -e "${GREEN}💡 Need more help?${NC}"
+    echo "- Run './ai-sdlc validate' for detailed diagnostics"
+    echo "- Documentation: https://nydamon.github.io/ai-sdlc-docs/"
+}
+
     fi
 }
 
 # Test initialization command
 cmd_test_init() {
     info "Initializing AI test generation..."
-    
+
     if [[ -f "./scripts-complex/ai-test-generator.js" ]]; then
         node ./scripts-complex/ai-test-generator.js init "$@"
     elif [[ -f "./scripts/ai-test-generator.js" ]]; then
@@ -199,7 +267,7 @@ cmd_test_init() {
 # Test generation command
 cmd_test_gen() {
     info "Generating tests..."
-    
+
     if [[ -f "./scripts-complex/ai-test-generator.js" ]]; then
         node ./scripts-complex/ai-test-generator.js generate "$@"
     elif [[ -f "./scripts/ai-test-generator.js" ]]; then
@@ -218,9 +286,9 @@ cmd_generate_from_requirements() {
         error "Usage: ai-sdlc generate-from-requirements \"your requirement\""
         exit 1
     fi
-    
+
     info "🤖 Generating test from requirement using Qase AIDEN..."
-    
+
     if [[ -f "scripts-complex/qase-aiden-integration.js" ]]; then
         node scripts-complex/qase-aiden-integration.js generate "$requirement"
     else
@@ -236,9 +304,9 @@ cmd_convert_manual_to_auto() {
         error "Usage: ai-sdlc convert-manual-to-auto <test-case-id>"
         exit 1
     fi
-    
+
     info "🔄 Converting manual test case $test_case_id to automated..."
-    
+
     if [[ -f "scripts-complex/qase-aiden-integration.js" ]]; then
         node scripts-complex/qase-aiden-integration.js convert "$test_case_id"
     else
@@ -249,7 +317,7 @@ cmd_convert_manual_to_auto() {
 
 cmd_heal_and_generate() {
     info "🔧 Auto-healing existing tests and generating new ones..."
-    
+
     if [[ -f "scripts-complex/qase-aiden-integration.js" ]]; then
         node scripts-complex/qase-aiden-integration.js heal-and-generate
     else
@@ -260,26 +328,26 @@ cmd_heal_and_generate() {
 
 cmd_auto_complete_testing() {
     info "🚀 Running complete automated testing setup..."
-    
+
     # Step 1: Heal existing tests
     cmd_heal_and_generate
-    
+
     # Step 2: Generate common credit repair tests
     info "📋 Generating common credit repair test scenarios..."
     cmd_generate_from_requirements "Test credit score calculation with FICO 8 algorithm"
     cmd_generate_from_requirements "Validate FCRA Section 604 permissible purpose disclosure"
     cmd_generate_from_requirements "Test secure PII data handling in credit reports"
-    
+
     # Step 3: Run validation
     cmd_validate
-    
+
     success "🎉 Auto-complete testing setup finished!"
 }
 
 # NEW: SonarCloud validation commands
 cmd_sonar_validate() {
     info "🔍 Validating SonarCloud configurations for TheCreditPros repositories..."
-    
+
     if [[ -f "scripts-complex/sonarcloud-config-validator.js" ]]; then
         node scripts-complex/sonarcloud-config-validator.js validate "$@"
     else
@@ -291,7 +359,7 @@ cmd_sonar_validate() {
 
 cmd_sonar_templates() {
     info "📋 Generating SonarCloud configuration templates..."
-    
+
     if [[ -f "scripts-complex/sonarcloud-config-validator.js" ]]; then
         node scripts-complex/sonarcloud-config-validator.js templates "$@"
         success "✅ SonarCloud templates generated in ./sonarcloud-templates/"
@@ -316,6 +384,10 @@ main() {
         "validate")
             shift
             cmd_validate "$@"
+            ;;
+        "explain")
+            shift
+            cmd_explain "$@"
             ;;
         "test-init")
             shift

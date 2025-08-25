@@ -18,6 +18,90 @@
 - **Fail Fast**: Detect and handle errors early
 - **Defensive Programming**: Always validate inputs and handle edge cases
 
+## API Quality Gate Standards
+
+### API Documentation Standards
+
+```typescript
+// Use descriptive endpoint summaries and detailed descriptions
+/**
+ * Retrieve credit report for consumer
+ *
+ * This endpoint fetches the complete credit report for a consumer, including
+ * trade lines, payment history, and credit scores. The request must include
+ * a valid permissible purpose as required by FCRA Section 604. All access
+ * is logged for audit trail compliance.
+ *
+ * @param consumerId - Unique identifier for the consumer (UUID format)
+ * @param purpose - Valid FCRA permissible purpose for credit access
+ * @returns Complete credit report with compliance metadata
+ */
+app.get('/api/consumers/:consumerId/credit-report', [
+  validatePermissiblePurpose,
+  authenticate,
+  authorize('credit_report_access')
+], async (req: Request, res: Response) => {
+  // Implementation
+});
+```
+
+### Error Response Standards
+
+```typescript
+// Standardized error response format
+interface APIError {
+  error: string;        // Error category (e.g., 'VALIDATION_ERROR')
+  message: string;      // User-friendly error message
+  code: string;         // Machine-readable error code
+  timestamp: string;    // ISO 8601 timestamp
+  details?: any;        // Additional context (never contains PII)
+  requestId?: string;   // For tracing and debugging
+}
+
+// Example error responses
+const validationError: APIError = {
+  error: 'VALIDATION_ERROR',
+  message: 'Invalid consumer ID format. Expected UUID format.',
+  code: 'INVALID_CONSUMER_ID',
+  timestamp: new Date().toISOString(),
+  requestId: 'req-12345'
+};
+
+const authError: APIError = {
+  error: 'AUTHENTICATION_ERROR',
+  message: 'Access token is invalid or expired.',
+  code: 'INVALID_TOKEN',
+  timestamp: new Date().toISOString(),
+  requestId: 'req-12346'
+};
+```
+
+### API Contract Testing Standards
+
+```typescript
+// Define clear request/response schemas
+interface CreditReportRequest {
+  consumerId: string;      // UUID format
+  purpose: string;         // Valid FCRA purpose
+  includeDisputes?: boolean; // Optional flag
+}
+
+interface CreditReportResponse {
+  data: {
+    consumerId: string;
+    creditScore: number;     // 300-850 range
+    reportDate: string;      // ISO 8601 date
+    tradeLines: TradeLine[];
+    summary: CreditSummary;
+  };
+  meta: {
+    auditId: string;         // For compliance tracking
+    retrievedAt: string;     // ISO 8601 timestamp
+    complianceValidated: boolean;
+  };
+}
+```
+
 ## TypeScript/JavaScript Standards
 
 ### File Organization
@@ -272,6 +356,57 @@ export const mockCreditReport = {
     purpose: 'automated_testing',
   },
 };
+```
+
+## API Security Standards
+
+### PII Data Handling in APIs
+
+```typescript
+// Always validate and sanitize API inputs
+app.post('/api/credit-applications', [
+  body('ssn').isLength({ min: 11, max: 11 }).custom(validateSSNFormat),
+  body('purpose').isIn(['credit_application', 'account_review', 'employment']),
+  authenticate,
+  authorize('credit_application_submission')
+], async (req: Request, res: Response) => {
+  try {
+    // Validate FCRA permissible purpose
+    await validatePermissiblePurpose(req.body.purpose, req.user);
+
+    // Create audit trail BEFORE processing
+    const auditId = await auditService.logCreditAccess({
+      userId: req.user.id,
+      consumerId: req.body.consumerId,
+      purpose: req.body.purpose,
+      ipAddress: req.ip,
+      userAgent: req.get('User-Agent')
+    });
+
+    // Process request with encrypted data
+    const result = await creditService.processApplication({
+      ...req.body,
+      auditId
+    });
+
+    res.json(result);
+  } catch (error) {
+    // Log errors without exposing PII
+    logger.error('Credit application failed', {
+      auditId,
+      userId: req.user.id,
+      error: maskPIIInLogs(error.message)
+    });
+
+    res.status(500).json({
+      error: 'SERVICE_ERROR',
+      message: 'Unable to process credit application',
+      code: 'CREDIT_APPLICATION_FAILED',
+      timestamp: new Date().toISOString(),
+      requestId: req.id
+    });
+  }
+});
 ```
 
 ## Security Standards

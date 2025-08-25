@@ -1,0 +1,222 @@
+{
+  "timestamp": "2025-08-25T14:59:13.183Z",
+  "summary": {
+    "totalSpecifications": 1,
+    "specificationsWithIssues": 1,
+    "totalIssues": 26,
+    "totalProcesses": 0
+  },
+  "detailedResults": [
+    {
+      "specFile": "/Users/damondecrescenzo/ai-sdlc-docs-1/openapi.yaml",
+      "issues": 26,
+      "validationIssues": 26,
+      "processIssues": 0,
+      "processes": 0,
+      "report": {
+        "timestamp": "2025-08-25T14:59:13.182Z",
+        "specification": "/Users/damondecrescenzo/ai-sdlc-docs-1/openapi.yaml",
+        "summary": {
+          "totalIssues": 26,
+          "highSeverity": 0,
+          "mediumSeverity": 3,
+          "lowSeverity": 23,
+          "totalProcesses": 0
+        },
+        "issues": [
+          {
+            "type": "brief-summary",
+            "severity": "low",
+            "message": "Summary too brief for POST /credit-reports (43 chars, min 50)",
+            "location": "/Users/damondecrescenzo/ai-sdlc-docs-1/openapi.yaml#/paths//credit-reports/post"
+          },
+          {
+            "type": "missing-property-example",
+            "severity": "low",
+            "message": "Property \"reportId\" missing example in schema \"200 application/json\"",
+            "location": "/Users/damondecrescenzo/ai-sdlc-docs-1/openapi.yaml"
+          },
+          {
+            "type": "brief-property-description",
+            "severity": "low",
+            "message": "Property \"clientId\" description too brief in schema \"200 application/json\"",
+            "location": "/Users/damondecrescenzo/ai-sdlc-docs-1/openapi.yaml"
+          },
+          {
+            "type": "missing-property-example",
+            "severity": "low",
+            "message": "Property \"clientId\" missing example in schema \"200 application/json\"",
+            "location": "/Users/damondecrescenzo/ai-sdlc-docs-1/openapi.yaml"
+          },
+          {
+            "type": "missing-property-example",
+            "severity": "low",
+            "message": "Property \"bureau\" missing example in schema \"200 application/json\"",
+            "location": "/Users/damondecrescenzo/ai-sdlc-docs-1/openapi.yaml"
+          },
+          {
+            "type": "missing-property-example",
+            "severity": "low",
+            "message": "Property \"reportDate\" missing example in schema \"200 application/json\"",
+            "location": "/Users/damondecrescenzo/ai-sdlc-docs-1/openapi.yaml"
+          },
+          {
+            "type": "missing-property-example",
+            "severity": "low",
+            "message": "Property \"auditTrailId\" missing example in schema \"200 application/json\"",
+            "location": "/Users/damondecrescenzo/ai-sdlc-docs-1/openapi.yaml"
+          },
+          {
+            "type": "missing-request-body-description",
+            "severity": "medium",
+            "message": "Missing request body description for POST /credit-reports",
+            "location": "/Users/damondecrescenzo/ai-sdlc-docs-1/openapi.yaml#/paths//credit-reports/post/requestBody"
+          },
+          {
+            "type": "missing-property-example",
+            "severity": "low",
+            "message": "Property \"bureau\" missing example in schema \"request body application/json\"",
+            "location": "/Users/damondecrescenzo/ai-sdlc-docs-1/openapi.yaml"
+          },
+          {
+            "type": "missing-security",
+            "severity": "low",
+            "message": "Missing security definition for POST /credit-reports",
+            "location": "/Users/damondecrescenzo/ai-sdlc-docs-1/openapi.yaml#/paths//credit-reports/post"
+          },
+          {
+            "type": "brief-summary",
+            "severity": "low",
+            "message": "Summary too brief for POST /disputes (21 chars, min 50)",
+            "location": "/Users/damondecrescenzo/ai-sdlc-docs-1/openapi.yaml#/paths//disputes/post"
+          },
+          {
+            "type": "missing-property-example",
+            "severity": "low",
+            "message": "Property \"disputeId\" missing example in schema \"201 application/json\"",
+            "location": "/Users/damondecrescenzo/ai-sdlc-docs-1/openapi.yaml"
+          },
+          {
+            "type": "missing-property-example",
+            "severity": "low",
+            "message": "Property \"status\" missing example in schema \"201 application/json\"",
+            "location": "/Users/damondecrescenzo/ai-sdlc-docs-1/openapi.yaml"
+          },
+          {
+            "type": "missing-request-body-description",
+            "severity": "medium",
+            "message": "Missing request body description for POST /disputes",
+            "location": "/Users/damondecrescenzo/ai-sdlc-docs-1/openapi.yaml#/paths//disputes/post/requestBody"
+          },
+          {
+            "type": "brief-property-description",
+            "severity": "low",
+            "message": "Property \"clientId\" description too brief in schema \"request body application/json\"",
+            "location": "/Users/damondecrescenzo/ai-sdlc-docs-1/openapi.yaml"
+          },
+          {
+            "type": "missing-property-example",
+            "severity": "low",
+            "message": "Property \"clientId\" missing example in schema \"request body application/json\"",
+            "location": "/Users/damondecrescenzo/ai-sdlc-docs-1/openapi.yaml"
+          },
+          {
+            "type": "missing-property-example",
+            "severity": "low",
+            "message": "Property \"reportId\" missing example in schema \"request body application/json\"",
+            "location": "/Users/damondecrescenzo/ai-sdlc-docs-1/openapi.yaml"
+          },
+          {
+            "type": "brief-property-description",
+            "severity": "low",
+            "message": "Property \"disputeItems\" description too brief in schema \"request body application/json\"",
+            "location": "/Users/damondecrescenzo/ai-sdlc-docs-1/openapi.yaml"
+          },
+          {
+            "type": "missing-property-example",
+            "severity": "low",
+            "message": "Property \"disputeItems\" missing example in schema \"request body application/json\"",
+            "location": "/Users/damondecrescenzo/ai-sdlc-docs-1/openapi.yaml"
+          },
+          {
+            "type": "missing-security",
+            "severity": "low",
+            "message": "Missing security definition for POST /disputes",
+            "location": "/Users/damondecrescenzo/ai-sdlc-docs-1/openapi.yaml#/paths//disputes/post"
+          },
+          {
+            "type": "low-coverage",
+            "severity": "medium",
+            "message": "Only 0% of endpoints are well-documented (target: 90%)",
+            "location": "/Users/damondecrescenzo/ai-sdlc-docs-1/openapi.yaml"
+          },
+          {
+            "type": "brief-property-description",
+            "severity": "low",
+            "message": "Property \"error\" description too brief in schema \"ErrorResponse\"",
+            "location": "/Users/damondecrescenzo/ai-sdlc-docs-1/openapi.yaml"
+          },
+          {
+            "type": "missing-property-example",
+            "severity": "low",
+            "message": "Property \"error\" missing example in schema \"ErrorResponse\"",
+            "location": "/Users/damondecrescenzo/ai-sdlc-docs-1/openapi.yaml"
+          },
+          {
+            "type": "brief-property-description",
+            "severity": "low",
+            "message": "Property \"code\" description too brief in schema \"ErrorResponse\"",
+            "location": "/Users/damondecrescenzo/ai-sdlc-docs-1/openapi.yaml"
+          },
+          {
+            "type": "missing-property-example",
+            "severity": "low",
+            "message": "Property \"code\" missing example in schema \"ErrorResponse\"",
+            "location": "/Users/damondecrescenzo/ai-sdlc-docs-1/openapi.yaml"
+          },
+          {
+            "type": "missing-property-example",
+            "severity": "low",
+            "message": "Property \"timestamp\" missing example in schema \"ErrorResponse\"",
+            "location": "/Users/damondecrescenzo/ai-sdlc-docs-1/openapi.yaml"
+          }
+        ],
+        "processes": [],
+        "recommendations": [
+          {
+            "priority": "medium",
+            "title": "Documentation Improvements",
+            "description": "These improvements will enhance API clarity and usability",
+            "items": [
+              {
+                "issue": "Missing request body description for POST /credit-reports",
+                "recommendation": "Improve documentation quality"
+              },
+              {
+                "issue": "Missing request body description for POST /disputes",
+                "recommendation": "Improve documentation quality"
+              },
+              {
+                "issue": "Only 0% of endpoints are well-documented (target: 90%)",
+                "recommendation": "Improve documentation quality"
+              }
+            ]
+          },
+          {
+            "priority": "low",
+            "title": "Best Practices",
+            "description": "Follow these practices for excellent API documentation",
+            "items": [
+              "Use consistent terminology across all endpoints",
+              "Include examples for all parameters and responses",
+              "Document error scenarios and edge cases",
+              "Provide clear descriptions of business logic",
+              "Use meaningful operation IDs",
+              "Include security considerations for each endpoint"
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

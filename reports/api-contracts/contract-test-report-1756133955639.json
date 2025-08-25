@@ -1,0 +1,20 @@
+{
+  "timestamp": "2025-08-25T14:59:15.639Z",
+  "summary": {
+    "totalSpecifications": 1,
+    "totalResults": 1,
+    "passed": 1,
+    "failed": 0
+  },
+  "specifications": [
+    "/Users/damondecrescenzo/ai-sdlc-docs-1/openapi.yaml"
+  ],
+  "testResults": [
+    {
+      "specFile": "/Users/damondecrescenzo/ai-sdlc-docs-1/openapi.yaml",
+      "tool": "dredd",
+      "status": "configured",
+      "issues": 0
+    }
+  ]
+}

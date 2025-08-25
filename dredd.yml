@@ -1,0 +1,9 @@
+swagger: /Users/damondecrescenzo/ai-sdlc-docs-1/openapi.yaml
+server: http://localhost:3000
+hooks-worker-timeout: 5000
+hooks-worker-connect-timeout: 1500
+hooks-worker-after-connect-wait: 100
+hooks-worker-term-timeout: 5000
+hooks-worker-term-retry: 500
+hooks-worker-handler-host: 127.0.0.1
+hooks-worker-handler-port: 61321

@@ -178,6 +178,166 @@ export const CreditApplicationFormComponent: React.FC = () => {
 };
 ```
 
+## API Quality Gate Patterns
+
+### 1. API Documentation Validation Pattern
+
+Standard pattern for validating API documentation completeness:
+
+```typescript
+interface OpenAPIValidationConfig {
+  requiredFields: string[];
+  minLengthRequirements: {
+    endpointDescriptions: number;
+    parameterDescriptions: number;
+    responseDescriptions: number;
+  };
+  formatRequirements: {
+    openapiVersion: string;
+    infoRequired: boolean;
+    pathsRequired: boolean;
+  };
+}
+
+export class APIDocumentationValidator {
+  private config: OpenAPIValidationConfig;
+
+  constructor(config: OpenAPIValidationConfig = {
+    requiredFields: ['openapi', 'info', 'paths'],
+    minLengthRequirements: {
+      endpointDescriptions: 50,
+      parameterDescriptions: 30,
+      responseDescriptions: 40
+    },
+    formatRequirements: {
+      openapiVersion: '3.0.0',
+      infoRequired: true,
+      pathsRequired: true
+    }
+  }) {
+    this.config = config;
+  }
+
+  async validateDocumentation(specPath: string): Promise<ValidationResult> {
+    try {
+      const spec = await this.loadOpenAPISpec(specPath);
+      const results: ValidationError[] = [];
+
+      // Validate basic structure
+      results.push(...this.validateBasicStructure(spec));
+
+      // Validate endpoint descriptions
+      results.push(...this.validateEndpointDescriptions(spec.paths));
+
+      // Validate parameter documentation
+      results.push(...this.validateParameterDocumentation(spec.paths));
+
+      // Validate response schemas
+      results.push(...this.validateResponseSchemas(spec.paths));
+
+      return {
+        valid: results.length === 0,
+        errors: results,
+        score: this.calculateDocumentationScore(results.length, spec)
+      };
+    } catch (error) {
+      return {
+        valid: false,
+        errors: [{ message: `Failed to load spec: ${error.message}`, severity: 'critical' }],
+        score: 0
+      };
+    }
+  }
+
+  private validateEndpointDescriptions(paths: any): ValidationError[] {
+    const errors: ValidationError[] = [];
+
+    Object.entries(paths).forEach(([path, methods]) => {
+      Object.entries(methods).forEach(([method, endpoint]) => {
+        if (endpoint.description?.length < this.config.minLengthRequirements.endpointDescriptions) {
+          errors.push({
+            message: `Endpoint ${method.toUpperCase()} ${path} description too short`,
+            severity: 'medium',
+            location: `${path}.${method}.description`
+          });
+        }
+      });
+    });
+
+    return errors;
+  }
+}
+```
+
+### 2. Error Response Validation Pattern
+
+Standard pattern for validating consistent error handling:
+
+```typescript
+interface ErrorValidationConfig {
+  requiredFields: string[];
+  sensitiveDataPatterns: RegExp[];
+  statusCodes: Record<string, number[]>;
+}
+
+export class APIErrorValidator {
+  private config: ErrorValidationConfig;
+
+  constructor(config: ErrorValidationConfig = {
+    requiredFields: ['error', 'message', 'code', 'timestamp'],
+    sensitiveDataPatterns: [
+      /\b\d{3}-\d{2}-\d{4}\b/, // SSN
+      /\b\d{16}\b/, // Credit card
+      /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/ // Email
+    ],
+    statusCodes: {
+      validation: [400],
+      authentication: [401],
+      authorization: [403],
+      notFound: [404],
+      server: [500, 502, 503, 504]
+    }
+  }) {
+    this.config = config;
+  }
+
+  validateErrorResponse(response: any, expectedType: string): ValidationError[] {
+    const errors: ValidationError[] = [];
+
+    // Validate required fields
+    this.config.requiredFields.forEach(field => {
+      if (!response.hasOwnProperty(field)) {
+        errors.push({
+          message: `Missing required field: ${field}`,
+          severity: 'high'
+        });
+      }
+    });
+
+    // Validate no sensitive data exposure
+    const responseString = JSON.stringify(response);
+    this.config.sensitiveDataPatterns.forEach(pattern => {
+      if (pattern.test(responseString)) {
+        errors.push({
+          message: 'Sensitive data detected in error response',
+          severity: 'critical'
+        });
+      }
+    });
+
+    // Validate status code mapping
+    const expectedCodes = this.config.statusCodes[expectedType] || [];
+    if (expectedCodes.length > 0 && !expectedCodes.includes(response.status)) {
+      errors.push({
+        message: `Unexpected status code ${response.status} for ${expectedType} error`,
+        severity: 'medium'
+      });
+    }
+
+    return errors;
+  }
+}
+
 ## Laravel API Patterns
 
 ### 1. Credit Report Controller Pattern

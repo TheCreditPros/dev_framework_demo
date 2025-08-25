@@ -47,6 +47,7 @@
       "dependencies": {
         "core": ["eslint", "prettier", "husky", "lint-staged"],
         "testing": ["vitest"],
+        "api": ["swagger-cli"],
         "optional": []
       },
       "features": {
@@ -59,7 +60,9 @@
         "compliance": false,
         "ai": false,
         "mcp": false,
-        "performance": false
+        "performance": false,
+        "apiDocumentation": true,
+        "basicApiValidation": true
       },
       "scripts": {
         "lint": "eslint . --cache",
@@ -81,6 +84,7 @@
         "core": ["eslint", "prettier", "husky", "lint-staged", "commitlint", "@commitlint/config-conventional"],
         "testing": ["vitest", "@testing-library/react", "@testing-library/jest-dom", "jsdom", "@playwright/test"],
         "typescript": ["@typescript-eslint/parser", "@typescript-eslint/eslint-plugin"],
+        "api": ["swagger-cli", "openapi-validator", "dredd", "express-openapi-validator"],
         "optional": []
       },
       "features": {
@@ -94,7 +98,12 @@
         "compliance": false,
         "ai": true,
         "mcp": false,
-        "performance": true
+        "performance": true,
+        "apiDocumentation": true,
+        "apiContractTesting": true,
+        "errorValidation": true,
+        "multiStepProcess": true,
+        "apiQualityGates": true
       },
       "scripts": {
         "lint": "eslint . --cache --cache-location .eslintcache/",
@@ -103,7 +112,12 @@
         "test:coverage": "vitest --coverage",
         "test:e2e": "playwright test",
         "validate": "node validate-setup.js",
-        "ai:generate-tests": "node scripts-complex/real-ai-test-generator.js generate"
+        "ai:generate-tests": "node scripts-complex/real-ai-test-generator.js generate",
+        "api:validate-docs": "node scripts-complex/api-documentation-validator.js validate",
+        "api:validate-errors": "node scripts-complex/api-error-validator.js validate",
+        "api:test-contracts": "node scripts-complex/api-contract-tester.js test",
+        "api:analyze-processes": "node scripts-complex/api-process-analyzer.js analyze",
+        "api:validate-all": "npm run api:validate-docs && npm run api:validate-errors && npm run api:test-contracts && npm run api:analyze-processes"
       }
     },
     "enterprise": {
@@ -125,6 +139,7 @@
         "testing": ["vitest", "@testing-library/react", "@testing-library/jest-dom", "jsdom", "@playwright/test", "playwright-qase-reporter"],
         "typescript": ["@typescript-eslint/parser", "@typescript-eslint/eslint-plugin"],
         "security": ["@semantic-release/changelog", "@semantic-release/git", "semantic-release"],
+        "api": ["swagger-cli", "openapi-validator", "dredd", "express-openapi-validator", "pactum", "supertest", "prism-cli"],
         "optional": []
       },
       "features": {
@@ -140,7 +155,14 @@
         "mcp": true,
         "performance": true,
         "monitoring": true,
-        "postgresql": true
+        "postgresql": true,
+        "apiDocumentation": true,
+        "apiContractTesting": true,
+        "errorValidation": true,
+        "multiStepProcess": true,
+        "apiQualityGates": true,
+        "fcraCompliance": true,
+        "piiSecurity": true
       },
       "scripts": {
         "lint": "eslint . --cache --cache-location .eslintcache/",
@@ -160,7 +182,12 @@
         "db:test": "./postgres-automation.sh test",
         "db:setup": "./postgres-automation.sh setup",
         "teams:setup": "./scripts-complex/setup-ms-teams.sh",
-        "teams:validate": "node scripts-complex/quality-gate-notifier.js test-webhook"
+        "teams:validate": "node scripts-complex/quality-gate-notifier.js test-webhook",
+        "api:validate-docs": "node scripts-complex/api-documentation-validator.js validate",
+        "api:validate-errors": "node scripts-complex/api-error-validator.js validate",
+        "api:test-contracts": "node scripts-complex/api-contract-tester.js test",
+        "api:analyze-processes": "node scripts-complex/api-process-analyzer.js analyze",
+        "api:validate-all": "npm run api:validate-docs && npm run api:validate-errors && npm run api:test-contracts && npm run api:analyze-processes"
       }
     }
   },

@@ -1,0 +1,19 @@
+{
+  "timestamp": "2025-08-25T14:59:13.616Z",
+  "summary": {
+    "totalFiles": 1,
+    "highSeverity": 0,
+    "mediumSeverity": 1,
+    "lowSeverity": 0
+  },
+  "details": [
+    {
+      "file": "/Users/damondecrescenzo/ai-sdlc-docs-1/src/sample/creditScore.js",
+      "issues": [
+        "No error logging found",
+        "No standardized error response format detected"
+      ],
+      "severity": "medium"
+    }
+  ]
+}

@@ -22,6 +22,17 @@
 ```
 
 ✅ You should see: "All core components functional"
+**Step 2.5: Test Enhanced CLI (NEW)**
+
+```bash
+# Test the new explain command for instant help
+./ai-sdlc explain "ESLint parsing error"
+./ai-sdlc explain "pre-commit hook failed"
+./ai-sdlc explain "package.json missing"
+```
+
+✅ Get detailed explanations and fix suggestions for any issue
+
 
 ## 🔄 **Automatic E2E Tests for Front-End Changes**
 
@@ -93,7 +104,7 @@ git clone https://github.com/nydamon/ai-sdlc.git .ai-sdlc
 
 **Recommended order:**
 1. customer-frontend-portal (highest impact)
-2. portal2-refactor 
+2. portal2-refactor
 3. portal2-admin-refactor
 
 ## 📋 **Prerequisites**
@@ -204,7 +215,7 @@ Just develop normally. The tools run automatically when you:
 ## 📚 **Next Steps**
 
 - **Developers**: Start developing - tests generate automatically
-- **Managers**: See [Implementation Guide](implementation-guide-managers.md) for rollout strategy  
+- **Managers**: See [Implementation Guide](implementation-guide-managers.md) for rollout strategy
 - **Issues**: Check [Troubleshooting Guide](troubleshooting-simple.md)
 
 **Questions?** The framework is designed to be completely transparent. You should notice:
