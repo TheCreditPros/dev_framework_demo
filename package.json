@@ -1,6 +1,6 @@
 {
   "name": "ai-sdlc-framework",
-  "version": "3.2.1",
+  "version": "3.2.2",
   "description": "AI-Powered SDLC Framework for The Credit Pros",
   "main": "index.js",
   "scripts": {
@@ -22,18 +22,11 @@
     "build": "echo 'Build completed successfully'",
     "dev": "echo 'Development server would start here'",
     "validate": "node validate-setup.js",
-    "repair": "./ai-sdlc repair",
-    "ai:generate-tests": "node scripts-complex/real-ai-test-generator.js generate",
-    "ai:generate-e2e": "node scripts-complex/ai-e2e-generator.js generate",
-    "ai:test-init": "./ai-sdlc test-init",
-    "ai:validate": "node implementation-tracker.js",
-    "coverage": "vitest --coverage",
-    "test:ci": "vitest --run --coverage",
-    "mcp:server": "node scripts-complex/mcp-server.js",
-    "mcp:setup": "node scripts-complex/mcp-installer.js",
-    "mcp:validate": "node scripts-complex/mcp-validator.js",
-    "mcp:install-servers": "node scripts-complex/mcp-installer.js",
-    "mcp:status": "echo \"Check MCP servers: claude mcp list\""
+    "api:validate-docs": "node scripts-complex/api-documentation-validator.js validate",
+    "api:validate-errors": "node scripts-complex/api-error-validator.js validate",
+    "api:test-contracts": "node scripts-complex/api-contract-tester.js test",
+    "api:analyze-processes": "node scripts-complex/api-process-analyzer.js analyze",
+    "api:validate-all": "npm run api:validate-docs && npm run api:validate-errors && npm run api:test-contracts && npm run api:analyze-processes"
   },
   "keywords": [
     "ai",
@@ -46,51 +39,19 @@
   "author": "Damon DeCrescenzo <damon@thecreditpros.com>",
   "license": "MIT",
   "devDependencies": {
-    "@babel/preset-env": "^7.28.0",
-    "@babel/preset-react": "^7.27.1",
-    "@babel/preset-typescript": "^7.27.1",
-    "@commitlint/cli": "^19.8.1",
-    "@commitlint/config-conventional": "^19.8.1",
-    "@eslint/js": "^9.32.0",
-    "@playwright/test": "^1.54.2",
     "@testing-library/jest-dom": "^6.6.4",
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^14.6.1",
-    "@typescript-eslint/eslint-plugin": "^8.39.0",
-    "@typescript-eslint/parser": "^8.39.0",
     "@vitejs/plugin-react": "^4.7.0",
-    "commitlint": "^19.8.1",
     "dotenv": "^17.2.1",
-    "esbuild": "^0.25.9",
     "eslint": "^9.32.0",
-    "eslint-plugin-react": "^7.37.5",
-    "eslint-plugin-react-hooks": "^5.2.0",
     "husky": "^9.1.7",
     "jsdom": "^26.1.0",
     "lint-staged": "^16.1.2",
-    "playwright-qase-reporter": "^2.1.4",
     "prettier": "^3.6.2",
-    "prop-types": "^15.8.1",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
-    "rollup": "^4.46.3",
     "typescript": "^5.9.2",
     "vitest": "^3.2.4"
-  },
-  "lint-staged": {
-    "*.{js,jsx,ts,tsx}": [
-      "eslint --fix",
-      "prettier --write"
-    ],
-    "*.php": [
-      "bash -c 'if [ -f ./vendor/bin/pint ] && [[ \"$0\" != *\".template.php\" ]]; then ./vendor/bin/pint \"$0\"; fi'"
-    ],
-    "*.{json,md,yml,yaml}": [
-      "prettier --write"
-    ]
-  },
-  "dependencies": {
-    "express": "^4.18.2",
-    "posthog-js": "^1.258.5"
   }
 }
