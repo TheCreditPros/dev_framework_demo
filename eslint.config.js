@@ -19,7 +19,7 @@ export default [
       '**/comprehensive-jest-to-vitest.js',
       '**/enhanced-jest-to-vitest.js',
       '**/final-jest-removal.js',
-      '**/jest-to-vitest-converter.js'
+      '**/jest-to-vitest-converter.js',
     ],
   },
   {
@@ -29,8 +29,8 @@ export default [
       sourceType: 'module',
       parserOptions: {
         ecmaFeatures: {
-          jsx: true
-        }
+          jsx: true,
+        },
       },
       globals: {
         console: 'readonly',
@@ -46,7 +46,23 @@ export default [
         File: 'readonly',
         document: 'readonly',
         window: 'readonly',
-        navigator: 'readonly'
+        navigator: 'readonly',
+        // Test globals
+        describe: 'readonly',
+        it: 'readonly',
+        test: 'readonly',
+        expect: 'readonly',
+        beforeEach: 'readonly',
+        afterEach: 'readonly',
+        beforeAll: 'readonly',
+        afterAll: 'readonly',
+        vi: 'readonly',
+        // Browser globals
+        fetch: 'readonly',
+        URL: 'readonly',
+        btoa: 'readonly',
+        localStorage: 'readonly',
+        HTMLInputElement: 'readonly',
       },
     },
     rules: {
@@ -54,7 +70,7 @@ export default [
       'no-console': 'off',
       'prefer-const': 'warn',
       'no-var': 'error',
-      'no-useless-escape': 'warn'
+      'no-useless-escape': 'warn',
     },
   },
   {
@@ -65,8 +81,8 @@ export default [
         ecmaVersion: 'latest',
         sourceType: 'module',
         ecmaFeatures: {
-          jsx: true
-        }
+          jsx: true,
+        },
       },
       globals: {
         console: 'readonly',
@@ -79,18 +95,37 @@ export default [
         File: 'readonly',
         document: 'readonly',
         window: 'readonly',
-        navigator: 'readonly'
-      }
+        navigator: 'readonly',
+        // Test globals
+        describe: 'readonly',
+        it: 'readonly',
+        test: 'readonly',
+        expect: 'readonly',
+        beforeEach: 'readonly',
+        afterEach: 'readonly',
+        beforeAll: 'readonly',
+        afterAll: 'readonly',
+        vi: 'readonly',
+        // Browser globals
+        fetch: 'readonly',
+        URL: 'readonly',
+        btoa: 'readonly',
+        localStorage: 'readonly',
+        HTMLInputElement: 'readonly',
+      },
     },
     plugins: {
-      '@typescript-eslint': tsPlugin
+      '@typescript-eslint': tsPlugin,
     },
     rules: {
       ...tsPlugin.configs.recommended.rules,
-      '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
+      '@typescript-eslint/no-unused-vars': [
+        'warn',
+        { argsIgnorePattern: '^_' },
+      ],
       'no-unused-vars': 'off',
       'prefer-const': 'warn',
-      'no-var': 'error'
-    }
-  }
+      'no-var': 'error',
+    },
+  },
 ];
