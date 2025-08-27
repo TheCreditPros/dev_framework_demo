@@ -285,7 +285,7 @@ async function verifyNoJestReferences(rootDir) {
   console.log('\n🔍 Verifying vitest removal...');
   
   const testFiles = await findAllFiles(rootDir);
-  let jestReferences = [];
+  const jestReferences = [];
   
   for (const file of testFiles) {
     // Skip node_modules and migration scripts

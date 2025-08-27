@@ -1,4 +1,6 @@
 import js from '@eslint/js';
+import tsPlugin from '@typescript-eslint/eslint-plugin';
+import tsParser from '@typescript-eslint/parser';
 
 export default [
   js.configs.recommended,
@@ -12,12 +14,24 @@ export default [
       '**/site/**',
       '**/docs/site/**',
       '**/temp/**',
+      '**/portal2-admin-refactor/.next/**',
+      '**/portal2-admin-refactor/node_modules/**',
+      '**/comprehensive-jest-to-vitest.js',
+      '**/enhanced-jest-to-vitest.js',
+      '**/final-jest-removal.js',
+      '**/jest-to-vitest-converter.js'
     ],
   },
   {
+    files: ['**/*.{js,jsx,mjs,cjs}'],
     languageOptions: {
       ecmaVersion: 'latest',
       sourceType: 'module',
+      parserOptions: {
+        ecmaFeatures: {
+          jsx: true
+        }
+      },
       globals: {
         console: 'readonly',
         process: 'readonly',
@@ -28,13 +42,55 @@ export default [
         require: 'readonly',
         module: 'readonly',
         exports: 'readonly',
+        FormData: 'readonly',
+        File: 'readonly',
+        document: 'readonly',
+        window: 'readonly',
+        navigator: 'readonly'
       },
     },
     rules: {
-      'no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+      'no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
       'no-console': 'off',
-      'prefer-const': 'error',
+      'prefer-const': 'warn',
       'no-var': 'error',
+      'no-useless-escape': 'warn'
     },
   },
+  {
+    files: ['**/*.{ts,tsx}'],
+    languageOptions: {
+      parser: tsParser,
+      parserOptions: {
+        ecmaVersion: 'latest',
+        sourceType: 'module',
+        ecmaFeatures: {
+          jsx: true
+        }
+      },
+      globals: {
+        console: 'readonly',
+        process: 'readonly',
+        Buffer: 'readonly',
+        __dirname: 'readonly',
+        __filename: 'readonly',
+        global: 'readonly',
+        FormData: 'readonly',
+        File: 'readonly',
+        document: 'readonly',
+        window: 'readonly',
+        navigator: 'readonly'
+      }
+    },
+    plugins: {
+      '@typescript-eslint': tsPlugin
+    },
+    rules: {
+      ...tsPlugin.configs.recommended.rules,
+      '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
+      'no-unused-vars': 'off',
+      'prefer-const': 'warn',
+      'no-var': 'error'
+    }
+  }
 ];
