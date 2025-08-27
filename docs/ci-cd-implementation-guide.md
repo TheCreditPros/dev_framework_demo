@@ -11,12 +11,14 @@ The AI-SDLC Framework now includes enterprise-grade CI/CD automation with compre
 **Purpose**: Complete CI/CD pipeline with quality gates, testing, and deployment automation.
 
 **Triggers**:
+
 - Push to `main`, `master`, `develop`, `staging` branches
 - Pull requests to `main`, `master`
 - Git tags (`v*`)
 - Manual workflow dispatch
 
 **Key Features**:
+
 - **Multi-stage Pipeline**: Setup → Quality Gates → Testing → Security → Build → Deploy
 - **Matrix Testing**: Multiple Node.js versions (18, 20)
 - **Comprehensive Testing**: Unit, Integration, E2E tests
@@ -26,9 +28,10 @@ The AI-SDLC Framework now includes enterprise-grade CI/CD automation with compre
 - **MS Teams Notifications**: Real-time status updates
 
 **Jobs Overview**:
+
 ```yaml
 setup → quality-gates → test-suite → sonarcloud
-                    ↓
+↓
 security-analysis → build → deploy → post-deploy-validation → cleanup
 ```
 
@@ -37,6 +40,7 @@ security-analysis → build → deploy → post-deploy-validation → cleanup
 **Purpose**: Comprehensive security scanning and vulnerability assessment.
 
 **Features**:
+
 - **Dependency Vulnerability Scanning**: NPM audit and dependency review
 - **CodeQL Analysis**: Static code analysis for security vulnerabilities
 - **Secret Scanning**: TruffleHog and GitLeaks integration
@@ -51,6 +55,7 @@ security-analysis → build → deploy → post-deploy-validation → cleanup
 **Purpose**: Automated performance testing and monitoring.
 
 **Features**:
+
 - **Lighthouse CI**: Web performance auditing
 - **Load Testing**: Artillery-based load testing
 - **Memory Profiling**: Memory leak detection and analysis
@@ -58,6 +63,7 @@ security-analysis → build → deploy → post-deploy-validation → cleanup
 - **Performance Budgets**: Automated performance threshold enforcement
 
 **Performance Thresholds**:
+
 - First Contentful Paint: < 2 seconds
 - Largest Contentful Paint: < 2.5 seconds
 - Cumulative Layout Shift: < 0.1
@@ -68,6 +74,7 @@ security-analysis → build → deploy → post-deploy-validation → cleanup
 ### Dependabot Configuration (`.github/dependabot.yml`)
 
 **Automated Updates**:
+
 - **NPM Dependencies**: Weekly on Mondays
 - **GitHub Actions**: Weekly on Tuesdays
 - **Docker Images**: Weekly on Wednesdays
@@ -75,6 +82,7 @@ security-analysis → build → deploy → post-deploy-validation → cleanup
 - **Python Pip**: Weekly on Fridays
 
 **Grouping Strategy**:
+
 - **Testing Frameworks**: Vitest, Playwright, Jest, Testing Library
 - **Build Tools**: Vite, Rollup, ESBuild, TypeScript
 - **Code Quality**: ESLint, Prettier, Husky, Lint-staged
@@ -83,6 +91,7 @@ security-analysis → build → deploy → post-deploy-validation → cleanup
 - **AI/MCP**: Model Context Protocol and AI packages
 
 **Security Features**:
+
 - Immediate security updates with auto-merge
 - Vulnerability scanning integration
 - Compliance with enterprise security policies
@@ -92,6 +101,7 @@ security-analysis → build → deploy → post-deploy-validation → cleanup
 ### CODEOWNERS Configuration (`.github/CODEOWNERS`)
 
 **Ownership Structure**:
+
 - **Global Owner**: `@nydamon` for all files
 - **Framework Core**: Critical framework files require senior review
 - **CI/CD**: GitHub Actions and automation files
@@ -101,6 +111,7 @@ security-analysis → build → deploy → post-deploy-validation → cleanup
 - **Testing**: Test files and testing infrastructure
 
 **Special Patterns**:
+
 - Credit repair code (`**/credit*`, `**/dispute*`, `**/compliance*`)
 - Security files (`**/auth*`, `**/security*`, `**/encryption*`)
 - Emergency overrides for hotfixes and security patches
@@ -108,6 +119,7 @@ security-analysis → build → deploy → post-deploy-validation → cleanup
 ## 📊 Quality Gates
 
 ### Code Quality Standards
+
 - **ESLint**: JavaScript/TypeScript linting with enterprise rules
 - **Prettier**: Code formatting consistency
 - **TypeScript**: Strict type checking
@@ -115,6 +127,7 @@ security-analysis → build → deploy → post-deploy-validation → cleanup
 - **Lint-staged**: Staged file validation
 
 ### Testing Requirements
+
 - **Unit Tests**: Vitest with 80% coverage minimum
 - **Integration Tests**: API and service integration validation
 - **E2E Tests**: Playwright for user workflow testing
@@ -122,6 +135,7 @@ security-analysis → build → deploy → post-deploy-validation → cleanup
 - **Security Tests**: Vulnerability and compliance validation
 
 ### Security Standards
+
 - **Dependency Scanning**: Automated vulnerability detection
 - **Secret Scanning**: Credential and API key detection
 - **Code Analysis**: Static analysis for security issues
@@ -133,12 +147,14 @@ security-analysis → build → deploy → post-deploy-validation → cleanup
 ### Performance Configuration (`lighthouse.config.js`)
 
 **Performance Budgets**:
+
 - Performance Score: ≥ 80%
 - Accessibility Score: ≥ 90%
 - Best Practices Score: ≥ 90%
 - SEO Score: ≥ 80%
 
 **Credit Repair Specific**:
+
 - Credit score calculations: < 1 second for 1000 operations
 - Dispute processing: Optimized for high-volume processing
 - HTTPS enforcement for financial data security
@@ -146,6 +162,7 @@ security-analysis → build → deploy → post-deploy-validation → cleanup
 ### Package Scripts Integration
 
 **New Scripts Added**:
+
 ```json
 {
   "scripts": {
@@ -160,11 +177,13 @@ security-analysis → build → deploy → post-deploy-validation → cleanup
 ## 🚀 Deployment Strategy
 
 ### Environment Configuration
+
 - **Development**: Feature branch deployments
 - **Staging**: Develop/staging branch deployments
 - **Production**: Main/master branch deployments
 
 ### Deployment Gates
+
 1. **Quality Gates**: All linting and type checking must pass
 2. **Test Suite**: All tests must pass across Node.js versions
 3. **Security Scan**: No high/critical vulnerabilities
@@ -172,6 +191,7 @@ security-analysis → build → deploy → post-deploy-validation → cleanup
 5. **Code Review**: CODEOWNERS approval required
 
 ### Rollback Strategy
+
 - Automated rollback on deployment failure
 - Health check validation post-deployment
 - Smoke tests for critical functionality
@@ -179,11 +199,13 @@ security-analysis → build → deploy → post-deploy-validation → cleanup
 ## 📈 Monitoring and Notifications
 
 ### MS Teams Integration
+
 - **Real-time Notifications**: Build status, security alerts, performance issues
 - **Detailed Reports**: Test results, coverage reports, security findings
 - **Action Links**: Direct links to GitHub Actions, security tabs, and reports
 
 ### Artifact Management
+
 - **Test Results**: Coverage reports, test outputs
 - **Security Reports**: Vulnerability scans, compliance checks
 - **Performance Reports**: Lighthouse results, load test data
@@ -192,12 +214,14 @@ security-analysis → build → deploy → post-deploy-validation → cleanup
 ## 🔒 Security Implementation
 
 ### FCRA Compliance Features
+
 - **PII Detection**: Automated scanning for sensitive data patterns
 - **Audit Trail Validation**: Compliance logging verification
 - **Encryption Checks**: Data protection pattern validation
 - **Access Control**: Permissible purpose validation
 
 ### Security Automation
+
 - **Daily Security Scans**: Comprehensive vulnerability assessment
 - **Secret Detection**: Multi-tool secret scanning approach
 - **Dependency Monitoring**: Real-time vulnerability tracking
@@ -230,6 +254,7 @@ MS_TEAMS_SECURITY_WEBHOOK # Security notifications
 ### 3. Dependabot Configuration
 
 Dependabot is automatically configured with:
+
 - Weekly dependency updates
 - Security-first update strategy
 - Grouped updates by category
@@ -245,6 +270,7 @@ Dependabot is automatically configured with:
 ## 📋 Best Practices
 
 ### Development Workflow
+
 1. **Feature Development**: Create feature branch from `develop`
 2. **Quality Checks**: Automated linting, testing, and security scanning
 3. **Code Review**: CODEOWNERS-based review assignment
@@ -253,6 +279,7 @@ Dependabot is automatically configured with:
 6. **Production Release**: Merge to `main` triggers production deployment
 
 ### Security Practices
+
 - Never commit secrets or credentials
 - Use environment variables for configuration
 - Implement proper error handling for sensitive operations
@@ -260,6 +287,7 @@ Dependabot is automatically configured with:
 - Regular security dependency updates
 
 ### Performance Optimization
+
 - Monitor Core Web Vitals continuously
 - Implement performance budgets
 - Optimize credit calculation algorithms
@@ -269,18 +297,21 @@ Dependabot is automatically configured with:
 ## 🔄 Maintenance
 
 ### Weekly Tasks
+
 - Review Dependabot PRs and merge approved updates
 - Monitor security scan results and address findings
 - Review performance metrics and optimize bottlenecks
 - Update documentation for new features or changes
 
 ### Monthly Tasks
+
 - Review and update performance budgets
 - Audit security configurations and permissions
 - Update CI/CD workflows for new requirements
 - Validate compliance with industry regulations
 
 ### Quarterly Tasks
+
 - Comprehensive security audit
 - Performance baseline reassessment
 - CI/CD pipeline optimization review
@@ -289,12 +320,14 @@ Dependabot is automatically configured with:
 ## 📞 Support and Troubleshooting
 
 ### Common Issues
+
 - **Build Failures**: Check dependency compatibility and Node.js version
 - **Test Failures**: Verify test environment setup and mock data
 - **Security Alerts**: Review dependency vulnerabilities and update
 - **Performance Issues**: Analyze Lighthouse reports and optimize
 
 ### Getting Help
+
 - Review GitHub Actions logs for detailed error information
 - Check SonarCloud dashboard for code quality insights
 - Monitor MS Teams notifications for real-time updates
@@ -303,12 +336,14 @@ Dependabot is automatically configured with:
 ## 🎯 Success Metrics
 
 ### Quality Metrics
+
 - **Test Coverage**: ≥ 80% for all new code
 - **Code Quality**: SonarCloud quality gate passing
 - **Security Score**: Zero high/critical vulnerabilities
 - **Performance Score**: ≥ 80% Lighthouse performance score
 
 ### Automation Metrics
+
 - **Deployment Frequency**: Automated deployments on every merge
 - **Lead Time**: Reduced time from commit to production
 - **Mean Time to Recovery**: Faster issue resolution with automated testing

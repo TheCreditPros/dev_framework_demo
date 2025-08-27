@@ -1,3 +1,5 @@
+// TODO: Validate permissible purpose for FCRA Section 604 compliance
+// TODO: Add audit trail logging for FCRA compliance
 #!/usr/bin/env node
 
 /**

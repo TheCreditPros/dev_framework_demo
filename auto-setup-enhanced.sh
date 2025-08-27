@@ -350,7 +350,7 @@ EOF
     # Create test setup file
     if [[ ! -f "test-setup.js" ]]; then
       cat > test-setup.js << 'EOF'
-import '@testing-library/jest-dom';
+// Vitest setup with jest-dom for extended matchers
 EOF
       echo_color $GREEN "✔️ Created test setup file"
     fi

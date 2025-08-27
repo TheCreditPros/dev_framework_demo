@@ -1,3 +1,4 @@
+// TODO: Add audit trail logging for FCRA compliance
 #!/usr/bin/env node
 
 /**
@@ -379,7 +380,7 @@ class CreditRepairAutoHealing extends PlaywrightAutoHealing {
    * SSN input with format validation
    */
   async enterSSN(ssn, options = {}) {
-    // Format SSN if needed (123456789 → 123-45-6789)
+    // Format SSN if needed (123456789 → ***-**-6789)
     let formattedSSN = ssn.replace(/\D/g, '');
     if (formattedSSN.length === 9) {
       formattedSSN = `${formattedSSN.substr(0, 3)}-${formattedSSN.substr(3, 2)}-${formattedSSN.substr(5)}`;
@@ -476,19 +477,19 @@ class CreditRepairAutoHealing extends PlaywrightAutoHealing {
     const scenarios = {
       good_credit: {
         creditScore: 750,
-        ssn: '123-45-6789',
+        ssn: '***-**-6789',
         income: 75000,
         debts: [],
       },
       fair_credit: {
         creditScore: 650,
-        ssn: '987-65-4321',
+        ssn: '***-**-4321',
         income: 50000,
         debts: [{ type: 'credit_card', amount: 5000 }],
       },
       poor_credit: {
         creditScore: 550,
-        ssn: '456-78-9123',
+        ssn: '***-**-9123',
         income: 35000,
         debts: [
           { type: 'credit_card', amount: 8000 },
@@ -497,7 +498,7 @@ class CreditRepairAutoHealing extends PlaywrightAutoHealing {
       },
       thin_file: {
         creditScore: 620,
-        ssn: '789-12-3456',
+        ssn: '***-**-3456',
         income: 40000,
         debts: [],
       },

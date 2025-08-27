@@ -1,0 +1,9 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# AI-SDLC Framework Commit Message Validation
+echo "🔍 AI-SDLC Framework: Validating commit message..."
+
+npx --no -- commitlint --edit $1
+
+echo "✅ AI-SDLC Framework: Commit message validation completed!"

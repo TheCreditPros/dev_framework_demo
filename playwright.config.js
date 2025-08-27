@@ -8,20 +8,23 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   reporter: [
     ['html'],
-    ['playwright-qase-reporter', {
-      mode: 'testops',
-      debug: false,
-      testops: {
-        api: {
-          token: process.env.QASE_API_TOKEN,
-        },
-        project: process.env.QASE_PROJECT_CODE || 'DEMO',
-        uploadAttachments: true,
-        run: {
-          complete: true,
+    [
+      'playwright-qase-reporter',
+      {
+        mode: 'testops',
+        debug: false,
+        testops: {
+          api: {
+            token: process.env.QASE_API_TOKEN,
+          },
+          project: process.env.QASE_PROJECT_CODE || 'DEMO',
+          uploadAttachments: true,
+          run: {
+            complete: true,
+          },
         },
       },
-    }],
+    ],
   ],
   use: {
     baseURL: 'http://localhost:3000',

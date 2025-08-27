@@ -1,7 +1,7 @@
 // Comprehensive test file with multiple intentional issues
 const badCode = {
   // Hardcoded SSN - should be auto-masked
-  ssn: "987-65-4321",
+  ssn: "***-**-4321",
   
   // Credit card number - should be flagged
   creditCard: "4532123456789012",
@@ -9,7 +9,7 @@ const badCode = {
   // Poorly formatted code - should be auto-fixed by Prettier/ESLint
   calculateScore:function(data){
     if(!data)return 0;
-    let score=data.payment*35+data.utilization*30;
+    const score=data.payment*35+data.utilization*30;
     return score>850?850:score<300?300:score;
   },
   

@@ -28,7 +28,7 @@ class EncryptionService
      */
     public function maskSSN(string $ssn): string
     {
-        // Show only last 4 digits: 123-45-6789 → ***-**-6789
+        // Show only last 4 digits: ***-**-6789 → ***-**-6789
         if (strlen($ssn) >= 4) {
             return "***-**-" . substr($ssn, -4);
         }

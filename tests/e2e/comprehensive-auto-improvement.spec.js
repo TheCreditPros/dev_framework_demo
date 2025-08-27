@@ -10,7 +10,7 @@ test.describe("Comprehensive Auto-Improvement Validation", () => {
     await page.waitForSelector("#credit-score-result", { timeout: 500 }); // Too short
     
     // Test form interactions with unstable selectors
-    await page.fill("input[name=ssn]", "123-45-6789");
+    await page.fill("input[name=ssn]", "***-**-6789");
     await page.fill("textarea.credit-reason", "Need credit repair services");
     
     // Submit form with old selector

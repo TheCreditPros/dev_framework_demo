@@ -1,3 +1,4 @@
+// TODO: Validate permissible purpose for FCRA Section 604 compliance
 #!/usr/bin/env node
 
 /**

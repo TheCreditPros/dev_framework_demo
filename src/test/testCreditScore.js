@@ -1,7 +1,7 @@
 // Test file with intentional issues to validate auto-improvement
 function calculateCreditScore(data) {
   // Hardcoded SSN for testing auto-masking
-  const testSSN = "123-45-6789";
+  const testSSN = "***-**-6789";
   
   // Credit score calculation without audit trail (should trigger auto-fix)
   const score = data.paymentHistory * 0.35 + 

@@ -29,7 +29,7 @@ const checks = [
 ];
 
 let passed = 0;
-let total = checks.length;
+const total = checks.length;
 
 checks.forEach(check => {
   try {

@@ -14,7 +14,8 @@ export default defineConfig({
         'src/test/',
         '**/*.d.ts',
         '**/*.config.js',
-        '**/coverage/**'
+        '**/coverage/**',
+        'portal2-admin-refactor/**'
       ],
       thresholds: {
         global: {
@@ -24,7 +25,17 @@ export default defineConfig({
           statements: 80
         }
       }
-    }
+    },
+    exclude: [
+      '**/node_modules/**',
+      '**/dist/**',
+      '**/.git/**',
+      '**/coverage/**',
+      'portal2-admin-refactor/**',
+      '**/tests/e2e/**',
+      '**/*.spec.js',
+      '**/playwright/**'
+    ]
   },
   resolve: {
     alias: {

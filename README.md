@@ -64,7 +64,7 @@ Your repository now has:
 ### **Core Framework Components**
 
 - ✅ **AI-SDLC Scripts** - Multi-stack detection, test generation, quality analysis
-- ✅ **Quality Gates** - ESLint, Prettier, TypeScript, Jest, Playwright
+- ✅ **Quality Gates** - ESLint, Prettier, TypeScript, Vitest, Playwright
 - ✅ **Git Hooks** - Pre-commit, commit-msg, post-commit automation
 - ✅ **PR Agent** - AI-powered code review with repository context
 
@@ -157,7 +157,7 @@ Your repository now has:
 - **PHP Stack Detection**: Laravel, Composer, PHPUnit
 - **JavaScript Stack Detection**: React, TypeScript, Next.js, Vite
 - **Database Detection**: MySQL, PostgreSQL, MongoDB
-- **Testing Stack Detection**: Jest, Playwright, PHPUnit
+- **Testing Stack Detection**: Vitest, Playwright, PHPUnit
 - **Deployment Stack Detection**: Docker, CI/CD configurations
 
 **Benefits**:
@@ -175,7 +175,7 @@ Your repository now has:
 **Capabilities**:
 
 - **Multi-Language Support**: JavaScript, TypeScript, PHP, Python
-- **Framework Awareness**: Jest, PHPUnit, Playwright, Cypress
+- **Framework Awareness**: Vitest, PHPUnit, Playwright, Cypress
 - **AI-Powered Generation**: Context-aware test creation
 - **Compliance Focus**: FCRA, HIPAA, PCI DSS patterns
 - **Cost Optimization**: 97% cost reduction vs GPT-4
@@ -398,7 +398,7 @@ module.exports = {
     prettier: { enabled: true, autoFormat: true },
     typescript: { enabled: true, strict: true },
     testing: {
-      jest: { enabled: true, coverage: 80 },
+      vitest: { enabled: true, coverage: 80 },
       playwright: { enabled: true, autoHealing: true },
     },
   },

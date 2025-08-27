@@ -7,6 +7,7 @@
 The AI PR Agent requires **full repository access** to function effectively with the AI-SDLC Framework. Here's the comprehensive access configuration:
 
 #### Required GitHub App Permissions:
+
 ```yaml
 Repository Permissions:
   - Contents: Read & Write (for code analysis and suggestions)
@@ -26,6 +27,7 @@ Organization Permissions:
 ```
 
 #### Required Environment Variables:
+
 ```bash
 # GitHub Configuration
 GITHUB_TOKEN=ghp_xxxxxxxxxxxxxxxxxxxx  # Personal Access Token with full repo access
@@ -48,13 +50,16 @@ GITHUB_OWNER=TheCreditPros
 ### 1. **README File Conflicts**
 
 #### Current Issue:
+
 Multiple README files exist with overlapping information:
+
 - `README.md` (main repository documentation)
 - `docs/README.md` (documentation index)
 - `CLAUDE.md` (Claude-specific instructions)
 - `DEPLOYMENT.md` (deployment instructions)
 
 #### Conflict Resolution Strategy:
+
 ```
 📁 Repository Structure (Recommended):
 ├── README.md                    # Main project overview & quick start
@@ -72,13 +77,16 @@ Multiple README files exist with overlapping information:
 ### 2. **Permission Scope Conflicts**
 
 #### Current Issues:
+
 - PR Agent may lack access to private repositories
 - Insufficient permissions for creating/updating files
 - Limited access to organization-level settings
 - Potential conflicts with branch protection rules
 
 #### Resolution Steps:
+
 1. **Upgrade GitHub Token Scope**:
+
    ```bash
    # Required scopes for GitHub Personal Access Token:
    - repo (full repository access)
@@ -104,11 +112,13 @@ Multiple README files exist with overlapping information:
 ### 3. **Branch Protection Rule Conflicts**
 
 #### Current Issues:
+
 - PR Agent may be blocked by branch protection rules
 - Required status checks may prevent automated updates
 - Admin bypass may be needed for critical fixes
 
 #### Resolution Configuration:
+
 ```yaml
 # .github/branch-protection-config.yml
 branch_protection:
@@ -116,22 +126,23 @@ branch_protection:
     required_status_checks:
       strict: true
       contexts:
-        - "ci-cd-enhanced"
-        - "security-scan"
-        - "performance-check"
-        - "pr-agent-review"  # Add PR agent as required check
-    enforce_admins: false  # Allow admin bypass for PR agent
+        - 'ci-cd-enhanced'
+        - 'security-scan'
+        - 'performance-check'
+        - 'pr-agent-review' # Add PR agent as required check
+    enforce_admins: false # Allow admin bypass for PR agent
     required_pull_request_reviews:
       required_approving_review_count: 1
       dismiss_stale_reviews: true
       require_code_owner_reviews: true
       bypass_pull_request_allowances:
-        apps: ["pr-agent-app"]  # Allow PR agent to bypass reviews
+        apps: ['pr-agent-app'] # Allow PR agent to bypass reviews
 ```
 
 ## 🔧 Implementation Steps
 
 ### Step 1: Update Repository Access
+
 ```bash
 # 1. Generate new GitHub token with full repo access
 # Go to: GitHub Settings > Developer settings > Personal access tokens
@@ -146,6 +157,7 @@ curl -H "Authorization: token $GITHUB_TOKEN" \
 ```
 
 ### Step 2: Restructure Documentation
+
 ```bash
 # 1. Consolidate README files
 mv CLAUDE.md docs/claude-integration-guide.md
@@ -157,6 +169,7 @@ mv docs/claude-integration-guide.md docs/ai-integration/
 ```
 
 ### Step 3: Configure PR Agent Integration
+
 ```bash
 # 1. Install PR Agent
 pip install pr-agent
@@ -169,6 +182,7 @@ pr-agent test-access
 ```
 
 ### Step 4: Update Branch Protection Rules
+
 ```bash
 # 1. Update branch protection via GitHub API
 curl -X PUT \
@@ -181,6 +195,7 @@ curl -X PUT \
 ## 📋 Access Validation Checklist
 
 ### ✅ Pre-Deployment Validation:
+
 - [ ] GitHub token has full repository access
 - [ ] PR Agent can read all repository files
 - [ ] PR Agent can create/update files and comments
@@ -190,6 +205,7 @@ curl -X PUT \
 - [ ] AI model API keys are valid and have sufficient credits
 
 ### ✅ Post-Deployment Validation:
+
 - [ ] PR Agent successfully analyzes test PR
 - [ ] Compliance checks are properly executed
 - [ ] FCRA validation rules are enforced
@@ -200,12 +216,14 @@ curl -X PUT \
 ## 🚨 Security Considerations
 
 ### Access Control:
+
 - **Principle of Least Privilege**: Grant only necessary permissions
 - **Token Rotation**: Regularly rotate GitHub tokens (every 90 days)
 - **Audit Logging**: Monitor all PR Agent activities
 - **Rate Limiting**: Implement API rate limiting to prevent abuse
 
 ### Compliance Requirements:
+
 - **FCRA Compliance**: Ensure PR Agent validates credit repair regulations
 - **PII Protection**: Verify PR Agent doesn't expose sensitive data
 - **Audit Trail**: Log all PR Agent actions for compliance auditing
@@ -213,24 +231,26 @@ curl -X PUT \
 
 ## 🔄 Conflict Resolution Matrix
 
-| Conflict Type | Current State | Resolution | Priority |
-|---------------|---------------|------------|----------|
-| README Overlap | Multiple conflicting READMEs | Consolidate into docs/ structure | High |
-| Permission Scope | Limited token access | Upgrade to full repo access | Critical |
-| Branch Protection | PR Agent blocked by rules | Configure bypass permissions | High |
-| Documentation Structure | Scattered across multiple files | Unified documentation hierarchy | Medium |
-| API Rate Limits | Potential throttling | Implement intelligent caching | Medium |
-| Multi-Stack Support | React-only configuration | Add Laravel/PHP detection | High |
+| Conflict Type           | Current State                   | Resolution                       | Priority |
+| ----------------------- | ------------------------------- | -------------------------------- | -------- |
+| README Overlap          | Multiple conflicting READMEs    | Consolidate into docs/ structure | High     |
+| Permission Scope        | Limited token access            | Upgrade to full repo access      | Critical |
+| Branch Protection       | PR Agent blocked by rules       | Configure bypass permissions     | High     |
+| Documentation Structure | Scattered across multiple files | Unified documentation hierarchy  | Medium   |
+| API Rate Limits         | Potential throttling            | Implement intelligent caching    | Medium   |
+| Multi-Stack Support     | React-only configuration        | Add Laravel/PHP detection        | High     |
 
 ## 📈 Success Metrics
 
 ### Access Validation:
+
 - **100% Repository Access**: PR Agent can read/write all necessary files
 - **Zero Permission Errors**: No access denied errors in logs
 - **Complete Compliance Coverage**: All FCRA rules validated in PRs
 - **Multi-Stack Detection**: Accurate Laravel + React project identification
 
 ### Performance Metrics:
+
 - **PR Analysis Time**: < 2 minutes for standard PRs
 - **Compliance Check Time**: < 30 seconds for FCRA validation
 - **Documentation Generation**: < 1 minute for PR descriptions

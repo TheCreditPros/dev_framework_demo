@@ -2,9 +2,9 @@ name: SonarCloud Analysis
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [main, develop]
   pull_request:
-    branches: [ main ]
+    branches: [main]
     types: [opened, synchronize, reopened]
 
 jobs:
@@ -13,146 +13,146 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0  # Shallow clones should be disabled for better analysis
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Shallow clones should be disabled for better analysis
 
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '18'
-        cache: 'npm'
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
 
-    - name: Setup PHP
-      uses: shivammathur/setup-php@v2
-      with:
-        php-version: '8.2'
-        extensions: mbstring, xml, ctype, iconv, intl, pdo_sqlite, pdo_mysql, pdo_pgsql
-        coverage: xdebug
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring, xml, ctype, iconv, intl, pdo_sqlite, pdo_mysql, pdo_pgsql
+          coverage: xdebug
 
-    - name: Install JavaScript dependencies
-      run: npm ci
+      - name: Install JavaScript dependencies
+        run: npm ci
 
-    - name: Install PHP dependencies (if Laravel project)
-      run: |
-        if [ -f "composer.json" ]; then
-          composer install --prefer-dist --no-progress --no-suggest
-        fi
-
-    - name: Run JavaScript tests with coverage
-      run: |
-        npm run test:coverage
-
-    - name: Run PHP tests with coverage (if Laravel project)
-      run: |
-        if [ -f "composer.json" ] && [ -f "artisan" ]; then
-          if [ -f "./vendor/bin/pest" ]; then
-            ./vendor/bin/pest --coverage --coverage-clover=coverage/clover.xml
-          elif [ -f "./vendor/bin/phpunit" ]; then
-            ./vendor/bin/phpunit --coverage-clover=coverage/clover.xml
+      - name: Install PHP dependencies (if Laravel project)
+        run: |
+          if [ -f "composer.json" ]; then
+            composer install --prefer-dist --no-progress --no-suggest
           fi
-        fi
 
-    - name: Run PHPStan analysis (if available)
-      run: |
-        if [ -f "./vendor/bin/phpstan" ]; then
-          ./vendor/bin/phpstan analyse --error-format=checkstyle --no-progress > phpstan-report.xml || true
-        fi
+      - name: Run JavaScript tests with coverage
+        run: |
+          npm run test:coverage
 
-    - name: Run ESLint analysis
-      run: |
-        npx eslint . --format json --output-file eslint-report.json || true
+      - name: Run PHP tests with coverage (if Laravel project)
+        run: |
+          if [ -f "composer.json" ] && [ -f "artisan" ]; then
+            if [ -f "./vendor/bin/pest" ]; then
+              ./vendor/bin/pest --coverage --coverage-clover=coverage/clover.xml
+            elif [ -f "./vendor/bin/phpunit" ]; then
+              ./vendor/bin/phpunit --coverage-clover=coverage/clover.xml
+            fi
+          fi
 
-    - name: SonarCloud Scan
-      uses: SonarSource/sonarcloud-github-action@master
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      with:
-        args: >
-          -Dsonar.projectKey=TheCreditPros_dev_framework_demo
-          -Dsonar.organization=thecreditpros
-          -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
-          -Dsonar.php.coverage.reportPaths=coverage/clover.xml
-          -Dsonar.php.phpstan.reportPaths=phpstan-report.xml
-          -Dsonar.eslint.reportPaths=eslint-report.json
+      - name: Run PHPStan analysis (if available)
+        run: |
+          if [ -f "./vendor/bin/phpstan" ]; then
+            ./vendor/bin/phpstan analyse --error-format=checkstyle --no-progress > phpstan-report.xml || true
+          fi
 
-    - name: Quality Gate Check
-      uses: sonarqube-quality-gate-action@master
-      timeout-minutes: 5
-      env:
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      with:
-        scanMetadataReportFile: .scannerwork/report-task.txt
+      - name: Run ESLint analysis
+        run: |
+          npx eslint . --format json --output-file eslint-report.json || true
 
-    - name: FCRA Compliance Validation
-      run: |
-        echo "🏦 Running FCRA compliance validation..."
-        node -e "
-          const fs = require('fs');
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          args: >
+            -Dsonar.projectKey=TheCreditPros_dev_framework_demo
+            -Dsonar.organization=thecreditpros
+            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
+            -Dsonar.php.coverage.reportPaths=coverage/clover.xml
+            -Dsonar.php.phpstan.reportPaths=phpstan-report.xml
+            -Dsonar.eslint.reportPaths=eslint-report.json
 
-          // Check SonarCloud results for compliance issues
-          try {
-            const sonarResults = JSON.parse(fs.readFileSync('.scannerwork/report-task.txt', 'utf8'));
-            console.log('✅ SonarCloud analysis completed');
+      - name: Quality Gate Check
+        uses: sonarqube-quality-gate-action@master
+        timeout-minutes: 5
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          scanMetadataReportFile: .scannerwork/report-task.txt
 
-            // Additional FCRA-specific checks
-            const complianceIssues = [];
+      - name: FCRA Compliance Validation
+        run: |
+          echo "🏦 Running FCRA compliance validation..."
+          node -e "
+            const fs = require('fs');
 
-            // Check for hardcoded sensitive data patterns
-            const sensitivePatterns = [
-              /\d{3}-\d{2}-\d{4}/g,  // SSN pattern
-              /4[0-9]{12}(?:[0-9]{3})?/g,  // Credit card pattern
-              /(?:password|secret|key)\s*[:=]\s*['\"]?[^'\"\\s]+/gi  // Credentials
-            ];
+            // Check SonarCloud results for compliance issues
+            try {
+              const sonarResults = JSON.parse(fs.readFileSync('.scannerwork/report-task.txt', 'utf8'));
+              console.log('✅ SonarCloud analysis completed');
 
-            // Scan source files for compliance issues
-            function scanDirectory(dir) {
-              const files = fs.readdirSync(dir, { withFileTypes: true });
+              // Additional FCRA-specific checks
+              const complianceIssues = [];
 
-              for (const file of files) {
-                const fullPath = \`\${dir}/\${file.name}\`;
+              // Check for hardcoded sensitive data patterns
+              const sensitivePatterns = [
+                /\d{3}-\d{2}-\d{4}/g,  // SSN pattern
+                /4[0-9]{12}(?:[0-9]{3})?/g,  // Credit card pattern
+                /(?:password|secret|key)\s*[:=]\s*['\"]?[^'\"\\s]+/gi  // Credentials
+              ];
 
-                if (file.isDirectory() && !['node_modules', 'vendor', '.git'].includes(file.name)) {
-                  scanDirectory(fullPath);
-                } else if (file.isFile() && (file.name.endsWith('.js') || file.name.endsWith('.ts') || file.name.endsWith('.php'))) {
-                  try {
-                    const content = fs.readFileSync(fullPath, 'utf8');
+              // Scan source files for compliance issues
+              function scanDirectory(dir) {
+                const files = fs.readdirSync(dir, { withFileTypes: true });
 
-                    for (const pattern of sensitivePatterns) {
-                      if (pattern.test(content)) {
-                        complianceIssues.push(\`\${fullPath}: Potential sensitive data exposure\`);
+                for (const file of files) {
+                  const fullPath = \`\${dir}/\${file.name}\`;
+
+                  if (file.isDirectory() && !['node_modules', 'vendor', '.git'].includes(file.name)) {
+                    scanDirectory(fullPath);
+                  } else if (file.isFile() && (file.name.endsWith('.js') || file.name.endsWith('.ts') || file.name.endsWith('.php'))) {
+                    try {
+                      const content = fs.readFileSync(fullPath, 'utf8');
+
+                      for (const pattern of sensitivePatterns) {
+                        if (pattern.test(content)) {
+                          complianceIssues.push(\`\${fullPath}: Potential sensitive data exposure\`);
+                        }
                       }
+                    } catch (e) {
+                      // Skip files that can't be read
                     }
-                  } catch (e) {
-                    // Skip files that can't be read
                   }
                 }
               }
+
+              scanDirectory('.');
+
+              if (complianceIssues.length > 0) {
+                console.log('❌ FCRA compliance issues detected:');
+                complianceIssues.forEach(issue => console.log(\`  - \${issue}\`));
+                process.exit(1);
+              } else {
+                console.log('✅ FCRA compliance validation passed');
+              }
+
+            } catch (e) {
+              console.log('⚠️  SonarCloud results not available, running basic compliance check');
+              console.log('✅ Basic compliance validation passed');
             }
+          "
 
-            scanDirectory('.');
-
-            if (complianceIssues.length > 0) {
-              console.log('❌ FCRA compliance issues detected:');
-              complianceIssues.forEach(issue => console.log(\`  - \${issue}\`));
-              process.exit(1);
-            } else {
-              console.log('✅ FCRA compliance validation passed');
-            }
-
-          } catch (e) {
-            console.log('⚠️  SonarCloud results not available, running basic compliance check');
-            console.log('✅ Basic compliance validation passed');
-          }
-        "
-
-    - name: Notify Teams on Quality Gate Failure
-      if: failure()
-      run: |
-        if [ -f "scripts-complex/quality-gate-notifier.js" ]; then
-          node scripts-complex/quality-gate-notifier.js sonarcloud-failure
-        else
-          echo "⚠️  Quality gate notifier not available"
-        fi
+      - name: Notify Teams on Quality Gate Failure
+        if: failure()
+        run: |
+          if [ -f "scripts-complex/quality-gate-notifier.js" ]; then
+            node scripts-complex/quality-gate-notifier.js sonarcloud-failure
+          else
+            echo "⚠️  Quality gate notifier not available"
+          fi

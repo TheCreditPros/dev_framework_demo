@@ -99,7 +99,7 @@ detect_and_setup_project() {
     elif [[ -f "frontend/package.json" ]]; then
       cd frontend
     fi
-    npm install --save-dev vitest @testing-library/react @testing-library/jest-dom jsdom
+    npm install --save-dev vitest @testing-library/react @testing-library/vitest-dom jsdom
     cd ..
     echo_color $GREEN "✔️ Installed Vitest and React testing libraries."
   fi
@@ -112,15 +112,15 @@ detect_and_setup_project() {
     elif [[ -f "admin/package.json" ]]; then
       cd admin
     fi
-    npm install --save-dev jest @testing-library/react @testing-library/jest-dom
+    npm install --save-dev vitest @testing-library/react @testing-library/vitest-dom
     cd ..
-    echo_color $GREEN "✔️ Installed Jest and React testing libraries."
+    echo_color $GREEN "✔️ Installed Vitest and React testing libraries."
   fi
 
   # React App Detection (root level)
   if [[ -f "package.json" ]] && ! [[ -f "client-frontend/package.json" ]] && ! [[ -f "admin-frontend/package.json" ]]; then
     echo_color $GREEN "📦 React project detected"
-    npm install --save-dev vitest @testing-library/react @testing-library/jest-dom jsdom
+    npm install --save-dev vitest @testing-library/react @testing-library/vitest-dom jsdom
     echo_color $GREEN "✔️ Installed Vitest and React testing libraries."
   fi
 }

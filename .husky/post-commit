@@ -1,0 +1,16 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# AI-SDLC Framework Post-commit Hook
+echo "🤖 AI-SDLC Framework: Running post-commit analysis..."
+
+# Run AI-powered code quality analysis
+node scripts-complex/quality-gate-notifier.js post-commit
+
+# Run multi-stack detection and optimization
+node scripts-complex/multi-stack-detector.js
+
+# Generate AI-powered test improvements
+node scripts-complex/real-ai-test-generator.js
+
+echo "✅ AI-SDLC Framework: Post-commit analysis completed!"
