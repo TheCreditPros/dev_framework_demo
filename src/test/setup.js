@@ -1,4 +1,5 @@
 import '@testing-library/jest-dom';
+import { vi } from 'vitest';
 
 // Mock environment variables for testing
 process.env.NODE_ENV = 'test';
@@ -9,9 +10,9 @@ process.env.FCRA_COMPLIANCE_MODE = 'true';
 global.console = {
   ...console,
   // Suppress console.log in tests unless explicitly needed
-  log: jest.fn(),
-  warn: jest.fn(),
-  error: jest.fn(),
+  log: vi.fn(),
+  warn: vi.fn(),
+  error: vi.fn(),
 };
 
 // Credit repair domain test utilities
