@@ -4,8 +4,4 @@ const testFunction = (name) => {
   return true;
 };
 
-<<<<<<< Updated upstream
 module.exports = testFunction;
-=======
-module.exports = testFunction;
->>>>>>> Stashed changes
