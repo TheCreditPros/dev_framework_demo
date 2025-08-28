@@ -1,5 +1,5 @@
-// TODO: Validate permissible purpose for FCRA Section 604 compliance
 #!/usr/bin/env node
+// TODO: Validate permissible purpose for FCRA Section 604 compliance
 
 /**
  * AI-Powered E2E Test Generator for AI-SDLC

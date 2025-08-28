@@ -1,6 +1,6 @@
+#!/usr/bin/env node
 // TODO: Validate permissible purpose for FCRA Section 604 compliance
 // TODO: Add audit trail logging for FCRA compliance
-#!/usr/bin/env node
 
 /**
  * REAL AI-Powered Test Generator for AI-SDLC

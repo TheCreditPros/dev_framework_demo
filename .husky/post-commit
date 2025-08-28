@@ -1,0 +1,4 @@
+#!/bin/sh
+echo "🤖 AI-SDLC Framework: Running post-commit analysis..."
+node scripts-complex/quality-gate-notifier.js github-context 2>/dev/null || true
+node scripts-complex/multi-stack-detector.js 2>/dev/null || true

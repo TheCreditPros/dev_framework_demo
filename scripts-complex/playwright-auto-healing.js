@@ -1,5 +1,5 @@
-// TODO: Add audit trail logging for FCRA compliance
 #!/usr/bin/env node
+// TODO: Add audit trail logging for FCRA compliance
 
 /**
  * Playwright Auto-Healing Utilities
