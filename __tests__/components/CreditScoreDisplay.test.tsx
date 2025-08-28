@@ -1,9 +1,7 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, cleanup } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { vi } from 'vitest';
-// Component file missing - skipping import
-// import { CreditScoreDisplay } from '../CreditScore/CreditScoreDisplay';
-const CreditScoreDisplay = () => null; // Placeholder
+import { CreditScoreDisplay } from '../../src/components/CreditScore/CreditScoreDisplay';
 
 describe('CreditScoreDisplay Component', () => {
   const defaultProps = {
@@ -16,14 +14,24 @@ describe('CreditScoreDisplay Component', () => {
     vi.clearAllMocks();
   });
 
+  afterEach(() => {
+    cleanup();
+  });
+
   it('should enforce FICO score range (300-850)', () => {
     // Test minimum boundary
-    render(<CreditScoreDisplay {...defaultProps} score={200} />);
+    const { unmount: unmount1 } = render(
+      <CreditScoreDisplay {...defaultProps} score={200} />
+    );
     expect(screen.getByTestId('credit-score-value')).toHaveTextContent('300');
+    unmount1();
 
     // Test maximum boundary
-    render(<CreditScoreDisplay {...defaultProps} score={900} />);
+    const { unmount: unmount2 } = render(
+      <CreditScoreDisplay {...defaultProps} score={900} />
+    );
     expect(screen.getByTestId('credit-score-value')).toHaveTextContent('850');
+    unmount2();
 
     // Test valid score
     render(<CreditScoreDisplay {...defaultProps} score={720} />);
@@ -58,10 +66,13 @@ describe('CreditScoreDisplay Component', () => {
     ];
 
     testCases.forEach(({ score, expectedRange }) => {
-      render(<CreditScoreDisplay {...defaultProps} score={score} />);
+      const { unmount } = render(
+        <CreditScoreDisplay {...defaultProps} score={score} />
+      );
       expect(screen.getByTestId('credit-score-range')).toHaveTextContent(
         expectedRange
       );
+      unmount();
     });
   });
 });
