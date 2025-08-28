@@ -30,12 +30,12 @@ function findBrokenTestFiles(dir) {
             ) {
               brokenFiles.push(fullPath);
             }
-          } catch (e) {
+          } catch {
             brokenFiles.push(fullPath);
           }
         }
       }
-    } catch (e) {
+    } catch {
       // Skip directories we can't access
     }
   }

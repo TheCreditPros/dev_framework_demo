@@ -36,7 +36,7 @@ checks.forEach((check) => {
     execSync(check.command, { stdio: 'ignore' });
     console.log(`✅ ${check.success}`);
     passed++;
-  } catch (error) {
+  } catch {
     console.log(`❌ ${check.name} not properly configured`);
   }
 });

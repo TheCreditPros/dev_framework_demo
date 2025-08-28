@@ -14,7 +14,7 @@ describe('Laravel + React API Contract Testing', () => {
         password: 'password123',
       });
       authToken = response.data.token;
-    } catch (error) {
+    } catch {
       console.warn('API not available for contract testing');
     }
   });

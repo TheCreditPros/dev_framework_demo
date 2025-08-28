@@ -142,7 +142,7 @@ class MultiStackDetector {
     return 'UNKNOWN';
   }
 
-  getStackRecommendations(projectType, detection) {
+  getStackRecommendations(projectType, _detection) {
     const recommendations = {
       LARAVEL_REACT_HYBRID: [
         'Configure Laravel Sail for Docker development',

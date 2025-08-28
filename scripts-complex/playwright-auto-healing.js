@@ -104,7 +104,7 @@ class PlaywrightAutoHealing {
     // Wait for element to be clickable
     await this.page.waitForFunction(
       (selector) => {
-        const element = document.querySelector(selector); // eslint-disable-line no-undef
+        const element = document.querySelector(selector);
         return element && !element.disabled && element.offsetParent !== null;
       },
       workingSelector,
@@ -463,7 +463,7 @@ class CreditRepairAutoHealing extends PlaywrightAutoHealing {
       '#results',
       '.calculation-results',
       '[data-testid="results"]',
-      () => document.querySelector('.loading') === null, // eslint-disable-line no-undef
+      () => document.querySelector('.loading') === null,
     ]);
 
     console.log('✅ Credit calculation flow completed');
