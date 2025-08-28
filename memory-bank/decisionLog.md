@@ -111,3 +111,67 @@ This file records architectural and implementation decisions using a list format
 - **Configuration Files**: Created .lintstagedrc.js to avoid package.json conflicts
 - **Dependencies**: Installed prettier v3.6.2, eslint v8.57.1, @eslint/js v9.34.0
 - **Validation Scripts**: Framework validation script confirms 3/4 checks passing (git hooks warning non-blocking)
+
+---
+
+## Decision
+
+**2025-08-28 - Git Hooks Path Standardization & Pre-push Gate** - Standardized `core.hookspath` to `.husky` and added test gate
+
+## Rationale
+
+- Prevent hook path corruption from external tools
+- Ensure tests run before remote pushes
+
+## Implementation Details
+
+- Set `git config core.hookspath .husky`
+- Added `.husky/pre-push` to run `npm test`
+- Updated validation to check configured hooks path (4/4 checks)
+
+---
+
+## Decision
+
+**2025-08-28 - TypeScript-ESLint Alignment** - Upgraded `@typescript-eslint/*` to v8 for TS 5.9 compatibility
+
+## Rationale
+
+- Remove unsupported-version warnings
+- Align parser/rules with current TypeScript
+
+## Implementation Details
+
+- Upgraded `@typescript-eslint/parser` and `eslint-plugin` to v8
+- Cleaned unused imports/vars to eliminate warnings
+
+---
+
+## Decision
+
+**2025-08-28 - ESLint Config ESM Rename** - Renamed `eslint.config.js` to `eslint.config.mjs`
+
+## Rationale
+
+- Eliminate Node MODULE_TYPELESS warning
+- Align with ESM-based flat config
+
+## Implementation Details
+
+- Renamed file and kept config content identical
+
+---
+
+## Decision
+
+**2025-08-28 - Remove Mocks and Mock Fallbacks** - Eliminated mock scripts and PR-agent mock
+
+## Rationale
+
+- Policy: no mock information or data in repository
+- Enforce production-only integrations
+
+## Implementation Details
+
+- Deleted mock scripts and PR agent mock
+- PR scripts now invoke `pr-agent` directly (no fallback)

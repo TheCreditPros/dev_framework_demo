@@ -32,19 +32,28 @@ This file tracks the project's progress using a task list format.
   - **TypeScript Support Added** - Configured @typescript-eslint/parser and plugin
   - **Validation Reports Created** - Generated comprehensive FINAL-VALIDATION-REPORT.md
 
+- 2025-08-28 - **Tooling Hardening & Cleanup**
+  - Fixed corrupted `core.hookspath`; standardized to `.husky`
+  - Added `.husky/pre-push` to run `npm test` before pushes
+  - Renamed `eslint.config.js` → `eslint.config.mjs`; removed legacy `.eslintrc.js`
+  - Upgraded `@typescript-eslint/*` to v8 to match TypeScript 5.9
+  - Refined `.lintstagedrc.js` patterns; ensured local `eslint`/`prettier` installed
+  - Updated `validate-setup.js` to respect configured hooksPath; now 4/4 checks
+  - Removed mock scripts and PR Agent mock fallbacks; PR scripts call `pr-agent` directly
+
 ## Current Status - DEPLOYMENT READY
 
 ### Test Results
 
-- **ai-sdlc-docs-1**: 26/30 tests passing (87% pass rate)
+- **ai-sdlc-docs-1**: 30/30 tests passing (100% pass rate)
 - **portal2-admin-refactor**: 76% test pass rate (881/1163 tests passing)
 - **dev_framework_demo**: Framework validation 3/4 checks passing
 
 ### Quality Gates
 
-- ✅ **ESLint**: Configured with warnings only (no blockers)
+- ✅ **ESLint**: 0 warnings, 0 errors
 - ✅ **Prettier**: v3.6.2 installed and configured
-- ✅ **Husky**: v9.1.7 git hooks operational
+- ✅ **Husky**: pre-commit, commit-msg, pre-push operational
 - ✅ **Vitest**: v3.2.4 framework fully operational
 - ✅ **Commitlint**: Conventional commits enforced
 - ✅ **Lint-staged**: Pre-commit checks configured

@@ -12,11 +12,11 @@
 
 ### Code Quality & Linting
 
-- **ESLint**: v8.57.1 - JavaScript/TypeScript linting
+- **ESLint**: v9.x - JavaScript/TypeScript linting
 - **@eslint/js**: v9.34.0 - ESLint JavaScript configuration
 - **Prettier**: v3.6.2 - Code formatting
-- **@typescript-eslint/parser**: v7.18.0 - TypeScript parsing for ESLint
-- **@typescript-eslint/eslint-plugin**: v7.18.0 - TypeScript ESLint rules
+- **@typescript-eslint/parser**: v8.x - TypeScript parsing for ESLint
+- **@typescript-eslint/eslint-plugin**: v8.x - TypeScript ESLint rules
 
 ### Git Hooks & Automation
 
@@ -99,7 +99,7 @@
 
 ## Configuration Files
 
-### ESLint Configuration (eslint.config.js)
+### ESLint Configuration (eslint.config.mjs)
 
 ```javascript
 import js from '@eslint/js';
@@ -113,29 +113,47 @@ export default [
       '**/node_modules/**',
       '**/dist/**',
       '**/build/**',
-      '**/.next/**',
       '**/coverage/**',
     ],
   },
   {
+    files: ['**/*.{js,jsx,mjs,cjs}'],
     languageOptions: {
       ecmaVersion: 'latest',
       sourceType: 'module',
-      parserOptions: {
-        ecmaFeatures: { jsx: true },
-      },
+      parserOptions: { ecmaFeatures: { jsx: true } },
       globals: {
-        // Test globals
+        // Browser
+        fetch: 'readonly',
+        document: 'readonly',
+        window: 'readonly',
+        // Test
         describe: 'readonly',
         it: 'readonly',
         test: 'readonly',
         expect: 'readonly',
         vi: 'readonly',
-        // Browser globals
-        fetch: 'readonly',
-        document: 'readonly',
-        window: 'readonly',
       },
+    },
+  },
+  {
+    files: ['**/*.{ts,tsx}'],
+    languageOptions: {
+      parser: tsParser,
+      parserOptions: {
+        ecmaVersion: 'latest',
+        sourceType: 'module',
+        ecmaFeatures: { jsx: true },
+      },
+    },
+    plugins: { '@typescript-eslint': tsPlugin },
+    rules: {
+      ...tsPlugin.configs.recommended.rules,
+      '@typescript-eslint/no-unused-vars': [
+        'warn',
+        { argsIgnorePattern: '^_' },
+      ],
+      'no-unused-vars': 'off',
     },
   },
 ];
@@ -325,13 +343,11 @@ ai-sdlc-framework@3.3.0
 
 ### Code Quality Gates
 
-- Enforce ESLint security rules
-- Use strict TypeScript settings
-- Validate input sanitization
-- Check for exposed secrets
+- ESLint/Prettier: Clean (0 warnings, 0 errors)
+- Husky: pre-commit, commit-msg, pre-push configured
 
 ---
 
-_Last Updated: August 27, 2025_  
-_Framework Version: AI-SDLC v3.3.0_  
+_Last Updated: August 27, 2025_
+_Framework Version: AI-SDLC v3.3.0_
 _Maintained by: AI-SDLC Team_
