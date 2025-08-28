@@ -29,7 +29,7 @@ describe('Credit Validation Utilities', () => {
     });
 
     it('should handle non-numeric input gracefully', () => {
-      const result = validateCreditScore('invalid' as any);
+      const result = validateCreditScore('invalid' as unknown as number);
 
       expect(result.isValid).toBe(false);
       expect(result.errors).toContain('Credit score must be a number');

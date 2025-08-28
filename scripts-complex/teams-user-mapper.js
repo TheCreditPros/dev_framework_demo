@@ -406,7 +406,7 @@ async function main() {
       break;
     }
 
-    case 'stats':
+    case 'stats': {
       const stats = mapper.getNotificationStats();
       console.log('📊 Notification Statistics:');
       console.log(`  Total Users: ${stats.totalUsers}`);
@@ -414,6 +414,7 @@ async function main() {
       console.log(`  Most Notified: ${stats.mostNotified?.displayName || 'None'} (${stats.mostNotified?.notificationCount || 0})`);
       console.log('  Departments:', stats.departments);
       break;
+    }
 
     case 'list':
       console.log('👥 Current User Mappings:');

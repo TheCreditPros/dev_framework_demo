@@ -252,7 +252,9 @@ class MultiStackDetector {
       tools.pest = this.hasComposerDependency('pestphp/pest');
       tools.rector = this.hasComposerDependency('rector/rector');
       tools.pint = this.hasComposerDependency('laravel/pint');
-    } catch {}
+    } catch {
+      // Composer.json not found or invalid, continue without PHP tools
+    }
     return tools;
   }
 

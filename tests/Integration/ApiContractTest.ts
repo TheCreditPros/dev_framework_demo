@@ -153,8 +153,8 @@ interface CreditReportResponse {
     credit_score: number;
     score_model: string;
     score_date: string;
-    trade_lines?: any[];
-    payment_history?: any[];
+    trade_lines?: Array<Record<string, unknown>>;
+    payment_history?: Array<Record<string, unknown>>;
   };
   meta: {
     audit_id: string;
