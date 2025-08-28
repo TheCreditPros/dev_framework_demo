@@ -22,7 +22,9 @@ class TeamsUserMapper {
     try {
       if (fs.existsSync(this.mappingFile)) {
         const mapping = JSON.parse(fs.readFileSync(this.mappingFile, 'utf8'));
-        console.log(`✅ Loaded user mapping for ${Object.keys(mapping.users || {}).length} users`);
+        console.log(
+          `✅ Loaded user mapping for ${Object.keys(mapping.users || {}).length} users`
+        );
         return mapping;
       }
     } catch (error) {
@@ -35,7 +37,7 @@ class TeamsUserMapper {
       lastUpdated: new Date().toISOString(),
       users: {},
       teams: {},
-      aliases: {}
+      aliases: {},
     };
   }
 
@@ -45,7 +47,10 @@ class TeamsUserMapper {
   saveUserMapping() {
     try {
       this.userMapping.lastUpdated = new Date().toISOString();
-      fs.writeFileSync(this.mappingFile, JSON.stringify(this.userMapping, null, 2));
+      fs.writeFileSync(
+        this.mappingFile,
+        JSON.stringify(this.userMapping, null, 2)
+      );
       console.log('✅ User mapping saved successfully');
       return true;
     } catch (error) {
@@ -59,12 +64,12 @@ class TeamsUserMapper {
    */
   addUser(githubHandle, teamsInfo) {
     const {
-      email,           // user@thecreditpros.com
-      displayName,     // "John Doe"
-      teamsId,         // Optional: Teams user ID
-      department,      // "Engineering", "Security", "Compliance"
-      role,            // "Senior Developer", "Security Engineer"
-      timezone = 'America/New_York'
+      email, // user@thecreditpros.com
+      displayName, // "John Doe"
+      teamsId, // Optional: Teams user ID
+      department, // "Engineering", "Security", "Compliance"
+      role, // "Senior Developer", "Security Engineer"
+      timezone = 'America/New_York',
     } = teamsInfo;
 
     this.userMapping.users[githubHandle] = {
@@ -76,10 +81,12 @@ class TeamsUserMapper {
       timezone,
       addedDate: new Date().toISOString(),
       lastNotified: null,
-      notificationCount: 0
+      notificationCount: 0,
     };
 
-    console.log(`✅ Added mapping: ${githubHandle} → ${displayName} (${email})`);
+    console.log(
+      `✅ Added mapping: ${githubHandle} → ${displayName} (${email})`
+    );
     return this.saveUserMapping();
   }
 
@@ -91,10 +98,12 @@ class TeamsUserMapper {
       members,
       teamsChannelId,
       description: `${teamName} team members`,
-      addedDate: new Date().toISOString()
+      addedDate: new Date().toISOString(),
     };
 
-    console.log(`✅ Added team mapping: ${teamName} with ${members.length} members`);
+    console.log(
+      `✅ Added team mapping: ${teamName} with ${members.length} members`
+    );
     return this.saveUserMapping();
   }
 
@@ -105,7 +114,9 @@ class TeamsUserMapper {
     const user = this.userMapping.users[githubHandle];
 
     if (!user) {
-      console.warn(`⚠️ No Teams mapping found for GitHub user: ${githubHandle}`);
+      console.warn(
+        `⚠️ No Teams mapping found for GitHub user: ${githubHandle}`
+      );
       return `@${githubHandle}`; // Fallback to GitHub handle
     }
 
@@ -127,7 +138,9 @@ class TeamsUserMapper {
    * Get team mentions for multiple users
    */
   getTeamMentions(githubHandles) {
-    return githubHandles.map(handle => this.getTeamsMention(handle)).join(', ');
+    return githubHandles
+      .map((handle) => this.getTeamsMention(handle))
+      .join(', ');
   }
 
   /**
@@ -139,7 +152,7 @@ class TeamsUserMapper {
       .map(([githubHandle, user]) => ({
         githubHandle,
         teamsHandle: this.getTeamsMention(githubHandle),
-        ...user
+        ...user,
       }));
 
     return teamMembers;
@@ -150,19 +163,23 @@ class TeamsUserMapper {
    */
   getNotificationTeam(failureType, priority = 'P1') {
     const teamMappings = {
-      'security': this.getTeamByDepartment('Security'),
-      'compliance': this.getTeamByDepartment('Compliance'),
-      'performance': this.getTeamByDepartment('Engineering').filter(u => u.role.includes('Frontend')),
-      'testing': this.getTeamByDepartment('QA'),
-      'infrastructure': this.getTeamByDepartment('DevOps')
+      security: this.getTeamByDepartment('Security'),
+      compliance: this.getTeamByDepartment('Compliance'),
+      performance: this.getTeamByDepartment('Engineering').filter((u) =>
+        u.role.includes('Frontend')
+      ),
+      testing: this.getTeamByDepartment('QA'),
+      infrastructure: this.getTeamByDepartment('DevOps'),
     };
 
-    const team = teamMappings[failureType] || this.getTeamByDepartment('Engineering');
+    const team =
+      teamMappings[failureType] || this.getTeamByDepartment('Engineering');
 
     // For critical issues, include senior developers
     if (priority === 'P0') {
-      const seniors = this.getTeamByDepartment('Engineering')
-        .filter(u => u.role.includes('Senior') || u.role.includes('Lead'));
+      const seniors = this.getTeamByDepartment('Engineering').filter(
+        (u) => u.role.includes('Senior') || u.role.includes('Lead')
+      );
       return [...team, ...seniors];
     }
 
@@ -178,13 +195,13 @@ class TeamsUserMapper {
       description: 'GitHub to MS Teams user mapping for AI-SDLC notifications',
       lastUpdated: new Date().toISOString(),
       users: {
-        'nydamon': {
+        nydamon: {
           email: 'damon@thecreditpros.com',
           displayName: 'Damon DeCrescenzo',
           teamsId: null,
           department: 'Engineering',
           role: 'CTO / Senior Developer',
-          timezone: 'America/New_York'
+          timezone: 'America/New_York',
         },
         'john.doe': {
           email: 'john.doe@thecreditpros.com',
@@ -192,7 +209,7 @@ class TeamsUserMapper {
           teamsId: null,
           department: 'Engineering',
           role: 'Senior Developer',
-          timezone: 'America/New_York'
+          timezone: 'America/New_York',
         },
         'jane.smith': {
           email: 'jane.smith@thecreditpros.com',
@@ -200,32 +217,32 @@ class TeamsUserMapper {
           teamsId: null,
           department: 'Security',
           role: 'Security Engineer',
-          timezone: 'America/New_York'
-        }
+          timezone: 'America/New_York',
+        },
       },
       teams: {
         'security-team': {
           members: ['jane.smith', 'security.lead'],
           teamsChannelId: null,
-          description: 'Security and compliance team'
+          description: 'Security and compliance team',
         },
         'frontend-team': {
           members: ['john.doe', 'frontend.dev'],
           teamsChannelId: null,
-          description: 'Frontend development team'
+          description: 'Frontend development team',
         },
         'senior-devs': {
           members: ['nydamon', 'senior.dev1', 'senior.dev2'],
           teamsChannelId: null,
-          description: 'Senior developers for escalation'
-        }
+          description: 'Senior developers for escalation',
+        },
       },
       aliases: {
-        'damon': 'nydamon',
-        'admin': 'nydamon',
-        'security': 'security-team',
-        'frontend': 'frontend-team'
-      }
+        damon: 'nydamon',
+        admin: 'nydamon',
+        security: 'security-team',
+        frontend: 'frontend-team',
+      },
     };
 
     fs.writeFileSync(this.mappingFile, JSON.stringify(template, null, 2));
@@ -253,24 +270,26 @@ class TeamsUserMapper {
       // Extract GitHub handles from CODEOWNERS
       const handleMatches = codeowners.match(/@[\w-]+/g);
       if (handleMatches) {
-        handleMatches.forEach(handle => {
+        handleMatches.forEach((handle) => {
           const cleanHandle = handle.replace('@', '');
           githubHandles.add(cleanHandle);
         });
       }
 
       // Add discovered users to mapping (with placeholder data)
-      githubHandles.forEach(handle => {
+      githubHandles.forEach((handle) => {
         if (!this.userMapping.users[handle]) {
           this.userMapping.users[handle] = {
             email: `${handle}@thecreditpros.com`,
-            displayName: handle.replace(/[.-]/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+            displayName: handle
+              .replace(/[.-]/g, ' ')
+              .replace(/\b\w/g, (l) => l.toUpperCase()),
             teamsId: null,
             department: 'Engineering',
             role: 'Developer',
             timezone: 'America/New_York',
             importedFrom: 'CODEOWNERS',
-            needsUpdate: true
+            needsUpdate: true,
           };
         }
       });
@@ -290,7 +309,7 @@ class TeamsUserMapper {
     const users = Object.keys(this.userMapping.users);
     const issues = [];
 
-    users.forEach(githubHandle => {
+    users.forEach((githubHandle) => {
       const user = this.userMapping.users[githubHandle];
 
       if (!user.email) {
@@ -302,7 +321,9 @@ class TeamsUserMapper {
       }
 
       if (user.needsUpdate) {
-        issues.push(`User ${githubHandle} needs manual update (imported from CODEOWNERS)`);
+        issues.push(
+          `User ${githubHandle} needs manual update (imported from CODEOWNERS)`
+        );
       }
     });
 
@@ -311,7 +332,7 @@ class TeamsUserMapper {
       return true;
     } else {
       console.log('⚠️ User mapping validation issues:');
-      issues.forEach(issue => console.log(`  - ${issue}`));
+      issues.forEach((issue) => console.log(`  - ${issue}`));
       return false;
     }
   }
@@ -323,13 +344,18 @@ class TeamsUserMapper {
     const users = Object.values(this.userMapping.users);
     const stats = {
       totalUsers: users.length,
-      totalNotifications: users.reduce((sum, user) => sum + (user.notificationCount || 0), 0),
-      mostNotified: users.sort((a, b) => (b.notificationCount || 0) - (a.notificationCount || 0))[0],
-      departments: {}
+      totalNotifications: users.reduce(
+        (sum, user) => sum + (user.notificationCount || 0),
+        0
+      ),
+      mostNotified: users.sort(
+        (a, b) => (b.notificationCount || 0) - (a.notificationCount || 0)
+      )[0],
+      departments: {},
     };
 
     // Group by department
-    users.forEach(user => {
+    users.forEach((user) => {
       if (!stats.departments[user.department]) {
         stats.departments[user.department] = 0;
       }
@@ -354,14 +380,16 @@ async function main() {
     case 'add-user': {
       const [githubHandle, email, displayName, department, role] = args;
       if (!githubHandle || !email || !displayName) {
-        console.error('Usage: teams-user-mapper.js add-user <github-handle> <email> <display-name> [department] [role]');
+        console.error(
+          'Usage: teams-user-mapper.js add-user <github-handle> <email> <display-name> [department] [role]'
+        );
         process.exit(1);
       }
       mapper.addUser(githubHandle, {
         email,
         displayName,
         department: department || 'Engineering',
-        role: role || 'Developer'
+        role: role || 'Developer',
       });
       break;
     }
@@ -369,7 +397,9 @@ async function main() {
     case 'add-team': {
       const [teamName, ...members] = args;
       if (!teamName || members.length === 0) {
-        console.error('Usage: teams-user-mapper.js add-team <team-name> <member1> <member2> ...');
+        console.error(
+          'Usage: teams-user-mapper.js add-team <team-name> <member1> <member2> ...'
+        );
         process.exit(1);
       }
       mapper.addTeam(teamName, members);
@@ -387,7 +417,9 @@ async function main() {
     case 'get-mention': {
       const [githubHandle] = args;
       if (!githubHandle) {
-        console.error('Usage: teams-user-mapper.js get-mention <github-handle>');
+        console.error(
+          'Usage: teams-user-mapper.js get-mention <github-handle>'
+        );
         process.exit(1);
       }
       const mention = mapper.getTeamsMention(githubHandle);
@@ -411,7 +443,9 @@ async function main() {
       console.log('📊 Notification Statistics:');
       console.log(`  Total Users: ${stats.totalUsers}`);
       console.log(`  Total Notifications: ${stats.totalNotifications}`);
-      console.log(`  Most Notified: ${stats.mostNotified?.displayName || 'None'} (${stats.mostNotified?.notificationCount || 0})`);
+      console.log(
+        `  Most Notified: ${stats.mostNotified?.displayName || 'None'} (${stats.mostNotified?.notificationCount || 0})`
+      );
       console.log('  Departments:', stats.departments);
       break;
     }
@@ -419,7 +453,9 @@ async function main() {
     case 'list':
       console.log('👥 Current User Mappings:');
       Object.entries(mapper.userMapping.users).forEach(([github, user]) => {
-        console.log(`  ${github} → ${user.displayName} (${user.email}) [${user.department}]`);
+        console.log(
+          `  ${github} → ${user.displayName} (${user.email}) [${user.department}]`
+        );
       });
       break;
 
@@ -427,19 +463,41 @@ async function main() {
       console.log('MS Teams User Mapper for AI-SDLC Framework');
       console.log('');
       console.log('Usage:');
-      console.log('  teams-user-mapper.js init                           - Generate mapping template');
-      console.log('  teams-user-mapper.js add-user <github> <email> <name> [dept] [role] - Add user mapping');
-      console.log('  teams-user-mapper.js add-team <team> <member1> <member2> ...       - Add team mapping');
-      console.log('  teams-user-mapper.js import-codeowners              - Import from CODEOWNERS file');
-      console.log('  teams-user-mapper.js validate                       - Validate mapping completeness');
-      console.log('  teams-user-mapper.js get-mention <github-handle>    - Get Teams mention for user');
-      console.log('  teams-user-mapper.js get-team <department>          - Get team members by department');
-      console.log('  teams-user-mapper.js stats                          - Show notification statistics');
-      console.log('  teams-user-mapper.js list                           - List all user mappings');
+      console.log(
+        '  teams-user-mapper.js init                           - Generate mapping template'
+      );
+      console.log(
+        '  teams-user-mapper.js add-user <github> <email> <name> [dept] [role] - Add user mapping'
+      );
+      console.log(
+        '  teams-user-mapper.js add-team <team> <member1> <member2> ...       - Add team mapping'
+      );
+      console.log(
+        '  teams-user-mapper.js import-codeowners              - Import from CODEOWNERS file'
+      );
+      console.log(
+        '  teams-user-mapper.js validate                       - Validate mapping completeness'
+      );
+      console.log(
+        '  teams-user-mapper.js get-mention <github-handle>    - Get Teams mention for user'
+      );
+      console.log(
+        '  teams-user-mapper.js get-team <department>          - Get team members by department'
+      );
+      console.log(
+        '  teams-user-mapper.js stats                          - Show notification statistics'
+      );
+      console.log(
+        '  teams-user-mapper.js list                           - List all user mappings'
+      );
       console.log('');
       console.log('Examples:');
-      console.log('  teams-user-mapper.js add-user nydamon damon@thecreditpros.com "Damon DeCrescenzo" Engineering CTO');
-      console.log('  teams-user-mapper.js add-team security-team jane.smith security.lead');
+      console.log(
+        '  teams-user-mapper.js add-user nydamon damon@thecreditpros.com "Damon DeCrescenzo" Engineering CTO'
+      );
+      console.log(
+        '  teams-user-mapper.js add-team security-team jane.smith security.lead'
+      );
       console.log('  teams-user-mapper.js get-mention nydamon');
       console.log('');
       console.log('Configuration File: .teams-user-mapping.json');

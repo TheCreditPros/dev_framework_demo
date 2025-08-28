@@ -15,16 +15,16 @@ export default defineConfig({
         '**/*.d.ts',
         '**/*.config.js',
         '**/coverage/**',
-        'portal2-admin-refactor/**'
+        'portal2-admin-refactor/**',
       ],
       thresholds: {
         global: {
           branches: 70,
           functions: 80,
           lines: 80,
-          statements: 80
-        }
-      }
+          statements: 80,
+        },
+      },
     },
     exclude: [
       '**/node_modules/**',
@@ -34,12 +34,12 @@ export default defineConfig({
       'portal2-admin-refactor/**',
       '**/tests/e2e/**',
       '**/*.spec.js',
-      '**/playwright/**'
-    ]
+      '**/playwright/**',
+    ],
   },
   resolve: {
     alias: {
-      '@': '/src'
-    }
-  }
+      '@': '/src',
+    },
+  },
 });

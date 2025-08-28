@@ -78,9 +78,25 @@
         "apiCalls": "2-5"
       },
       "dependencies": {
-        "core": ["eslint", "prettier", "husky", "lint-staged", "commitlint", "@commitlint/config-conventional"],
-        "testing": ["vitest", "@testing-library/react", "@testing-library/jest-dom", "jsdom", "@playwright/test"],
-        "typescript": ["@typescript-eslint/parser", "@typescript-eslint/eslint-plugin"],
+        "core": [
+          "eslint",
+          "prettier",
+          "husky",
+          "lint-staged",
+          "commitlint",
+          "@commitlint/config-conventional"
+        ],
+        "testing": [
+          "vitest",
+          "@testing-library/react",
+          "@testing-library/jest-dom",
+          "jsdom",
+          "@playwright/test"
+        ],
+        "typescript": [
+          "@typescript-eslint/parser",
+          "@typescript-eslint/eslint-plugin"
+        ],
         "optional": []
       },
       "features": {
@@ -121,10 +137,31 @@
         "monitoring": "Performance & monitoring only"
       },
       "dependencies": {
-        "core": ["eslint", "prettier", "husky", "lint-staged", "commitlint", "@commitlint/config-conventional"],
-        "testing": ["vitest", "@testing-library/react", "@testing-library/jest-dom", "jsdom", "@playwright/test", "playwright-qase-reporter"],
-        "typescript": ["@typescript-eslint/parser", "@typescript-eslint/eslint-plugin"],
-        "security": ["@semantic-release/changelog", "@semantic-release/git", "semantic-release"],
+        "core": [
+          "eslint",
+          "prettier",
+          "husky",
+          "lint-staged",
+          "commitlint",
+          "@commitlint/config-conventional"
+        ],
+        "testing": [
+          "vitest",
+          "@testing-library/react",
+          "@testing-library/jest-dom",
+          "jsdom",
+          "@playwright/test",
+          "playwright-qase-reporter"
+        ],
+        "typescript": [
+          "@typescript-eslint/parser",
+          "@typescript-eslint/eslint-plugin"
+        ],
+        "security": [
+          "@semantic-release/changelog",
+          "@semantic-release/git",
+          "semantic-release"
+        ],
         "optional": []
       },
       "features": {

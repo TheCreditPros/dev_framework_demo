@@ -36,7 +36,7 @@ export function validateCreditScore(score: number): ValidationResult {
   return {
     isValid: errors.length === 0,
     errors,
-    warnings
+    warnings,
   };
 }
 
@@ -55,7 +55,7 @@ export function validatePermissiblePurpose(purpose: string): ValidationResult {
     'employment_screening',
     'insurance_underwriting',
     'tenant_screening',
-    'legitimate_business_need'
+    'legitimate_business_need',
   ];
 
   if (!purpose || typeof purpose !== 'string') {
@@ -68,7 +68,7 @@ export function validatePermissiblePurpose(purpose: string): ValidationResult {
   return {
     isValid: errors.length === 0,
     errors,
-    warnings
+    warnings,
   };
 }
 
@@ -76,7 +76,9 @@ export function validatePermissiblePurpose(purpose: string): ValidationResult {
  * Validates complete credit data structure
  * Ensures FCRA compliance across all fields
  */
-export function validateCreditData(data: Partial<CreditData>): ValidationResult {
+export function validateCreditData(
+  data: Partial<CreditData>
+): ValidationResult {
   const errors: string[] = [];
   const warnings: string[] = [];
 
@@ -92,7 +94,9 @@ export function validateCreditData(data: Partial<CreditData>): ValidationResult 
   if (!data.permissiblePurpose) {
     errors.push('Permissible purpose is required');
   } else {
-    const purposeValidation = validatePermissiblePurpose(data.permissiblePurpose);
+    const purposeValidation = validatePermissiblePurpose(
+      data.permissiblePurpose
+    );
     errors.push(...purposeValidation.errors);
     warnings.push(...purposeValidation.warnings);
   }
@@ -102,10 +106,13 @@ export function validateCreditData(data: Partial<CreditData>): ValidationResult 
   } else {
     const reportDate = new Date(data.reportDate);
     const now = new Date();
-    const daysDiff = (now.getTime() - reportDate.getTime()) / (1000 * 60 * 60 * 24);
-    
+    const daysDiff =
+      (now.getTime() - reportDate.getTime()) / (1000 * 60 * 60 * 24);
+
     if (daysDiff > 90) {
-      warnings.push('Credit report is older than 90 days - consider refreshing');
+      warnings.push(
+        'Credit report is older than 90 days - consider refreshing'
+      );
     }
   }
 
@@ -116,7 +123,7 @@ export function validateCreditData(data: Partial<CreditData>): ValidationResult 
   return {
     isValid: errors.length === 0,
     errors,
-    warnings
+    warnings,
   };
 }
 
@@ -129,7 +136,7 @@ export function calculateScoreImprovement(
   negativeItems: number
 ): { potentialScore: number; improvementPoints: number } {
   const scoreValidation = validateCreditScore(currentScore);
-  
+
   if (!scoreValidation.isValid) {
     throw new Error('Invalid current credit score');
   }
@@ -137,11 +144,14 @@ export function calculateScoreImprovement(
   // Conservative improvement calculation
   // Each negative item removal can improve score by 10-50 points
   const averageImprovement = 25;
-  const potentialImprovement = Math.min(negativeItems * averageImprovement, 200);
+  const potentialImprovement = Math.min(
+    negativeItems * averageImprovement,
+    200
+  );
   const potentialScore = Math.min(currentScore + potentialImprovement, 850);
 
   return {
     potentialScore,
-    improvementPoints: potentialScore - currentScore
+    improvementPoints: potentialScore - currentScore,
   };
 }

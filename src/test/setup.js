@@ -24,8 +24,8 @@ global.mockCreditData = {
   sampleFactors: [
     'Payment history: 35%',
     'Credit utilization: 30%',
-    'Length of credit history: 15%'
-  ]
+    'Length of credit history: 15%',
+  ],
 };
 
 // FCRA compliance test helpers
@@ -35,7 +35,7 @@ global.fcraTestHelpers = {
     action,
     userId,
     timestamp: new Date().toISOString(),
-    compliance: 'FCRA_604'
+    compliance: 'FCRA_604',
   }),
-  encryptPII: (data) => `encrypted_${btoa(data)}`
+  encryptPII: (data) => `encrypted_${btoa(data)}`,
 };
