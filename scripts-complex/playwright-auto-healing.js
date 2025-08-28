@@ -586,10 +586,10 @@ Commands:
 Usage in tests:
   const healing = new CreditRepairAutoHealing(page);
   await healing.smartClick('#button', ['.button', '[data-test="btn"]']);
-  
+
 Features:
   ✅ Smart selector fallback system
-  ✅ Auto-retry with intelligent waiting  
+  ✅ Auto-retry with intelligent waiting
   ✅ Credit repair domain utilities
   ✅ Learning and statistics export
   ✅ Self-healing test maintenance
