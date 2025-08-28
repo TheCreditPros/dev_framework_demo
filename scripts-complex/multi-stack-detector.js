@@ -16,23 +16,26 @@ class MultiStackDetector {
 
   async detectProjectStack() {
     console.log('🔍 Detecting project stack architecture...');
-    
+
     const detection = {
       php: this.detectPHPStack(),
       javascript: this.detectJavaScriptStack(),
       database: this.detectDatabaseStack(),
       testing: this.detectTestingStack(),
-      deployment: this.detectDeploymentStack()
+      deployment: this.detectDeploymentStack(),
     };
 
     const projectType = this.determineProjectType(detection);
-    const recommendations = this.getStackRecommendations(projectType, detection);
+    const recommendations = this.getStackRecommendations(
+      projectType,
+      detection
+    );
 
     return {
       projectType,
       detection,
       recommendations,
-      setupCommands: this.getSetupCommands(projectType)
+      setupCommands: this.getSetupCommands(projectType),
     };
   }
 
@@ -42,7 +45,7 @@ class MultiStackDetector {
       hasLaravel: fs.existsSync('app/Http/Controllers'),
       hasArtisan: fs.existsSync('artisan'),
       hasPHPUnit: fs.existsSync('phpunit.xml'),
-      hasLaravelStructure: fs.existsSync('config/app.php')
+      hasLaravelStructure: fs.existsSync('config/app.php'),
     };
 
     let framework = 'none';
@@ -53,7 +56,7 @@ class MultiStackDetector {
       detected: Object.values(indicators).some(Boolean),
       framework,
       indicators,
-      tools: this.detectPHPTools()
+      tools: this.detectPHPTools(),
     };
   }
 
@@ -64,7 +67,7 @@ class MultiStackDetector {
       hasReact: this.hasReactDependency(packageJson),
       hasTypeScript: fs.existsSync('tsconfig.json'),
       hasVite: this.hasDependency(packageJson, 'vite'),
-      hasNextJS: this.hasDependency(packageJson, 'next')
+      hasNextJS: this.hasDependency(packageJson, 'next'),
     };
 
     let framework = 'none';
@@ -76,7 +79,7 @@ class MultiStackDetector {
       detected: indicators.hasPackageJson,
       framework,
       indicators,
-      buildTool: this.detectBuildTool(packageJson)
+      buildTool: this.detectBuildTool(packageJson),
     };
   }
 
@@ -84,7 +87,7 @@ class MultiStackDetector {
     const indicators = {
       hasLaravelMigrations: fs.existsSync('database/migrations'),
       hasDockerCompose: fs.existsSync('docker-compose.yml'),
-      hasEnvExample: fs.existsSync('.env.example')
+      hasEnvExample: fs.existsSync('.env.example'),
     };
 
     const envContent = this.readEnvExample();
@@ -93,7 +96,7 @@ class MultiStackDetector {
     return {
       detected: Object.values(indicators).some(Boolean),
       type: dbType,
-      indicators
+      indicators,
     };
   }
 
@@ -103,13 +106,13 @@ class MultiStackDetector {
       hasVitest: this.hasDependency(packageJson, 'vitest'),
       hasPlaywright: this.hasDependency(packageJson, '@playwright/test'),
       hasPHPUnit: fs.existsSync('phpunit.xml'),
-      hasPest: this.hasComposerDependency('pestphp/pest')
+      hasPest: this.hasComposerDependency('pestphp/pest'),
     };
 
     return {
       detected: Object.values(indicators).some(Boolean),
       frameworks: this.getTestingFrameworks(indicators),
-      indicators
+      indicators,
     };
   }
 
@@ -118,17 +121,20 @@ class MultiStackDetector {
       hasGitHubActions: fs.existsSync('.github/workflows'),
       hasDockerfile: fs.existsSync('Dockerfile'),
       hasLaravelSail: this.hasComposerDependency('laravel/sail'),
-      hasVercelConfig: fs.existsSync('vercel.json')
+      hasVercelConfig: fs.existsSync('vercel.json'),
     };
 
     return {
       detected: Object.values(indicators).some(Boolean),
-      indicators
+      indicators,
     };
   }
 
   determineProjectType(detection) {
-    if (detection.php.framework === 'laravel' && detection.javascript.framework === 'react') {
+    if (
+      detection.php.framework === 'laravel' &&
+      detection.javascript.framework === 'react'
+    ) {
       return 'LARAVEL_REACT_HYBRID';
     }
     if (detection.php.framework === 'laravel') return 'LARAVEL_API';
@@ -146,25 +152,29 @@ class MultiStackDetector {
         'Configure shared test database for integration tests',
         'Set up Laravel Telescope for API monitoring',
         'Add PHPStan Level 8 for strict type checking',
-        'Configure Pest for elegant PHP testing'
+        'Configure Pest for elegant PHP testing',
       ],
       LARAVEL_API: [
         'Add Pest for elegant PHP testing',
         'Configure PHPStan for static analysis',
         'Set up Laravel Sanctum for API authentication',
         'Implement comprehensive API documentation',
-        'Add Rector for automated refactoring'
+        'Add Rector for automated refactoring',
       ],
       REACT_SPA: [
         'Add React Testing Library for component tests',
         'Configure MSW for API mocking',
         'Set up Storybook for component documentation',
         'Implement accessibility testing with axe-core',
-        'Add React Query for server state management'
-      ]
+        'Add React Query for server state management',
+      ],
     };
 
-    return recommendations[projectType] || ['Unknown project type - manual configuration required'];
+    return (
+      recommendations[projectType] || [
+        'Unknown project type - manual configuration required',
+      ]
+    );
   }
 
   getSetupCommands(projectType) {
@@ -176,19 +186,16 @@ class MultiStackDetector {
         'php artisan key:generate',
         'php artisan migrate',
         './vendor/bin/sail up -d',
-        'npm run dev'
+        'npm run dev',
       ],
       LARAVEL_API: [
         'composer install',
         'cp .env.example .env',
         'php artisan key:generate',
         'php artisan migrate',
-        'php artisan serve'
+        'php artisan serve',
       ],
-      REACT_SPA: [
-        'npm install',
-        'npm run dev'
-      ]
+      REACT_SPA: ['npm install', 'npm run dev'],
     };
 
     return commands[projectType] || ['echo "Unknown project type"'];
@@ -205,7 +212,9 @@ class MultiStackDetector {
 
   hasDependency(packageJson, dep) {
     if (!packageJson) return false;
-    return !!(packageJson.dependencies?.[dep] || packageJson.devDependencies?.[dep]);
+    return !!(
+      packageJson.dependencies?.[dep] || packageJson.devDependencies?.[dep]
+    );
   }
 
   hasReactDependency(packageJson) {
@@ -274,45 +283,57 @@ class MultiStackDetector {
       projectType: result.projectType,
       recommendations: result.recommendations,
       setupCommands: result.setupCommands,
-      missingTools: this.identifyMissingTools(result.detection)
+      missingTools: this.identifyMissingTools(result.detection),
     };
 
-    fs.writeFileSync('project-stack-report.json', JSON.stringify(report, null, 2));
+    fs.writeFileSync(
+      'project-stack-report.json',
+      JSON.stringify(report, null, 2)
+    );
     console.log('📊 Project stack report generated: project-stack-report.json');
-    
+
     return report;
   }
 
   identifyMissingTools(detection) {
     const missing = [];
-    
+
     if (detection.php.detected && !detection.php.tools.phpstan) {
       missing.push('PHPStan for static analysis');
     }
     if (detection.php.detected && !detection.php.tools.pest) {
       missing.push('Pest for elegant PHP testing');
     }
-    if (detection.javascript.detected && !detection.testing.indicators.hasPlaywright) {
+    if (
+      detection.javascript.detected &&
+      !detection.testing.indicators.hasPlaywright
+    ) {
       missing.push('Playwright for E2E testing');
     }
-    if (detection.javascript.detected && !detection.testing.indicators.hasVitest) {
+    if (
+      detection.javascript.detected &&
+      !detection.testing.indicators.hasVitest
+    ) {
       missing.push('Vitest for unit testing');
     }
-    
+
     return missing;
   }
 }
 
 if (require.main === module) {
   const detector = new MultiStackDetector();
-  detector.detectProjectStack().then(result => {
-    console.log('📊 Project Stack Detection Results:');
-    console.log(`Project Type: ${result.projectType}`);
-    console.log('\n🔧 Recommendations:');
-    result.recommendations.forEach(rec => console.log(`  - ${rec}`));
-    console.log('\n⚡ Setup Commands:');
-    result.setupCommands.forEach(cmd => console.log(`  $ ${cmd}`));
-  }).catch(console.error);
+  detector
+    .detectProjectStack()
+    .then((result) => {
+      console.log('📊 Project Stack Detection Results:');
+      console.log(`Project Type: ${result.projectType}`);
+      console.log('\n🔧 Recommendations:');
+      result.recommendations.forEach((rec) => console.log(`  - ${rec}`));
+      console.log('\n⚡ Setup Commands:');
+      result.setupCommands.forEach((cmd) => console.log(`  $ ${cmd}`));
+    })
+    .catch(console.error);
 }
 
 module.exports = MultiStackDetector;

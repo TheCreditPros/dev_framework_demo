@@ -1,7 +1,6 @@
 module.exports = {
   '*.{js,jsx,ts,tsx,mjs}': ['eslint --fix', 'prettier --write'],
   '*.{json,md,mdx,css,scss}': ['prettier --write'],
-<<<<<<< Updated upstream
   // Temporarily disabled TypeScript compilation to focus on framework stability
   // '*.{ts,tsx}': (files) => {
   //   const filteredFiles = files.filter(file => !file.includes('portal2-admin-refactor'));
@@ -9,7 +8,3 @@ module.exports = {
   //   return `tsc --noEmit ${filteredFiles.join(' ')}`;
   // },
 };
-=======
-  '*.{ts,tsx}': () => 'tsc --noEmit',
-};
->>>>>>> Stashed changes
