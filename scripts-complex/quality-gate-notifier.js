@@ -7,9 +7,6 @@
  */
 
 const https = require('https');
-const fs = require('fs');
-const path = require('path');
-const { execSync } = require('child_process');
 
 // Import user mapper for GitHub → Teams user mapping
 const TeamsUserMapper = require('./teams-user-mapper.js');
@@ -24,12 +21,12 @@ class QualityGateNotifier {
     this.userMapper = new TeamsUserMapper();
 
     this.themeColors = {
-      critical: 'ff0000',    // Red - Critical failures
-      error: 'dc3545',       // Dark red - Errors
-      warning: 'ff902a',     // Orange - Warnings
-      success: '28a745',     // Green - Success
-      info: '0f314b',        // Blue - Info
-      security: '6f42c1',    // Purple - Security
+      critical: 'ff0000', // Red - Critical failures
+      error: 'dc3545', // Dark red - Errors
+      warning: 'ff902a', // Orange - Warnings
+      success: '28a745', // Green - Success
+      info: '0f314b', // Blue - Info
+      security: '6f42c1', // Purple - Security
     };
 
     this.priorityLevels = {
@@ -45,29 +42,36 @@ class QualityGateNotifier {
    */
   async sendQualityGateFailure(failureData) {
     const {
-      gateType,           // 'test', 'security', 'performance', 'coverage', 'lint'
-      failureReason,      // Specific reason for failure
-      developer,          // GitHub actor
-      repository,         // Repository name
-      branch,             // Branch name
-      pullRequest,        // PR number if applicable
-      workflowRun,        // GitHub Actions run ID
-      priority = 'P1',    // Priority level
-      details = {},       // Additional failure details
+      gateType, // 'test', 'security', 'performance', 'coverage', 'lint'
+      failureReason, // Specific reason for failure
+      developer, // GitHub actor
+      repository, // Repository name
+      branch, // Branch name
+      pullRequest, // PR number if applicable
+      workflowRun, // GitHub Actions run ID
+      priority = 'P1', // Priority level
+      details = {}, // Additional failure details
     } = failureData;
 
     const priorityInfo = this.priorityLevels[priority];
-    const actionableGuidance = this.getActionableGuidance(gateType, failureReason, details);
+    const actionableGuidance = this.getActionableGuidance(
+      gateType,
+      failureReason,
+      details
+    );
 
     // Get proper Teams mention for developer
     const teamsMention = this.userMapper.getTeamsMention(developer);
 
     // Get additional team members for critical issues
-    const additionalMentions = priority === 'P0' ?
-      this.userMapper.getNotificationTeam(gateType, priority)
-        .map(member => member.teamsHandle)
-        .slice(0, 3) // Limit to 3 additional mentions
-        .join(', ') : '';
+    const additionalMentions =
+      priority === 'P0'
+        ? this.userMapper
+            .getNotificationTeam(gateType, priority)
+            .map((member) => member.teamsHandle)
+            .slice(0, 3) // Limit to 3 additional mentions
+            .join(', ')
+        : '';
 
     const notification = {
       '@type': 'MessageCard',
@@ -85,8 +89,12 @@ class QualityGateNotifier {
             { name: '📁 Repository', value: repository },
             { name: '🌿 Branch', value: branch },
             { name: '🔗 Workflow Run', value: `#${workflowRun}` },
-            ...(pullRequest ? [{ name: '📋 Pull Request', value: `#${pullRequest}` }] : []),
-            ...(additionalMentions ? [{ name: '👥 Team Notified', value: additionalMentions }] : []),
+            ...(pullRequest
+              ? [{ name: '📋 Pull Request', value: `#${pullRequest}` }]
+              : []),
+            ...(additionalMentions
+              ? [{ name: '👥 Team Notified', value: additionalMentions }]
+              : []),
             { name: '⏰ Timestamp', value: new Date().toISOString() },
           ],
           markdown: true,
@@ -120,17 +128,33 @@ class QualityGateNotifier {
         {
           '@type': 'OpenUri',
           name: '🔍 View Workflow Run',
-          targets: [{ os: 'default', uri: `https://github.com/${repository}/actions/runs/${workflowRun}` }],
+          targets: [
+            {
+              os: 'default',
+              uri: `https://github.com/${repository}/actions/runs/${workflowRun}`,
+            },
+          ],
         },
-        ...(pullRequest ? [{
-          '@type': 'OpenUri',
-          name: '📋 View Pull Request',
-          targets: [{ os: 'default', uri: `https://github.com/${repository}/pull/${pullRequest}` }],
-        }] : []),
+        ...(pullRequest
+          ? [
+              {
+                '@type': 'OpenUri',
+                name: '📋 View Pull Request',
+                targets: [
+                  {
+                    os: 'default',
+                    uri: `https://github.com/${repository}/pull/${pullRequest}`,
+                  },
+                ],
+              },
+            ]
+          : []),
         {
           '@type': 'OpenUri',
           name: '📖 Framework Documentation',
-          targets: [{ os: 'default', uri: 'https://nydamon.github.io/ai-sdlc-docs/' }],
+          targets: [
+            { os: 'default', uri: 'https://nydamon.github.io/ai-sdlc-docs/' },
+          ],
         },
       ],
     };
@@ -335,7 +359,9 @@ class QualityGateNotifier {
 
       const req = https.request(options, (res) => {
         let responseData = '';
-        res.on('data', (chunk) => { responseData += chunk; });
+        res.on('data', (chunk) => {
+          responseData += chunk;
+        });
         res.on('end', () => {
           if (res.statusCode === 200) {
             resolve(responseData);
@@ -357,11 +383,12 @@ class QualityGateNotifier {
   async sendFailureSummary(failures) {
     if (!this.webhookUrl) return;
 
-    const criticalCount = failures.filter(f => f.priority === 'P0').length;
-    const errorCount = failures.filter(f => f.priority === 'P1').length;
-    const warningCount = failures.filter(f => f.priority === 'P2').length;
+    const criticalCount = failures.filter((f) => f.priority === 'P0').length;
+    const errorCount = failures.filter((f) => f.priority === 'P1').length;
+    const warningCount = failures.filter((f) => f.priority === 'P2').length;
 
-    const theme = criticalCount > 0 ? 'critical' : errorCount > 0 ? 'error' : 'warning';
+    const theme =
+      criticalCount > 0 ? 'critical' : errorCount > 0 ? 'error' : 'warning';
     const emoji = criticalCount > 0 ? '🚨' : errorCount > 0 ? '❌' : '⚠️';
 
     const notification = {
@@ -395,7 +422,12 @@ class QualityGateNotifier {
         {
           '@type': 'OpenUri',
           name: '🔍 View All Workflows',
-          targets: [{ os: 'default', uri: `https://github.com/${failures[0].repository}/actions` }],
+          targets: [
+            {
+              os: 'default',
+              uri: `https://github.com/${failures[0].repository}/actions`,
+            },
+          ],
         },
       ],
     };
@@ -470,100 +502,17 @@ async function main() {
   const command = process.argv[2];
 
   switch (command) {
-    case 'test-failure':
-      await notifier.sendQualityGateFailure({
-        gateType: 'test',
-        failureReason: 'Unit tests failed with 3 failures',
-        developer: 'developer-name',
-        repository: 'TheCreditPros/example-repo',
-        branch: 'feature/test-branch',
-        workflowRun: '12345',
-        priority: 'P1',
-        details: { failedTests: 3, coverage: 75 },
-      });
-      break;
-
-    case 'security-failure':
-      await notifier.sendQualityGateFailure({
-        gateType: 'security',
-        failureReason: 'High severity vulnerabilities detected',
-        developer: 'developer-name',
-        repository: 'TheCreditPros/example-repo',
-        branch: 'feature/security-test',
-        workflowRun: '12346',
-        priority: 'P0',
-        details: { critical: 2, high: 5 },
-      });
-      break;
-
-    case 'coverage-failure':
-      await notifier.sendQualityGateFailure({
-        gateType: 'coverage',
-        failureReason: 'Code coverage below 80% threshold',
-        developer: 'developer-name',
-        repository: 'TheCreditPros/example-repo',
-        branch: 'feature/coverage-test',
-        workflowRun: '12347',
-        priority: 'P1',
-        details: { coverage: 65, threshold: 80 },
-      });
-      break;
-
-    case 'performance-failure':
-      await notifier.sendQualityGateFailure({
-        gateType: 'performance',
-        failureReason: 'Core Web Vitals budget exceeded',
-        developer: 'developer-name',
-        repository: 'TheCreditPros/example-repo',
-        branch: 'feature/performance-test',
-        workflowRun: '12348',
-        priority: 'P1',
-        details: { lcp: 3500, threshold: 2500 },
-      });
-      break;
-
-    case 'compliance-failure':
-      await notifier.sendQualityGateFailure({
-        gateType: 'compliance',
-        failureReason: 'FCRA compliance validation failed',
-        developer: 'developer-name',
-        repository: 'TheCreditPros/example-repo',
-        branch: 'feature/compliance-test',
-        workflowRun: '12349',
-        priority: 'P0',
-        details: { violations: ['PII exposure', 'Missing audit trail'] },
-      });
-      break;
-
     case 'github-context':
       await notifier.notifyFromGitHubContext();
-      break;
-
-    case 'test-webhook':
-      console.log('🧪 Testing quality gate notification webhooks...');
-      await notifier.sendQualityGateFailure({
-        gateType: 'test',
-        failureReason: 'Webhook connectivity test',
-        developer: 'test-user',
-        repository: 'TheCreditPros/webhook-test',
-        branch: 'test-branch',
-        workflowRun: '99999',
-        priority: 'P3',
-        details: { test: true },
-      });
       break;
 
     default:
       console.log('Quality Gate Notifier for AI-SDLC Framework');
       console.log('');
       console.log('Usage:');
-      console.log('  quality-gate-notifier.js test-failure      - Test failure notification');
-      console.log('  quality-gate-notifier.js security-failure  - Security failure notification');
-      console.log('  quality-gate-notifier.js coverage-failure  - Coverage failure notification');
-      console.log('  quality-gate-notifier.js performance-failure - Performance failure notification');
-      console.log('  quality-gate-notifier.js compliance-failure - FCRA compliance failure');
-      console.log('  quality-gate-notifier.js github-context    - Auto-detect from GitHub context');
-      console.log('  quality-gate-notifier.js test-webhook      - Test webhook connectivity');
+      console.log(
+        '  quality-gate-notifier.js github-context    - Auto-detect from GitHub context (CI only)'
+      );
       console.log('');
       console.log('Environment Variables:');
       console.log('  MS_TEAMS_WEBHOOK_URI     - Main webhook URL');
@@ -571,9 +520,15 @@ async function main() {
       console.log('  MS_TEAMS_SECURITY_WEBHOOK - Security team webhook');
       console.log('');
       console.log('Priority Levels:');
-      console.log('  P0 - Critical (Security, Compliance) - Immediate action required');
-      console.log('  P1 - High (Tests, Performance) - Action required within hours');
-      console.log('  P2 - Medium (Coverage, Lint) - Action required within day');
+      console.log(
+        '  P0 - Critical (Security, Compliance) - Immediate action required'
+      );
+      console.log(
+        '  P1 - High (Tests, Performance) - Action required within hours'
+      );
+      console.log(
+        '  P2 - Medium (Coverage, Lint) - Action required within day'
+      );
       console.log('  P3 - Low (Info, Warnings) - Action required within week');
       break;
   }

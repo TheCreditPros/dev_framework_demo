@@ -6,7 +6,6 @@
  */
 
 const fs = require('fs');
-const path = require('path');
 
 class MultiStackDetector {
   constructor() {
@@ -255,7 +254,6 @@ class MultiStackDetector {
   detectPHPTools() {
     const tools = {};
     try {
-      const composer = JSON.parse(fs.readFileSync('composer.json', 'utf8'));
       tools.phpstan = this.hasComposerDependency('phpstan/phpstan');
       tools.phpcs = this.hasComposerDependency('squizlabs/php_codesniffer');
       tools.pest = this.hasComposerDependency('pestphp/pest');
