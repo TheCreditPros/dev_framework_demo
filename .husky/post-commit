@@ -1,0 +1,2 @@
+node validate-setup.js || true
+

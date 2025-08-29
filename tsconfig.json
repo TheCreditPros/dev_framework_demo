@@ -11,6 +11,7 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
+    "types": ["vitest/globals", "@testing-library/jest-dom", "node"],
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
@@ -20,6 +21,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["src", "tests", "**/*.ts", "**/*.tsx"],
-  "exclude": ["node_modules", "dist", "build"]
+  "include": ["src", "tests", "__tests__", "**/*.ts", "**/*.tsx"],
+  "exclude": ["node_modules", "dist", "build", "portal2-admin-refactor/**"]
 }

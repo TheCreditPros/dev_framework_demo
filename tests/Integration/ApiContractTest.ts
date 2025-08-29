@@ -56,9 +56,12 @@ describe('Laravel + React API Contract Testing', () => {
           params: { permissible_purpose: 'curiosity' },
         });
         expect.fail('Should have thrown FCRA violation error');
-      } catch (error) {
-        expect(error.response.status).toBe(403);
-        expect(error.response.data.code).toBe('FCRA_VIOLATION');
+      } catch (error: unknown) {
+        const err = error as {
+          response: { status: number; data: { code: string } };
+        };
+        expect(err.response.status).toBe(403);
+        expect(err.response.data.code).toBe('FCRA_VIOLATION');
       }
     });
   });
@@ -99,15 +102,18 @@ describe('Laravel + React API Contract Testing', () => {
       try {
         await axios.get(`${API_BASE_URL}/credit-reports/invalid-consumer`);
         expect.fail('Should have thrown error');
-      } catch (error) {
+      } catch (error: unknown) {
+        const err = error as {
+          response: { data: { error: string; code: string } };
+        };
         // Ensure no internal details are exposed
-        expect(error.response.data.error).not.toContain('database');
-        expect(error.response.data.error).not.toContain('internal');
-        expect(error.response.data.error).not.toContain('exception');
+        expect(err.response.data.error).not.toContain('database');
+        expect(err.response.data.error).not.toContain('internal');
+        expect(err.response.data.error).not.toContain('exception');
 
         // Should have user-friendly message
-        expect(error.response.data).toHaveProperty('error');
-        expect(error.response.data).toHaveProperty('code');
+        expect(err.response.data).toHaveProperty('error');
+        expect(err.response.data).toHaveProperty('code');
       }
     });
   });
@@ -117,8 +123,9 @@ describe('Laravel + React API Contract Testing', () => {
       try {
         await axios.get(`${API_BASE_URL}/credit-reports/test-consumer-123`);
         expect.fail('Should require authentication');
-      } catch (error) {
-        expect(error.response.status).toBe(401);
+      } catch (error: unknown) {
+        const err = error as { response: { status: number } };
+        expect(err.response.status).toBe(401);
       }
     });
 

@@ -1,7 +1,7 @@
 // TODO: Validate permissible purpose for FCRA Section 604 compliance
-import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
-import { describe, it, expect, vi } from 'vitest';
+// React import not required with react-jsx runtime
+import { fireEvent, render, screen } from '@testing-library/react';
+import { describe, expect, it, vi } from 'vitest';
 import { CreditScore } from '../../src/components/CreditScore';
 
 describe('CreditScore Component', () => {
@@ -23,7 +23,7 @@ describe('CreditScore Component', () => {
 
     it('should log audit trail for credit score access', () => {
       const auditSpy = vi.fn();
-      global.auditLogger = auditSpy;
+      (globalThis as unknown as { auditLogger: (message: unknown) => void }).auditLogger = auditSpy;
 
       render(<CreditScore score={720} />);
 
