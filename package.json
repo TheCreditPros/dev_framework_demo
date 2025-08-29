@@ -82,5 +82,8 @@
   "dependencies": {
     "@playwright/test": "^1.55.0",
     "dotenv": "^17.2.1"
+  },
+  "optionalDependencies": {
+    "@rollup/rollup-linux-x64-gnu": "4.46.2"
   }
 }
