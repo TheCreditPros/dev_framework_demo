@@ -235,7 +235,7 @@ jobs:
 
       - name: 📊 Upload Coverage Reports
         if: matrix.test-type == 'unit' && matrix.node-version == '18'
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ./coverage/lcov.info
