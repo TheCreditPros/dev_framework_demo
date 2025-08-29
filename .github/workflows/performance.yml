@@ -37,7 +37,8 @@ jobs:
   lighthouse:
     name: 🔍 Lighthouse Performance Audit
     runs-on: ubuntu-latest
-    if: github.event.inputs.test_type == 'lighthouse' || github.event.inputs.test_type == 'full' || github.event.inputs.test_type == ''
+    # Disabled by default; enable via repo variable ENABLE_LIGHTHOUSE=true or ENABLE_PERF=true
+    if: (github.event.inputs.test_type == 'lighthouse' || github.event.inputs.test_type == 'full' || github.event.inputs.test_type == '') && (vars.ENABLE_LIGHTHOUSE == 'true' || vars.ENABLE_PERF == 'true')
     steps:
       - name: 📥 Checkout Repository
         uses: actions/checkout@v4
@@ -79,7 +80,8 @@ jobs:
   load-testing:
     name: 🚛 Load Testing
     runs-on: ubuntu-latest
-    if: github.event.inputs.test_type == 'load' || github.event.inputs.test_type == 'full' || github.event.inputs.test_type == ''
+    # Disabled by default; enable via repo variable ENABLE_PERF=true
+    if: (github.event.inputs.test_type == 'load' || github.event.inputs.test_type == 'full' || github.event.inputs.test_type == '') && (vars.ENABLE_PERF == 'true')
     steps:
       - name: 📥 Checkout Repository
         uses: actions/checkout@v4
@@ -119,7 +121,8 @@ jobs:
   memory-profiling:
     name: 🧠 Memory Profiling
     runs-on: ubuntu-latest
-    if: github.event.inputs.test_type == 'memory' || github.event.inputs.test_type == 'full' || github.event.inputs.test_type == ''
+    # Disabled by default; enable via repo variable ENABLE_PERF=true
+    if: (github.event.inputs.test_type == 'memory' || github.event.inputs.test_type == 'full' || github.event.inputs.test_type == '') && (vars.ENABLE_PERF == 'true')
     steps:
       - name: 📥 Checkout Repository
         uses: actions/checkout@v4
@@ -226,7 +229,8 @@ jobs:
     name: 📊 Performance Report
     runs-on: ubuntu-latest
     needs: [lighthouse, load-testing, memory-profiling, credit-performance]
-    if: always()
+    # Only generate report when perf jobs are enabled
+    if: always() && (vars.ENABLE_PERF == 'true' || vars.ENABLE_LIGHTHOUSE == 'true')
     steps:
       - name: 📊 Generate Performance Report
         run: |

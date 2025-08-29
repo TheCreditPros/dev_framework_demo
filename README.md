@@ -550,6 +550,16 @@ cp dev_framework_demo/.pr_agent.toml ./
 ./auto-setup.sh
 ```
 
+### **Opt-in Feature Flags (Defaults: Safe & Fast)**
+
+- `ENABLE_LIGHTHOUSE=true` — Enable Lighthouse audit in CI
+- `ENABLE_PERF=true` — Enable load testing and memory profiling
+- `ENABLE_E2E=true` — Run Playwright E2E in CI (kept off by default)
+- `PR_AGENT_ENABLED=true` — Enable AI PR-Agent integration (requires API access)
+- `ENABLE_COVERAGE_HTML=true` — Generate HTML coverage artifacts
+
+By default these are OFF to keep internal apps fast and signal-only. Turn on per-repo in GitHub “Settings → Variables”.
+
 ### **CI/CD Integration**
 
 - **GitHub Actions** - Multi-stack pipeline with quality gates
