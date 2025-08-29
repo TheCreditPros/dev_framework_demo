@@ -175,3 +175,19 @@ This file records architectural and implementation decisions using a list format
 
 - Deleted mock scripts and PR agent mock
 - PR scripts now invoke `pr-agent` directly (no fallback)
+
+---
+
+## Decision
+
+**2025-08-29 - Root Demo Validation Logging Standard** - Adopted deterministic test execution and log archival
+
+## Rationale
+
+- Improve diagnosability, avoid perceived hangs, and create auditable artifacts
+
+## Implementation Details
+
+- Run tests single-worker for determinism when validating
+- Tee outputs of validate/lint/format/typecheck/tests/hooks to `reports/` with timestamps
+- Add non-blocking `post-commit` validation to confirm hooks health

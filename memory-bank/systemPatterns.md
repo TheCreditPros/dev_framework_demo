@@ -29,6 +29,7 @@ It is optional, but recommended to be updated as the project evolves.
 - **JSX Test File Naming** - Test files containing JSX must use .test.jsx or .spec.jsx extensions
 - **Component Mock Pattern** - React components mocked with vi.mock() returning functional components
 - **Global Test Environment** - Test globals (describe, it, expect, vi) configured in ESLint
+- **Deterministic Validation Runs** - Use single-worker runs during validation to eliminate flakiness
 
 ## Migration Patterns
 
@@ -43,6 +44,7 @@ It is optional, but recommended to be updated as the project evolves.
 - **Pre-commit Validation** - ESLint + Prettier via lint-staged before every commit
 - **Commit Message Standards** - Conventional commits enforced via commitlint
 - **Post-commit Hooks** - Additional validation after successful commits
+- **Hook Path Standardization** - `core.hookspath` set to `.husky`; validation script checks configured path
 - **Configuration Isolation** - Separate config files (.lintstagedrc.js) to avoid conflicts
 - **Flat ESLint Config** - Modern ESLint v9 configuration with explicit global definitions
 - **TypeScript Integration** - @typescript-eslint parser for .ts/.tsx files
@@ -67,3 +69,4 @@ It is optional, but recommended to be updated as the project evolves.
 
 2025-08-14 14:29:49 - Core patterns established for Memory Bank and AI-SDLC framework demonstration
 2025-08-27 - Comprehensive patterns updated after 805+ file migration and quality gate implementation
+2025-08-29 - Deterministic validation runs and hook path standardization recorded

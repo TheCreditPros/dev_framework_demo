@@ -45,7 +45,7 @@ This file tracks the project's progress using a task list format.
 
 ### Test Results
 
-- **ai-sdlc-docs-1**: 30/30 tests passing (100% pass rate)
+- **ai-sdlc-docs-1**: 30/30 tests passing (100% pass rate, single-worker)
 - **portal2-admin-refactor**: 76% test pass rate (881/1163 tests passing)
 - **dev_framework_demo**: Framework validation 3/4 checks passing
 
@@ -57,6 +57,10 @@ This file tracks the project's progress using a task list format.
 - ✅ **Vitest**: v3.2.4 framework fully operational
 - ✅ **Commitlint**: Conventional commits enforced
 - ✅ **Lint-staged**: Pre-commit checks configured
+
+### Logs
+
+- Root logs saved under `reports/`: validation, lint, format, typecheck, tests, hook simulations
 
 ## Completed Migration Metrics
 

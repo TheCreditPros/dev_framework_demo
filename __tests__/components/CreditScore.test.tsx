@@ -23,7 +23,9 @@ describe('CreditScore Component', () => {
 
     it('should log audit trail for credit score access', () => {
       const auditSpy = vi.fn();
-      (globalThis as unknown as { auditLogger: (message: unknown) => void }).auditLogger = auditSpy;
+      (
+        globalThis as unknown as { auditLogger: (message: unknown) => void }
+      ).auditLogger = auditSpy;
 
       render(<CreditScore score={720} />);
 
