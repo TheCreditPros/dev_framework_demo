@@ -28,7 +28,7 @@ on:
         type: boolean
 
 env:
-  NODE_VERSION: '18'
+  NODE_VERSION: '20'
   CACHE_VERSION: v1
   SONAR_ORGANIZATION: thecreditpros
   REGISTRY: ghcr.io
@@ -183,7 +183,7 @@ jobs:
     strategy:
       matrix:
         test-type: [unit, integration, e2e]
-        node-version: [18]
+        node-version: [20]
     steps:
       - name: 📥 Checkout Repository
         uses: actions/checkout@v4
