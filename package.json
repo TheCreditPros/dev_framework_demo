@@ -13,6 +13,7 @@
     "format": "prettier --check '**/*.{js,jsx,ts,tsx,json,md}'",
     "format:fix": "prettier --write '**/*.{js,jsx,ts,tsx,json,md}'",
     "type-check": "tsc --noEmit",
+    "build": "node -e \"const fs=require('fs');['dist','build','public'].forEach(d=>fs.mkdirSync(d,{recursive:true})); fs.writeFileSync('dist/index.txt','AI-SDLC demo build artifact');\"",
     "ai:setup": "node scripts-complex/multi-stack-detector.js",
     "ai:quality-check": "node scripts-complex/quality-gate-notifier.js",
     "ai:test-generate": "node scripts-complex/real-ai-test-generator.js",
