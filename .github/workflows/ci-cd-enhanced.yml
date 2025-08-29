@@ -83,7 +83,7 @@ jobs:
             node-modules-${{ env.CACHE_VERSION }}-${{ runner.os }}-${{ runner.arch }}-node${{ env.NODE_VERSION }}-
 
       - name: 📦 Install Dependencies
-        run: npm ci --prefer-offline --no-audit
+        run: npm ci --no-audit
 
       - name: 🔍 Validate Package Structure
         run: |
@@ -145,7 +145,7 @@ jobs:
           key: ${{ needs.setup.outputs.cache-key }}
 
       - name: 📦 Install Dependencies
-        run: npm ci --prefer-offline --no-audit
+        run: npm ci --no-audit
 
       - name: 🔍 ESLint Check
         if: matrix.check == 'lint'
@@ -203,7 +203,7 @@ jobs:
           key: ${{ needs.setup.outputs.cache-key }}
 
       - name: 📦 Install Dependencies
-        run: npm ci --prefer-offline --no-audit
+        run: npm ci --no-audit
 
       - name: 🧪 Unit Tests
         if: matrix.test-type == 'unit'
@@ -278,7 +278,7 @@ jobs:
           key: ${{ needs.setup.outputs.cache-key }}
 
       - name: 📦 Install Dependencies
-        run: npm ci --prefer-offline --no-audit
+        run: npm ci --no-audit
 
       - name: 📊 Download Coverage Reports
         uses: actions/download-artifact@v4
@@ -355,7 +355,7 @@ jobs:
           key: ${{ needs.setup.outputs.cache-key }}
 
       - name: 📦 Install Dependencies
-        run: npm ci --prefer-offline --no-audit
+        run: npm ci --no-audit
 
       - name: 🏗️ Build Application
         run: npm run build
