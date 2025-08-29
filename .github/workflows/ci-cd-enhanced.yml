@@ -56,7 +56,7 @@ jobs:
       version: ${{ steps.version.outputs.version }}
     steps:
       - name: 📥 Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -73,7 +73,7 @@ jobs:
           echo "cache-key=node-modules-${{ env.CACHE_VERSION }}-${{ runner.os }}-${{ runner.arch }}-node${{ env.NODE_VERSION }}-${{ hashFiles('**/package-lock.json') }}" >> $GITHUB_OUTPUT
 
       - name: 📦 Cache Dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             ~/.npm
@@ -128,7 +128,7 @@ jobs:
         check: [lint, type-check, security-scan]
     steps:
       - name: 📥 Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: 🔧 Setup Node.js
         uses: actions/setup-node@v4
@@ -137,7 +137,7 @@ jobs:
           cache: 'npm'
 
       - name: 📦 Restore Dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             ~/.npm
@@ -186,7 +186,7 @@ jobs:
         node-version: [20]
     steps:
       - name: 📥 Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: 🔧 Setup Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
@@ -195,7 +195,7 @@ jobs:
           cache: 'npm'
 
       - name: 📦 Restore Dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             ~/.npm
@@ -259,7 +259,7 @@ jobs:
     if: always() && (needs.test-suite.result == 'success' || needs.test-suite.result == 'skipped')
     steps:
       - name: 📥 Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
@@ -270,7 +270,7 @@ jobs:
           cache: 'npm'
 
       - name: 📦 Restore Dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             ~/.npm
@@ -281,7 +281,7 @@ jobs:
         run: npm ci --no-audit
 
       - name: 📊 Download Coverage Reports
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: test-results-unit-node18
           path: ./
@@ -312,7 +312,7 @@ jobs:
       security-events: write
     steps:
       - name: 📥 Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: 🔒 CodeQL Analysis
         uses: github/codeql-action/init@v2
@@ -323,7 +323,7 @@ jobs:
         uses: github/codeql-action/analyze@v2
 
       - name: 🔒 Dependency Vulnerability Scan
-        uses: actions/dependency-review-action@v3
+        uses: actions/dependency-review-action@v4
         if: github.event_name == 'pull_request'
 
   # ============================================================================
@@ -338,7 +338,7 @@ jobs:
       image-digest: ${{ steps.build.outputs.digest }}
     steps:
       - name: 📥 Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: 🔧 Setup Node.js
         uses: actions/setup-node@v4
@@ -347,7 +347,7 @@ jobs:
           cache: 'npm'
 
       - name: 📦 Restore Dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             ~/.npm
@@ -383,10 +383,10 @@ jobs:
       url: ${{ steps.deploy.outputs.url }}
     steps:
       - name: 📥 Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: 📦 Download Build Artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: build-${{ needs.setup.outputs.version }}
           path: ./dist
@@ -439,7 +439,7 @@ jobs:
     if: needs.deploy.result == 'success'
     steps:
       - name: 📥 Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: 🔧 Setup Node.js
         uses: actions/setup-node@v4
@@ -467,7 +467,7 @@ jobs:
     if: always()
     steps:
       - name: 🧹 Clean up artifacts
-        uses: actions/github-script@v6
+        uses: actions/github-script@v7
         with:
           script: |
             const artifacts = await github.rest.actions.listWorkflowRunArtifacts({
