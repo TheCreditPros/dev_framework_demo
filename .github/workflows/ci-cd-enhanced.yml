@@ -70,18 +70,17 @@ jobs:
       - name: 📦 Generate Cache Keys
         id: cache-keys
         run: |
-          echo "cache-key=node-modules-${{ env.CACHE_VERSION }}-${{ hashFiles('**/package-lock.json') }}" >> $GITHUB_OUTPUT
+          echo "cache-key=node-modules-${{ env.CACHE_VERSION }}-${{ runner.os }}-${{ runner.arch }}-node${{ env.NODE_VERSION }}-${{ hashFiles('**/package-lock.json') }}" >> $GITHUB_OUTPUT
 
       - name: 📦 Cache Dependencies
         uses: actions/cache@v3
         with:
           path: |
             ~/.npm
-            node_modules
             .eslintcache
           key: ${{ steps.cache-keys.outputs.cache-key }}
           restore-keys: |
-            node-modules-${{ env.CACHE_VERSION }}-
+            node-modules-${{ env.CACHE_VERSION }}-${{ runner.os }}-${{ runner.arch }}-node${{ env.NODE_VERSION }}-
 
       - name: 📦 Install Dependencies
         run: npm ci --prefer-offline --no-audit
@@ -142,7 +141,6 @@ jobs:
         with:
           path: |
             ~/.npm
-            node_modules
             .eslintcache
           key: ${{ needs.setup.outputs.cache-key }}
 
@@ -201,7 +199,6 @@ jobs:
         with:
           path: |
             ~/.npm
-            node_modules
             .eslintcache
           key: ${{ needs.setup.outputs.cache-key }}
 
@@ -277,7 +274,6 @@ jobs:
         with:
           path: |
             ~/.npm
-            node_modules
             .eslintcache
           key: ${{ needs.setup.outputs.cache-key }}
 
@@ -355,7 +351,6 @@ jobs:
         with:
           path: |
             ~/.npm
-            node_modules
             .eslintcache
           key: ${{ needs.setup.outputs.cache-key }}
 
