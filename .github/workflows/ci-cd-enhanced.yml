@@ -193,9 +193,7 @@ jobs:
           if [[ -n $(git status --porcelain) ]]; then
             echo "💾 Committing auto-healed changes..."
             git add -A
-            git commit -m "fix(auto-heal): apply eslint and prettier auto-fixes
-
-Auto-healed by GitHub Actions quality gates"
+            git commit -m "fix(auto-heal): apply eslint and prettier auto-fixes"
             git push
             echo "✅ Auto-healed changes committed and pushed"
           else

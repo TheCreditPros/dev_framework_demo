@@ -58,20 +58,13 @@ jobs:
             const maxChars = 40000;
             const diffChunk = patches.length > maxChars ? patches.slice(0, maxChars) + "\n\n[...diff truncated...]" : patches;
 
-            const system = `
-You are a senior staff engineer doing code review.
-Be specific. Point to exact lines/hunks.
-Focus on security, correctness, performance, race conditions, resource leaks, error handling, and readability.
-When confident, suggest concrete diffs/patches.
-Use markdown with short sections and bullet points. Keep it under ~400 words.`;
+            const system = "You are a senior staff engineer doing code review. Be specific. Point to exact lines/hunks. Focus on security, correctness, performance, race conditions, resource leaks, error handling, and readability. When confident, suggest concrete diffs/patches. Use markdown with short sections and bullet points. Keep it under ~400 words.";
 
-            const user = `
-Repository: ${context.repo.owner}/${context.repo.repo}
-PR #${pr.number}: ${pr.title}
-
-Here are the unified diffs for the changed files:
-${diffChunk}
-`;
+            const user = `Repository: ${context.repo.owner}/${context.repo.repo}
+            PR #${pr.number}: ${pr.title}
+            
+            Here are the unified diffs for the changed files:
+            ${diffChunk}`;
             // 3) Call OpenAI API with retry/backoff; non-blocking on failure
             const endpoint = 'https://api.openai.com/v1/chat/completions';
             const payload = {
