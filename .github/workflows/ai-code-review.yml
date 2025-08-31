@@ -62,7 +62,7 @@ jobs:
 
             const user = `Repository: ${context.repo.owner}/${context.repo.repo}
             PR #${pr.number}: ${pr.title}
-            
+
             Here are the unified diffs for the changed files:
             ${diffChunk}`;
             // 3) Call OpenAI API with retry/backoff; non-blocking on failure
