@@ -27,6 +27,34 @@ jobs:
       - name: Install deps
         run: npm ci --no-audit
 
+      - name: Find latest healing learnings artifact
+        id: find-artifact
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const artifacts = await github.paginate(github.rest.actions.listArtifactsForRepo, {
+              owner,
+              repo,
+              per_page: 100,
+            });
+            const found = artifacts
+              .filter(a => a.name === 'healing-learnings' && !a.expired)
+              .sort((a,b) => new Date(b.created_at) - new Date(a.created_at))[0];
+            core.setOutput('artifact_id', found ? String(found.id) : '');
+
+      - name: Download healing learnings artifact
+        if: steps.find-artifact.outputs.artifact_id != ''
+        run: |
+          echo "Downloading artifact ID: ${{ steps.find-artifact.outputs.artifact_id }}"
+          curl -L -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github+json" \
+            https://api.github.com/repos/${{ github.repository }}/actions/artifacts/${{ steps.find-artifact.outputs.artifact_id }}/zip \
+            -o healing-learnings.zip
+          unzip -o healing-learnings.zip -d ./
+          ls -la ./test-results || true
+
       - name: Check for existing learnings
         run: |
           if [ -d test-results ]; then
