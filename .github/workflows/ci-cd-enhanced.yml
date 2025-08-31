@@ -195,6 +195,8 @@ jobs:
             git add -A
             # Use --no-verify to bypass lint-staged which causes detached HEAD
             git commit --no-verify -m "fix(auto-heal): apply eslint and prettier auto-fixes"
+            # Pull latest changes before pushing to avoid conflicts
+            git pull origin ${{ github.event.pull_request.head.ref }} --rebase || echo "Pull failed, trying force push"
             git push origin HEAD:${{ github.event.pull_request.head.ref }}
             echo "✅ Auto-healed changes committed and pushed"
           else
