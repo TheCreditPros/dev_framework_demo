@@ -78,7 +78,7 @@ jobs:
           fi
 
       - name: Create PR with changes
-        uses: peter-evans/create-pull-request@v6
+        uses: peter-evans/create-pull-request@v7
         with:
           commit-message: "chore(ai): apply safe auto-fixes"
           title: "chore(ai): apply safe auto-fixes"
