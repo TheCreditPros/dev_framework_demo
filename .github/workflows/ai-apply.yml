@@ -12,6 +12,10 @@ jobs:
   apply:
     if: contains(github.event.pull_request.labels.*.name, 'apply-ai-fixes')
     runs-on: ubuntu-latest
+    env:
+      ENABLE_E2E: true
+      PLAYWRIGHT_BASE_URL: http://localhost:3000
+      PLAYWRIGHT_WEB_SERVER: node scripts/simple-static-server.js
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -26,6 +30,17 @@ jobs:
 
       - name: Install deps
         run: npm ci --no-audit
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+
+      - name: Run E2E (Chromium) to generate artifacts (non-blocking)
+        run: |
+          npm run test:e2e || true
+
+      - name: Run auto-heal demo to export learnings (non-blocking)
+        run: |
+          npm run ai:auto-heal || true
 
       - name: Apply safe fixes (lint/format)
         run: |
@@ -49,4 +64,3 @@ jobs:
           branch: ai/apply-safe-fixes
           base: ${{ github.event.pull_request.head.ref }}
           labels: ai, automation
-

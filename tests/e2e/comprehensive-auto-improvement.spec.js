@@ -42,7 +42,10 @@ test.describe('Comprehensive Auto-Improvement Validation', () => {
 
     // Fill dispute form with old selectors
     await page.selectOption('select[name=dispute-reason]', 'incorrect-balance');
-    await page.setInputFiles('input[type=file]', 'test-document.pdf');
+    await page.setInputFiles(
+      'input[type=file]',
+      'tests/e2e/assets/test-document.pdf'
+    );
 
     // Submit dispute
     await page.click('[data-testid=submit-dispute]');
