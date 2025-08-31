@@ -14,9 +14,9 @@
   },
   "conditionalFeatures": {
     "ai": {
-      "condition": "OPENAI_API_KEY",
+      "condition": "OPENAI_KEY",
       "fallback": false,
-      "message": "AI features require OPENAI_API_KEY environment variable"
+      "message": "AI features require OPENAI_KEY environment variable"
     },
     "mcp": {
       "condition": "scripts-complex/mcp-installer.js",

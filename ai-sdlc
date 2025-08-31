@@ -366,7 +366,7 @@ cmd_test_init() {
         echo -e "${YELLOW}💡 Troubleshooting:${NC}"
         echo "- Ensure you're in the correct directory"
         echo "- Run './ai-sdlc setup' to install missing components"
-        echo "- Check if OpenAI API key is configured in .env"
+        echo "- Check if OPENAI_KEY is configured in .env"
         exit 1
     fi
 }
@@ -385,7 +385,7 @@ cmd_test_gen() {
         echo
         echo -e "${YELLOW}💡 Troubleshooting:${NC}"
         echo "- Run './ai-sdlc explain \"test generation\"' for detailed help"
-        echo "- Ensure OpenAI API key is configured"
+        echo "- Ensure OPENAI_KEY is configured"
         echo "- Verify you're in the correct project directory"
         exit 1
     fi

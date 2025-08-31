@@ -16,12 +16,12 @@ const https = require('https');
 
 class RealAITestGenerator {
   constructor() {
-    this.openaiApiKey = process.env.OPENAI_API_KEY;
+    this.openaiApiKey = process.env.OPENAI_KEY;
     this.projectRoot = process.cwd();
 
     if (!this.openaiApiKey || this.openaiApiKey.length < 20) {
       console.warn('⚠️  WARNING: No valid OpenAI API key found');
-      console.warn('   Set OPENAI_API_KEY in .env file');
+      console.warn('   Set OPENAI_KEY in .env file');
       console.warn('   Falling back to template generation');
       this.useTemplateMode = true;
     } else {
@@ -547,7 +547,7 @@ async function main() {
       );
       console.log('');
       console.log('Environment Variables:');
-      console.log('  OPENAI_API_KEY - Required for AI-powered generation');
+      console.log('  OPENAI_KEY - Required for AI-powered generation');
       console.log('  Without API key, falls back to template generation');
       break;
   }

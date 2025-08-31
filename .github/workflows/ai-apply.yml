@@ -1,0 +1,52 @@
+name: 🤖 AI Apply Safe Fixes
+
+on:
+  pull_request:
+    types: [labeled]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  apply:
+    if: contains(github.event.pull_request.labels.*.name, 'apply-ai-fixes')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+
+      - name: Install deps
+        run: npm ci --no-audit
+
+      - name: Apply safe fixes (lint/format)
+        run: |
+          npx eslint . --fix || true
+          npx prettier --write "**/*.{js,jsx,ts,tsx,json,md,css,scss}" || true
+
+      - name: Apply auto-heal learnings (if present)
+        run: |
+          if [ -d test-results ]; then
+            npm run ai:apply-heal || true
+          else
+            echo "No test-results/ learnings to apply."
+          fi
+
+      - name: Create PR with changes
+        uses: peter-evans/create-pull-request@v6
+        with:
+          commit-message: "chore(ai): apply safe auto-fixes"
+          title: "chore(ai): apply safe auto-fixes"
+          body: "Automated lint/format and optional selector healings."
+          branch: ai/apply-safe-fixes
+          base: ${{ github.event.pull_request.head.ref }}
+          labels: ai, automation
+

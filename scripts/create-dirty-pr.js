@@ -38,7 +38,13 @@ function writeFile(file, content) {
 
 function dirtyLintFiles() {
   const target = 'src/utils/dirtyLint.ts';
-  const content = `// Intentional style issues for dirty PR validation\n\nexport function badFormat( value :number){\nconsole.log(\"bad\",  value)\nconst UNUSED = 123\nreturn value+1}\n`;
+  const content = `// Intentional style issues for dirty PR validation
+
+export function badFormat( value :number){
+console.log("bad",  value)
+const UNUSED = 123
+return value+1}
+`;
   writeFile(target, content);
   return [target];
 }

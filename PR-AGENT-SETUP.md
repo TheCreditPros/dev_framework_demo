@@ -27,7 +27,7 @@ Create a `.env` file in your project root:
 ```env
 # Required
 GITHUB_TOKEN=your_github_personal_access_token
-OPENAI_API_KEY=your_openai_api_key
+OPENAI_KEY=your_openai_api_key
 
 # Optional (for enterprise)
 GITHUB_ENTERPRISE_URL=https://github.enterprise.com
@@ -105,7 +105,7 @@ jobs:
       - name: PR Agent Review
         uses: Codium-ai/pr-agent@main
         env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_KEY: ${{ secrets.OPENAI_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           pr_url: ${{ github.event.pull_request.html_url }}
@@ -114,7 +114,7 @@ jobs:
       - name: PR Agent Describe
         uses: Codium-ai/pr-agent@main
         env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_KEY: ${{ secrets.OPENAI_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           pr_url: ${{ github.event.pull_request.html_url }}

@@ -223,7 +223,7 @@ Required secrets for full functionality:
 GITHUB_TOKEN          # Automatically provided
 SONAR_TOKEN          # SonarCloud integration
 CODECOV_TOKEN        # Code coverage reporting
-OPENAI_API_KEY       # AI-powered code analysis
+OPENAI_KEY           # AI-powered code analysis
 QODO_AI_API_KEY      # Enhanced PR analysis
 MS_TEAMS_WEBHOOK_URI # Team notifications
 MS_TEAMS_SECURITY_WEBHOOK # Security notifications

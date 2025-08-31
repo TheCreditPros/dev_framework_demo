@@ -80,18 +80,15 @@ Your repository now has:
 
 ## 🎭 **Git Hooks - The Automation Engine**
 
-### **1. Pre-Commit Hook** 🔍
+### **1. Pre-Commit Hook (Low-Friction)** 🔍
 
 **Purpose**: Ensures code quality before any commit is made
 **Why It's Essential**: Prevents broken code from entering the repository
 
 ```bash
-# What happens automatically before every commit:
-🧹 Repo fixers (if present)
-   - scripts/fix-test-syntax-errors.js
-   - scripts/fix-css-module-mocks.js
-✨ ESLint --fix on staged files
-💅 Prettier format on staged files
+# What happens automatically before every commit (fast):
+✨ ESLint --fix on staged files (lint-staged)
+💅 Prettier format on staged files (lint-staged)
 🧪 (Optional) Type-check in CI
 ```
 
@@ -120,18 +117,17 @@ Your repository now has:
 - **Team Communication**: Clear understanding of what changed
 - **CI/CD Integration**: Automated version bumping and deployment
 
-### **3. Post-Commit Hook** 🤖
+### **3. Post-Commit Hook (Opt-in)** 🤖
 
 **Purpose**: Continuous improvement after code is committed
 **Why It's Essential**: Proactive quality enhancement and team notification
 
 ```bash
-# What happens automatically after commit:
-🤖 AI-SDLC Framework: Running post-commit analysis...
-📊 Quality gate analysis and optimization
-🔍 Multi-stack detection and optimization
-🧪 AI-powered test improvements
-✅ Post-commit analysis completed!
+Post-commit validation is disabled by default. Enable with:
+
+```bash
+export RUN_POST_COMMIT_VALIDATE=true
+```
 ```
 
 **Benefits**:
@@ -424,7 +420,7 @@ module.exports = {
 
 ```bash
 # AI Configuration
-OPENAI_API_KEY=your_key_here
+OPENAI_KEY=your_key_here
 ANTHROPIC_API_KEY=your_claude_key
 DEEPSEEK_API_KEY=your_deepseek_key
 

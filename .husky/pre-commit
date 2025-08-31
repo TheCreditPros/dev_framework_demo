@@ -1,8 +1,7 @@
 #!/usr/bin/env sh
 
-# Run repository auto-fixers when present
-[ -f scripts/fix-test-syntax-errors.js ] && node scripts/fix-test-syntax-errors.js || true
-[ -f scripts/fix-css-module-mocks.js ] && node scripts/fix-css-module-mocks.js || true
+# Minimal, fast, low-friction pre-commit
+# - Only fixes and formats staged files
+# - Heavy tasks are opt-in via pre-push or CI
 
-# Lint and format staged files
 npx lint-staged
