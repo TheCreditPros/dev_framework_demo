@@ -68,19 +68,21 @@ Here are the unified diffs for the changed files:
 ${diffChunk}
 `;
 
-            // 3) Call OpenAI Responses API (GPT-4.1-mini for speed/cost)
-            const resp = await fetch('https://api.openai.com/v1/responses', {
+            // 3) Call OpenAI Chat Completions API (GPT-4o-mini for speed/cost)
+            const resp = await fetch('https://api.openai.com/v1/chat/completions', {
               method: 'POST',
               headers: {
                 'Authorization': `Bearer ${process.env.OPENAI_KEY}`,
                 'Content-Type': 'application/json'
               },
               body: JSON.stringify({
-                model: 'gpt-4.1-mini',
-                input: [
+                model: 'gpt-4o-mini',
+                messages: [
                   { role: 'system', content: system },
                   { role: 'user', content: user }
-                ]
+                ],
+                max_tokens: 1000,
+                temperature: 0.1
               })
             });
 
@@ -91,7 +93,7 @@ ${diffChunk}
             }
 
             const data = await resp.json();
-            const reviewText = (data.output_text ?? (data.content || []).map(c => c.text).join('') ?? '').trim();
+            const reviewText = data.choices?.[0]?.message?.content?.trim() || '';
 
             if (!reviewText) {
               core.info('Model returned no content.');
@@ -103,5 +105,5 @@ ${diffChunk}
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: pr.number,
-              body: `## 🤖 AI Code Review (gpt-4.1-mini)\n${reviewText}\n\n— _automated review_`
+              body: `## 🤖 AI Code Review (gpt-4o-mini)\n${reviewText}\n\n— _automated review_`
             });
