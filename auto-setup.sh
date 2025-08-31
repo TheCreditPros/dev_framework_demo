@@ -39,15 +39,37 @@ check_prerequisites() {
   fi
 }
 
+install_pr_agent() {
+  echo_color $YELLOW "🤖 Ensuring AI PR Agent (pr-agent) is installed..."
+  if command -v pr-agent >/dev/null 2>&1; then
+    echo_color $GREEN "✔️ PR Agent already available"
+    return 0
+  fi
+
+  if command -v pipx >/dev/null 2>&1; then
+    pipx install pr-agent || true
+  elif command -v pip >/dev/null 2>&1; then
+    pip install --user pr-agent || true
+    echo "If pr-agent is not found, add \"$HOME/.local/bin\" to your PATH"
+  else
+    echo_color $YELLOW "⚠️ Neither pipx nor pip found. Skipping automatic PR Agent install."
+  fi
+
+  if command -v pr-agent >/dev/null 2>&1; then
+    echo_color $GREEN "✔️ PR Agent installed"
+  else
+    echo_color $RED "❌ PR Agent not available. Install manually via pipx or pip and set GITHUB_TOKEN."
+  fi
+}
+
 ### INSTALL SHARED PACKAGES & HOOKS
 install_common_dependencies() {
   echo_color $YELLOW "📦 Installing shared developer dependencies..."
   npm install --save-dev eslint prettier husky lint-staged commitlint @commitlint/config-conventional
 
-  # NEW: Qase AIDEN Integration Dependencies
-  echo_color $YELLOW "🤖 Installing Qase AIDEN integration..."
-  # Install Playwright and Qase integration
-  npm install --save-dev @playwright/test playwright-qase-reporter
+  # Install Playwright core (Qase reporter optional; not installed by default)
+  echo_color $YELLOW "🎭 Installing Playwright test runner..."
+  npm install --save-dev @playwright/test
 
   # Install TypeScript ESLint support if TypeScript is detected
   if [[ -f "tsconfig.json" ]] || find . -name "*.ts" -o -name "*.tsx" | head -1 | grep -q .; then
@@ -55,13 +77,7 @@ install_common_dependencies() {
     npm install --save-dev @typescript-eslint/parser @typescript-eslint/eslint-plugin
   fi
 
-  # Check if QASE_API_TOKEN is set
-  if [[ -z "$QASE_API_TOKEN" ]]; then
-    echo_color $YELLOW "⚠️  QASE_API_TOKEN not found - AIDEN will run in demo mode"
-    echo_color $YELLOW "💡 Set QASE_API_TOKEN environment variable for full AI test generation"
-  else
-    echo_color $GREEN "✅ Qase AIDEN configured with API token"
-  fi
+  # QASE_API_TOKEN handling removed (Qase reporter not installed by default)
 
   # Modern Husky v8+ initialization
   echo_color $YELLOW "🪝 Setting up Git hooks with Husky..."
@@ -74,6 +90,9 @@ EOF
   chmod +x .husky/pre-commit
 
   echo_color $GREEN "✔️ Git hooks configured successfully."
+
+  # Ensure PR Agent availability
+  install_pr_agent || true
 }
 
 ### DETECT AND SETUP PROJECT TYPE
@@ -304,55 +323,7 @@ setup_cicd_automation() {
     echo_color $GREEN "✔️ CODEOWNERS already configured"
   fi
 
-  # Setup Lighthouse configuration
-  if [[ ! -f "lighthouse.config.js" ]]; then
-    echo_color $BLUE "⚡ Creating Lighthouse performance configuration..."
-    cat > lighthouse.config.js << 'EOF'
-// AI-SDLC Framework v3.2.1 - Lighthouse CI Configuration
-// Performance monitoring and web vitals tracking
-
-module.exports = {
-  ci: {
-    collect: {
-      url: ['http://localhost:3000'],
-      startServerCommand: 'npm run dev',
-      startServerReadyPattern: 'ready|listening|started',
-      startServerReadyTimeout: 30000,
-      numberOfRuns: 3,
-      settings: {
-        chromeFlags: '--no-sandbox --disable-dev-shm-usage',
-      },
-    },
-    assert: {
-      assertions: {
-        // Performance budgets for credit repair applications
-        'categories:performance': ['error', { minScore: 0.8 }],
-        'categories:accessibility': ['error', { minScore: 0.9 }],
-        'categories:best-practices': ['error', { minScore: 0.9 }],
-        'categories:seo': ['error', { minScore: 0.8 }],
-
-        // Core Web Vitals - Critical for user experience
-        'first-contentful-paint': ['error', { maxNumericValue: 2000 }],
-        'largest-contentful-paint': ['error', { maxNumericValue: 2500 }],
-        'cumulative-layout-shift': ['error', { maxNumericValue: 0.1 }],
-        'total-blocking-time': ['error', { maxNumericValue: 300 }],
-
-        // Security and compliance
-        'is-on-https': 'error',
-        'uses-http2': 'warn',
-        'no-vulnerable-libraries': 'error',
-      },
-    },
-    upload: {
-      target: 'temporary-public-storage',
-    },
-  },
-};
-EOF
-    echo_color $GREEN "✔️ Lighthouse configuration created"
-  else
-    echo_color $GREEN "✔️ Lighthouse configuration already exists"
-  fi
+  # Lighthouse/Performance configuration removed from base template
 
   # Add CI/CD scripts to package.json
   if [[ -f "package.json" ]]; then

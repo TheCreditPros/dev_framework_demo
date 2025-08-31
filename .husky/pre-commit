@@ -1,1 +1,8 @@
+#!/usr/bin/env sh
+
+# Run repository auto-fixers when present
+[ -f scripts/fix-test-syntax-errors.js ] && node scripts/fix-test-syntax-errors.js || true
+[ -f scripts/fix-css-module-mocks.js ] && node scripts/fix-css-module-mocks.js || true
+
+# Lint and format staged files
 npx lint-staged

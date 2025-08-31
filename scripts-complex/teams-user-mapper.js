@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * MS Teams User Mapper for AI-SDLC Framework v3.2.1
+ * MS Teams User Mapper for AI-SDLC Framework v3.3.0
  * Maps GitHub handles to MS Teams user mentions for proper notifications
  * The Credit Pros - Development Team
  */

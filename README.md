@@ -10,6 +10,8 @@
 
 ## 🎯 **What This Framework Does**
 
+Note: In this demo repository, performance tracking (Lighthouse/Artillery) is disabled by default and related CI jobs/configs have been removed to keep the template lean. You can enable performance testing later using the examples in docs.
+
 The AI-SDLC Framework transforms any repository into an **AI-powered development powerhouse** with:
 
 - 🤖 **AI-Powered Code Review** - PR Agent with full repository context
@@ -44,7 +46,7 @@ git clone https://github.com/TheCreditPros/dev_framework_demo.git
 cd your-project
 ```
 
-### **2. Run Auto-Setup**
+### **2. Run Auto-Setup (installs PR Agent and hooks)**
 
 ```bash
 ./auto-setup.sh
@@ -55,9 +57,9 @@ cd your-project
 Your repository now has:
 
 - AI-powered development automation
-- Quality gates and testing
-- Intelligent PR reviews
-- Auto-healing capabilities
+- Quality gates and testing (ESLint, Prettier, TypeScript, Vitest)
+- Intelligent PR reviews (PR Agent auto-installed during setup)
+- Auto-correction on commit (lint-staged + repo fixers)
 
 ## 🔧 **Complete Toolkit Overview**
 
@@ -67,6 +69,7 @@ Your repository now has:
 - ✅ **Quality Gates** - ESLint, Prettier, TypeScript, Vitest, Playwright
 - ✅ **Git Hooks** - Pre-commit, commit-msg, post-commit automation
 - ✅ **PR Agent** - AI-powered code review with repository context
+- ✅ **Laravel Example (optional)** - See `examples/laravel/` for PHP backend patterns
 
 ### **Configuration Files**
 
@@ -84,18 +87,12 @@ Your repository now has:
 
 ```bash
 # What happens automatically before every commit:
-🔍 Multi-stack project detection
-🧹 Lint-staged with auto-improvements
-🤖 AI-powered code improvements
-  ✨ Auto-fix ESLint issues
-  💅 Auto-format with Prettier
-  🐘 Auto-fix PHP issues (Laravel Pint, Rector)
-  🧪 Generate missing tests for uncovered code
-  🎭 Playwright test auto-healing
-  🏦 Auto-fix FCRA compliance issues
-  🔒 Security vulnerability scanning
-  📊 Code coverage validation
-  🚀 Performance optimization suggestions
+🧹 Repo fixers (if present)
+   - scripts/fix-test-syntax-errors.js
+   - scripts/fix-css-module-mocks.js
+✨ ESLint --fix on staged files
+💅 Prettier format on staged files
+🧪 (Optional) Type-check in CI
 ```
 
 **Benefits**:

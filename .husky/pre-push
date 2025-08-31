@@ -1,1 +1,8 @@
-npx vitest run --reporter=verbose
+npx vitest run --reporter=verbose --maxWorkers=2
+
+# Optional: run E2E + auto-healing when explicitly enabled
+if [ "$ENABLE_E2E" = "true" ]; then
+  npx playwright install --with-deps || true
+  npm run test:e2e || true
+  npm run ai:auto-heal || true
+fi

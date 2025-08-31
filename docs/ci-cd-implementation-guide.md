@@ -1,4 +1,4 @@
-# CI/CD Implementation Guide - AI-SDLC Framework v3.2.1
+# CI/CD Implementation Guide - AI-SDLC Framework v3.3.0
 
 ## Overview
 
@@ -50,24 +50,9 @@ security-analysis → build → deploy → post-deploy-validation → cleanup
 
 **Schedule**: Daily at 2 AM EST + on-demand
 
-### 3. Performance Monitoring (`performance.yml`)
+### 3. Performance Monitoring (Removed)
 
-**Purpose**: Automated performance testing and monitoring.
-
-**Features**:
-
-- **Lighthouse CI**: Web performance auditing
-- **Load Testing**: Artillery-based load testing
-- **Memory Profiling**: Memory leak detection and analysis
-- **Credit-Specific Performance**: Credit score calculation benchmarks
-- **Performance Budgets**: Automated performance threshold enforcement
-
-**Performance Thresholds**:
-
-- First Contentful Paint: < 2 seconds
-- Largest Contentful Paint: < 2.5 seconds
-- Cumulative Layout Shift: < 0.1
-- Total Blocking Time: < 300ms
+Performance monitoring and budgets have been removed from the base template. If needed, reintroduce Lighthouse/Artillery as opt-in workflows.
 
 ## 🤖 Dependency Management
 
@@ -260,12 +245,9 @@ Dependabot is automatically configured with:
 - Grouped updates by category
 - Automated labeling and assignment
 
-### 4. Performance Monitoring Setup
+### 4. Performance Monitoring Setup (Removed)
 
-1. Configure Lighthouse CI with performance budgets
-2. Set up load testing endpoints
-3. Configure performance thresholds
-4. Enable performance regression detection
+This section has been intentionally removed to keep the template lean.
 
 ## 📋 Best Practices
 
@@ -286,13 +268,9 @@ Dependabot is automatically configured with:
 - Follow FCRA compliance guidelines for credit data
 - Regular security dependency updates
 
-### Performance Optimization
+### Performance Optimization (Optional)
 
-- Monitor Core Web Vitals continuously
-- Implement performance budgets
-- Optimize credit calculation algorithms
-- Use efficient data structures for large datasets
-- Regular performance regression testing
+If you reintroduce performance tooling, keep these practices in a dedicated workflow.
 
 ## 🔄 Maintenance
 
@@ -300,7 +278,7 @@ Dependabot is automatically configured with:
 
 - Review Dependabot PRs and merge approved updates
 - Monitor security scan results and address findings
-- Review performance metrics and optimize bottlenecks
+  -- (Optional) Review performance metrics and optimize bottlenecks
 - Update documentation for new features or changes
 
 ### Monthly Tasks
@@ -313,7 +291,6 @@ Dependabot is automatically configured with:
 ### Quarterly Tasks
 
 - Comprehensive security audit
-- Performance baseline reassessment
 - CI/CD pipeline optimization review
 - Team training on new tools and processes
 
@@ -324,7 +301,7 @@ Dependabot is automatically configured with:
 - **Build Failures**: Check dependency compatibility and Node.js version
 - **Test Failures**: Verify test environment setup and mock data
 - **Security Alerts**: Review dependency vulnerabilities and update
-- **Performance Issues**: Analyze Lighthouse reports and optimize
+- (Optional) Performance: analyze Lighthouse reports when enabled
 
 ### Getting Help
 
@@ -340,7 +317,7 @@ Dependabot is automatically configured with:
 - **Test Coverage**: ≥ 80% for all new code
 - **Code Quality**: SonarCloud quality gate passing
 - **Security Score**: Zero high/critical vulnerabilities
-- **Performance Score**: ≥ 80% Lighthouse performance score
+- (Optional) Performance Score: track Lighthouse score when enabled
 
 ### Automation Metrics
 

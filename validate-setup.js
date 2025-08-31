@@ -26,6 +26,21 @@ const checks = [
     command: 'npx husky --version',
     success: 'Husky available',
   },
+  {
+    name: 'TypeScript',
+    command: 'npx tsc --version',
+    success: 'TypeScript available',
+  },
+  {
+    name: 'Vitest',
+    command: 'npx vitest --version',
+    success: 'Vitest available',
+  },
+  {
+    name: 'PR Agent',
+    command: 'pr-agent --help',
+    success: 'PR Agent available',
+  },
 ];
 
 let passed = 0;

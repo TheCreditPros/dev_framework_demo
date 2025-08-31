@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * Quality Gate Failure Notifier for AI-SDLC Framework v3.2.1
+ * Quality Gate Failure Notifier for AI-SDLC Framework v3.3.0
  * Enhanced MS Teams notifications with actionable developer guidance
  * The Credit Pros - Development Team
  */

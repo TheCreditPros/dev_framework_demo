@@ -33,7 +33,6 @@ export default defineConfig({
       '**/coverage/**',
       'portal2-admin-refactor/**',
       '**/tests/e2e/**',
-      '**/*.spec.js',
       '**/playwright/**',
     ],
   },
