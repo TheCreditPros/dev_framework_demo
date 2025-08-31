@@ -194,7 +194,7 @@ jobs:
             echo "💾 Committing auto-healed changes..."
             git add -A
             git commit -m "fix(auto-heal): apply eslint and prettier auto-fixes"
-            git push
+            git push origin HEAD:${{ github.event.pull_request.head.ref }}
             echo "✅ Auto-healed changes committed and pushed"
           else
             echo "ℹ️ No auto-healing changes to commit"
