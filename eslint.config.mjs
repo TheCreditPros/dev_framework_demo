@@ -18,6 +18,7 @@ export default [
       '**/enhanced-jest-to-vitest.js',
       '**/final-jest-removal.js',
       '**/jest-to-vitest-converter.js',
+      '**/playwright-report/**',
     ],
   },
   {
