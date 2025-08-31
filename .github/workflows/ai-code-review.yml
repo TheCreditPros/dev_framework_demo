@@ -72,34 +72,58 @@ PR #${pr.number}: ${pr.title}
 Here are the unified diffs for the changed files:
 ${diffChunk}
 `;
+            // 3) Call OpenAI API with retry/backoff; non-blocking on failure
+            const endpoint = 'https://api.openai.com/v1/chat/completions';
+            const payload = {
+              model: 'gpt-4o-mini',
+              messages: [
+                { role: 'system', content: system },
+                { role: 'user', content: user }
+              ],
+              max_tokens: 1000,
+              temperature: 0.1
+            };
 
-            // 3) Call OpenAI Chat Completions API (GPT-4o-mini for speed/cost)
-            const resp = await fetch('https://api.openai.com/v1/chat/completions', {
-              method: 'POST',
-              headers: {
-                'Authorization': `Bearer ${process.env.OPENAI_KEY}`,
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify({
-                model: 'gpt-4o-mini',
-                messages: [
-                  { role: 'system', content: system },
-                  { role: 'user', content: user }
-                ],
-                max_tokens: 1000,
-                temperature: 0.1
-              })
-            });
+            const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+            const shouldRetry = (status) => [429, 500, 502, 503, 504].includes(status);
 
-            core.info(`OpenAI API response status: ${resp.status}`);
+            let resp, text, data;
+            const maxAttempts = 3;
+            for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+              try {
+                const controller = new AbortController();
+                const t = setTimeout(() => controller.abort(), 15000);
+                resp = await fetch(endpoint, {
+                  method: 'POST',
+                  headers: {
+                    'Authorization': `Bearer ${process.env.OPENAI_KEY}`,
+                    'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify(payload),
+                  signal: controller.signal
+                });
+                clearTimeout(t);
+                core.info(`OpenAI API status (attempt ${attempt}): ${resp.status}`);
+                if (resp.ok) {
+                  data = await resp.json();
+                  break;
+                }
+                if (!shouldRetry(resp.status)) {
+                  text = await resp.text();
+                  core.warning(`OpenAI API non-retryable error: ${resp.status} ${text}`);
+                  break;
+                }
+              } catch (err) {
+                core.warning(`OpenAI request error on attempt ${attempt}: ${err.message || err}`);
+              }
+              if (attempt < maxAttempts) await sleep(1000 * Math.pow(2, attempt - 1));
+            }
 
-            if (!resp.ok) {
-              const text = await resp.text();
-              core.setFailed(`OpenAI API error: ${resp.status} ${text}`);
+            if (!data) {
+              core.warning('Skipping AI review (OpenAI API unavailable after retries).');
               return;
             }
 
-            const data = await resp.json();
             const reviewText = data.choices?.[0]?.message?.content?.trim() || '';
 
             core.info(`Review text length: ${reviewText.length}`);
