@@ -32,7 +32,7 @@ test_help() {
 
 test_version() {
   echo_color $YELLOW "Testing --version flag..."
-  if ./auto-setup-enhanced.sh --version | grep -q "v3.2.1"; then
+if ./auto-setup-enhanced.sh --version | grep -q "v3.3.0"; then
     echo_color $GREEN "✅ Version function works"
   else
     echo_color $RED "❌ Version function failed"

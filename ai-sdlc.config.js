@@ -33,7 +33,7 @@ module.exports = {
     },
     prettier: {
       enabled: process.env.PRETTIER_ENABLED !== 'false',
-      config: process.env.PRETTIER_CONFIG || './prettier.config.mjs',
+      config: process.env.PRETTIER_CONFIG || '.prettierrc',
       autoFormat: process.env.PRETTIER_AUTO_FORMAT !== 'false',
     },
     typescript: {
@@ -45,11 +45,11 @@ module.exports = {
       vitest: {
         enabled: process.env.VITEST_ENABLED !== 'false',
         coverage: parseInt(process.env.VITEST_COVERAGE_THRESHOLD) || 80,
-        config: process.env.VITEST_CONFIG || './vitest.config.ts',
+        config: process.env.VITEST_CONFIG || './vitest.config.js',
       },
       playwright: {
         enabled: process.env.PLAYWRIGHT_ENABLED !== 'false',
-        config: process.env.PLAYWRIGHT_CONFIG || './e2e/playwright.config.js',
+        config: process.env.PLAYWRIGHT_CONFIG || './playwright.config.js',
         autoHealing: process.env.PLAYWRIGHT_AUTO_HEALING !== 'false',
       },
     },

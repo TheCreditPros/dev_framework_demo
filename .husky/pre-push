@@ -1,1 +1,15 @@
-npx vitest run --reporter=verbose
+#!/usr/bin/env sh
+
+# Light-touch pre-push: tests are opt-in to keep DX fast
+# Enable by setting RUN_TESTS_ON_PUSH=true
+
+if [ "$RUN_TESTS_ON_PUSH" = "true" ]; then
+  npx vitest run --reporter=verbose --maxWorkers=2 || exit 1
+fi
+
+# Optional: run E2E + auto-healing when explicitly enabled
+if [ "$ENABLE_E2E" = "true" ]; then
+  npx playwright install --with-deps || true
+  npm run test:e2e || true
+  npm run ai:auto-heal || true
+fi

@@ -14,11 +14,11 @@ export default [
       '**/site/**',
       '**/docs/site/**',
       '**/temp/**',
-      '**/portal2-admin-refactor/**',
       '**/comprehensive-jest-to-vitest.js',
       '**/enhanced-jest-to-vitest.js',
       '**/final-jest-removal.js',
       '**/jest-to-vitest-converter.js',
+      '**/playwright-report/**',
     ],
   },
   {

@@ -10,6 +10,8 @@
 
 ## 🎯 **What This Framework Does**
 
+Note: In this demo repository, performance tracking (Lighthouse/Artillery) is disabled by default and related CI jobs/configs have been removed to keep the template lean. You can enable performance testing later using the examples in docs.
+
 The AI-SDLC Framework transforms any repository into an **AI-powered development powerhouse** with:
 
 - 🤖 **AI-Powered Code Review** - PR Agent with full repository context
@@ -44,7 +46,7 @@ git clone https://github.com/TheCreditPros/dev_framework_demo.git
 cd your-project
 ```
 
-### **2. Run Auto-Setup**
+### **2. Run Auto-Setup (installs PR Agent and hooks)**
 
 ```bash
 ./auto-setup.sh
@@ -55,9 +57,9 @@ cd your-project
 Your repository now has:
 
 - AI-powered development automation
-- Quality gates and testing
-- Intelligent PR reviews
-- Auto-healing capabilities
+- Quality gates and testing (ESLint, Prettier, TypeScript, Vitest)
+- Intelligent PR reviews (PR Agent auto-installed during setup)
+- Auto-correction on commit (lint-staged + repo fixers)
 
 ## 🔧 **Complete Toolkit Overview**
 
@@ -67,6 +69,7 @@ Your repository now has:
 - ✅ **Quality Gates** - ESLint, Prettier, TypeScript, Vitest, Playwright
 - ✅ **Git Hooks** - Pre-commit, commit-msg, post-commit automation
 - ✅ **PR Agent** - AI-powered code review with repository context
+- ✅ **Laravel Example (optional)** - See `examples/laravel/` for PHP backend patterns
 
 ### **Configuration Files**
 
@@ -77,25 +80,16 @@ Your repository now has:
 
 ## 🎭 **Git Hooks - The Automation Engine**
 
-### **1. Pre-Commit Hook** 🔍
+### **1. Pre-Commit Hook (Low-Friction)** 🔍
 
 **Purpose**: Ensures code quality before any commit is made
 **Why It's Essential**: Prevents broken code from entering the repository
 
 ```bash
-# What happens automatically before every commit:
-🔍 Multi-stack project detection
-🧹 Lint-staged with auto-improvements
-🤖 AI-powered code improvements
-  ✨ Auto-fix ESLint issues
-  💅 Auto-format with Prettier
-  🐘 Auto-fix PHP issues (Laravel Pint, Rector)
-  🧪 Generate missing tests for uncovered code
-  🎭 Playwright test auto-healing
-  🏦 Auto-fix FCRA compliance issues
-  🔒 Security vulnerability scanning
-  📊 Code coverage validation
-  🚀 Performance optimization suggestions
+# What happens automatically before every commit (fast):
+✨ ESLint --fix on staged files (lint-staged)
+💅 Prettier format on staged files (lint-staged)
+🧪 (Optional) Type-check in CI
 ```
 
 **Benefits**:
@@ -123,19 +117,19 @@ Your repository now has:
 - **Team Communication**: Clear understanding of what changed
 - **CI/CD Integration**: Automated version bumping and deployment
 
-### **3. Post-Commit Hook** 🤖
+### **3. Post-Commit Hook (Opt-in)** 🤖
 
 **Purpose**: Continuous improvement after code is committed
 **Why It's Essential**: Proactive quality enhancement and team notification
 
+````bash
+Post-commit validation is disabled by default. Enable with:
+
 ```bash
-# What happens automatically after commit:
-🤖 AI-SDLC Framework: Running post-commit analysis...
-📊 Quality gate analysis and optimization
-🔍 Multi-stack detection and optimization
-🧪 AI-powered test improvements
-✅ Post-commit analysis completed!
-```
+export RUN_POST_COMMIT_VALIDATE=true
+````
+
+````
 
 **Benefits**:
 
@@ -307,7 +301,7 @@ npm run ai:auto-heal
 
 # Multi-stack project analysis
 npm run ai:setup
-```
+````
 
 ### **2. Quality Gates**
 
@@ -427,7 +421,7 @@ module.exports = {
 
 ```bash
 # AI Configuration
-OPENAI_API_KEY=your_key_here
+OPENAI_KEY=your_key_here
 ANTHROPIC_API_KEY=your_claude_key
 DEEPSEEK_API_KEY=your_deepseek_key
 

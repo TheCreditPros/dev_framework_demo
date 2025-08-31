@@ -117,6 +117,29 @@ check_prerequisites() {
   echo_color $GREEN "✅ Prerequisites check passed"
 }
 
+install_pr_agent() {
+  echo_color $YELLOW "🤖 Ensuring AI PR Agent (pr-agent) is installed..."
+  if command -v pr-agent >/dev/null 2>&1; then
+    echo_color $GREEN "✔️ PR Agent already available"
+    return 0
+  fi
+
+  if command -v pipx >/dev/null 2>&1; then
+    pipx install pr-agent || true
+  elif command -v pip >/dev/null 2>&1; then
+    pip install --user pr-agent || true
+    echo_color $YELLOW "ℹ️ If pr-agent is not found, add \"$HOME/.local/bin\" to your PATH"
+  else
+    echo_color $YELLOW "⚠️ Neither pipx nor pip found. Skipping automatic PR Agent install."
+  fi
+
+  if command -v pr-agent >/dev/null 2>&1; then
+    echo_color $GREEN "✔️ PR Agent installed"
+  else
+    echo_color $RED "❌ PR Agent not available. Install manually via pipx or pip and set GITHUB_TOKEN."
+  fi
+}
+
 ### LOAD SETUP LEVELS CONFIGURATION
 load_setup_config() {
   if [[ ! -f "setup-levels.json" ]]; then
@@ -463,6 +486,7 @@ main() {
   check_prerequisites
   load_setup_config
   install_dependencies
+  install_pr_agent
   setup_git_hooks
   setup_configuration
   setup_api_validation

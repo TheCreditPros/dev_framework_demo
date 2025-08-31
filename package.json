@@ -8,7 +8,9 @@
     "test:watch": "vitest --watch",
     "test:coverage": "vitest --coverage",
     "test:ci": "vitest run --reporter=verbose --maxWorkers=1",
+    "test:e2e": "playwright test",
     "lint": "eslint .",
+    "lint:ci": "eslint . --max-warnings=0",
     "lint:fix": "eslint . --fix",
     "format": "prettier --check '**/*.{js,jsx,ts,tsx,json,md}'",
     "format:fix": "prettier --write '**/*.{js,jsx,ts,tsx,json,md}'",
@@ -17,7 +19,9 @@
     "ai:setup": "node scripts-complex/multi-stack-detector.js",
     "ai:quality-check": "node scripts-complex/quality-gate-notifier.js",
     "ai:test-generate": "node scripts-complex/real-ai-test-generator.js",
-    "ai:auto-heal": "node scripts-complex/playwright-auto-healing.js",
+    "ai:auto-heal": "node scripts-complex/playwright-auto-healing.js demo",
+    "ai:apply-heal": "node scripts-complex/apply-auto-heal-learnings.js",
+    "examples:extract-laravel": "node scripts/relocate-laravel-example.js",
     "ai:analyze": "node scripts-complex/api-process-analyzer.js",
     "framework:validate": "node validate-setup.js",
     "framework:setup": "./setup.sh",
@@ -30,6 +34,10 @@
     "pr:security-review": "pr-agent --pr_url=${PR_URL} review --pr_reviewer.extra_instructions=\"Focus on security vulnerabilities, input validation, and data protection\"",
     "pr:compliance-review": "pr-agent --pr_url=${PR_URL} review --pr_reviewer.extra_instructions=\"Focus on compliance requirements, audit trails, and regulatory adherence\"",
     "test:ai-pr-review": "node test-ai-pr-review.js",
+    "pr:dirty": "node scripts/create-dirty-pr.js --type=mixed --open-pr",
+    "pr:dirty:lint": "node scripts/create-dirty-pr.js --type=lint --open-pr",
+    "pr:dirty:e2e": "node scripts/create-dirty-pr.js --type=e2e --open-pr",
+    "pr:cleanup": "node scripts/cleanup-dirty-prs.js",
     "prepare": "husky"
   },
   "keywords": [
@@ -79,6 +87,9 @@
     "url": "https://github.com/TheCreditPros/dev_framework_demo/issues"
   },
   "homepage": "https://github.com/TheCreditPros/dev_framework_demo#readme",
+  "engines": {
+    "node": ">=18"
+  },
   "dependencies": {
     "@playwright/test": "^1.55.0",
     "dotenv": "^17.2.1"

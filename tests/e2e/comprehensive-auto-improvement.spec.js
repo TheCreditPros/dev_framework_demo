@@ -6,18 +6,23 @@ test.describe('Comprehensive Auto-Improvement Validation', () => {
     await page.goto('http://localhost:3000/credit-dashboard');
 
     // Use old, fragile selectors that should be auto-healed
-    await page.click('button.submit-credit-application');
-    await page.waitForSelector('#credit-score-result', { timeout: 500 }); // Too short
+    await page.click('button[data-testid=submit-credit-application]');
+    await page.waitForSelector('[data-testid=credit-score-result]', {
+      timeout: 500,
+    }); // Too short
 
     // Test form interactions with unstable selectors
     await page.fill('input[name=ssn]', '***-**-6789');
-    await page.fill('textarea.credit-reason', 'Need credit repair services');
+    await page.fill(
+      'textarea[name=credit-reason]',
+      'Need credit repair services'
+    );
 
     // Submit form with old selector
-    await page.click('.old-submit-button');
+    await page.click('[data-testid=submit-button]');
 
     // Verify results with fragile selector
-    const result = await page.textContent('div.result-container > span');
+    const result = await page.textContent('[data-testid=result-message]');
     expect(result).toContain('Application submitted');
   });
 
@@ -32,18 +37,23 @@ test.describe('Comprehensive Auto-Improvement Validation', () => {
     });
 
     // Interact with credit score elements
-    await page.hover('#credit-score-display');
-    await page.click('button[class*=dispute]');
+    await page.hover('[data-testid=credit-score-display]');
+    await page.click('button[data-testid=dispute]');
 
     // Fill dispute form with old selectors
-    await page.selectOption('select.dispute-reason', 'incorrect-balance');
-    await page.setInputFiles('input[type=file]', 'test-document.pdf');
+    await page.selectOption('select[name=dispute-reason]', 'incorrect-balance');
+    await page.setInputFiles(
+      'input[type=file]',
+      'tests/e2e/assets/test-document.pdf'
+    );
 
     // Submit dispute
-    await page.click('.submit-dispute-btn');
+    await page.click('[data-testid=submit-dispute]');
 
     // Verify dispute submission
-    const confirmation = await page.textContent('.confirmation-message');
+    const confirmation = await page.textContent(
+      '[data-testid=confirmation-message]'
+    );
     expect(confirmation).toContain('Dispute submitted successfully');
   });
 });

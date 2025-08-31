@@ -1,5 +1,5 @@
 #!/bin/bash
-# AI-SDLC Enhanced CLI - v3.2.1
+# AI-SDLC Enhanced CLI - v3.3.0
 # Simplified management interface for development automation
 
 set -e
@@ -12,7 +12,7 @@ BLUE='\033[0;34m'
 NC='\033[0m'
 
 # Version
-VERSION="3.2.1"
+VERSION="3.3.0"
 
 # Logging functions
 info() { echo -e "${BLUE}ℹ️  $1${NC}"; }
@@ -366,7 +366,7 @@ cmd_test_init() {
         echo -e "${YELLOW}💡 Troubleshooting:${NC}"
         echo "- Ensure you're in the correct directory"
         echo "- Run './ai-sdlc setup' to install missing components"
-        echo "- Check if OpenAI API key is configured in .env"
+        echo "- Check if OPENAI_KEY is configured in .env"
         exit 1
     fi
 }
@@ -385,7 +385,7 @@ cmd_test_gen() {
         echo
         echo -e "${YELLOW}💡 Troubleshooting:${NC}"
         echo "- Run './ai-sdlc explain \"test generation\"' for detailed help"
-        echo "- Ensure OpenAI API key is configured"
+        echo "- Ensure OPENAI_KEY is configured"
         echo "- Verify you're in the correct project directory"
         exit 1
     fi

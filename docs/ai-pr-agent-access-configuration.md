@@ -36,7 +36,7 @@ GITHUB_APP_PRIVATE_KEY=-----BEGIN...   # GitHub App Private Key
 GITHUB_WEBHOOK_SECRET=your_secret      # Webhook secret for security
 
 # AI Model Configuration
-OPENAI_API_KEY=sk-xxxxxxxxxxxxxxxxxxxx # OpenAI API key for GPT-4o-mini
+OPENAI_KEY=sk-xxxxxxxxxxxxxxxxxxxx # OpenAI API key for GPT-4.1/4o-mini
 ANTHROPIC_API_KEY=sk-ant-xxxxxxxxxxxx  # Claude API key for complex analysis
 DEEPSEEK_API_KEY=sk-xxxxxxxxxxxxxxxxxxxx # DeepSeek API key for planning
 

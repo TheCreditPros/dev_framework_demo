@@ -65,6 +65,7 @@ jobs:
           npx eslint . --format json --output-file eslint-report.json || true
 
       - name: SonarCloud Scan
+        if: env.SONAR_TOKEN != ''
         uses: SonarSource/sonarcloud-github-action@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -79,73 +80,51 @@ jobs:
             -Dsonar.eslint.reportPaths=eslint-report.json
 
       - name: Quality Gate Check
-        uses: sonarqube-quality-gate-action@master
+        if: env.SONAR_TOKEN != ''
+        uses: SonarSource/sonarqube-quality-gate-action@master
         timeout-minutes: 5
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
           scanMetadataReportFile: .scannerwork/report-task.txt
-
-      - name: FCRA Compliance Validation
+      - name: FCRA Compliance Validation (guarded)
         run: |
           echo "🏦 Running FCRA compliance validation..."
           node -e "
             const fs = require('fs');
+            const complianceIssues = [];
 
-            // Check SonarCloud results for compliance issues
-            try {
-              const sonarResults = JSON.parse(fs.readFileSync('.scannerwork/report-task.txt', 'utf8'));
-              console.log('✅ SonarCloud analysis completed');
+            // Basic source scan for sensitive patterns
+            const sensitivePatterns = [
+              /\b\d{3}-\d{2}-\d{4}\b/g, // SSN
+              /4[0-9]{12}(?:[0-9]{3})?/g, // Credit card
+              /(?:password|secret|key)\s*[:=]\s*['\"][^'\"\s]+/gi // Credentials
+            ];
 
-              // Additional FCRA-specific checks
-              const complianceIssues = [];
-
-              // Check for hardcoded sensitive data patterns
-              const sensitivePatterns = [
-                /\d{3}-\d{2}-\d{4}/g,  // SSN pattern
-                /4[0-9]{12}(?:[0-9]{3})?/g,  // Credit card pattern
-                /(?:password|secret|key)\s*[:=]\s*['\"]?[^'\"\\s]+/gi  // Credentials
-              ];
-
-              // Scan source files for compliance issues
-              function scanDirectory(dir) {
-                const files = fs.readdirSync(dir, { withFileTypes: true });
-
-                for (const file of files) {
-                  const fullPath = \`\${dir}/\${file.name}\`;
-
-                  if (file.isDirectory() && !['node_modules', 'vendor', '.git'].includes(file.name)) {
-                    scanDirectory(fullPath);
-                  } else if (file.isFile() && (file.name.endsWith('.js') || file.name.endsWith('.ts') || file.name.endsWith('.php'))) {
-                    try {
-                      const content = fs.readFileSync(fullPath, 'utf8');
-
-                      for (const pattern of sensitivePatterns) {
-                        if (pattern.test(content)) {
-                          complianceIssues.push(\`\${fullPath}: Potential sensitive data exposure\`);
-                        }
-                      }
-                    } catch (e) {
-                      // Skip files that can't be read
-                    }
-                  }
+            function scanDirectory(dir) {
+              const entries = fs.readdirSync(dir, { withFileTypes: true });
+              for (const e of entries) {
+                const p = `${dir}/${e.name}`;
+                if (e.isDirectory() && !['node_modules','vendor','.git','coverage','dist','build'].includes(e.name)) scanDirectory(p);
+                else if (e.isFile() && /(\.js|\.ts|\.php)$/.test(e.name)) {
+                  try {
+                    const content = fs.readFileSync(p, 'utf8');
+                    for (const pattern of sensitivePatterns) if (pattern.test(content)) complianceIssues.push(`${p}: Potential sensitive data`);
+                  } catch {}
                 }
               }
-
-              scanDirectory('.');
-
-              if (complianceIssues.length > 0) {
-                console.log('❌ FCRA compliance issues detected:');
-                complianceIssues.forEach(issue => console.log(\`  - \${issue}\`));
-                process.exit(1);
-              } else {
-                console.log('✅ FCRA compliance validation passed');
-              }
-
-            } catch (e) {
-              console.log('⚠️  SonarCloud results not available, running basic compliance check');
-              console.log('✅ Basic compliance validation passed');
             }
+
+            scanDirectory('.');
+
+            if (complianceIssues.length) {
+              console.log('❌ FCRA compliance issues detected:');
+              complianceIssues.forEach(i => console.log('  - ' + i));
+              process.exit(1);
+            }
+
+            if (!process.env.SONAR_TOKEN) console.log('ℹ️  SONAR_TOKEN not set; skipped Sonar quality gate enforcement');
+            console.log('✅ Compliance validation passed');
           "
 
       - name: Notify Teams on Quality Gate Failure

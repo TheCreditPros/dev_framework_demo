@@ -1,1 +1,8 @@
-node validate-setup.js || true
+#!/usr/bin/env sh
+
+# Optional post-commit validation (silent and non-blocking)
+# Enable by setting RUN_POST_COMMIT_VALIDATE=true in your shell
+
+if [ "$RUN_POST_COMMIT_VALIDATE" = "true" ]; then
+  node validate-setup.js || true
+fi
