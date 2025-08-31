@@ -122,13 +122,14 @@ Your repository now has:
 **Purpose**: Continuous improvement after code is committed
 **Why It's Essential**: Proactive quality enhancement and team notification
 
-```bash
+````bash
 Post-commit validation is disabled by default. Enable with:
 
 ```bash
 export RUN_POST_COMMIT_VALIDATE=true
-```
-```
+````
+
+````
 
 **Benefits**:
 
@@ -300,7 +301,7 @@ npm run ai:auto-heal
 
 # Multi-stack project analysis
 npm run ai:setup
-```
+````
 
 ### **2. Quality Gates**
 
