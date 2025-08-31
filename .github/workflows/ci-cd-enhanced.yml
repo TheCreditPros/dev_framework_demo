@@ -182,7 +182,24 @@ jobs:
       - name: 🚑 Commit Auto-Healed Changes
         if: matrix.check == 'lint'
         run: |
-          echo "ℹ️ Auto-healing disabled to prevent workflow hangs"
+          # Only commit on pull_request events to same-repo branches, avoid loops
+          if [[ "${{ github.event_name }}" != "pull_request" ]]; then echo "Not a PR event; skipping auto-commit"; exit 0; fi
+          HEAD_REPO="${{ github.event.pull_request.head.repo.full_name }}"
+          BASE_REPO="${{ github.repository }}"
+          if [[ "$HEAD_REPO" != "$BASE_REPO" ]]; then echo "Fork PR detected; skipping auto-commit"; exit 0; fi
+          LAST_MSG="$(git log -1 --pretty=%B || true)"
+          if echo "$LAST_MSG" | grep -q "fix(auto-heal)"; then echo "Previous commit was auto-heal; skipping to avoid loop"; exit 0; fi
+
+          if [[ -n $(git status --porcelain) ]]; then
+            echo "💾 Committing auto-healed changes..."
+            git add -A
+            # Use --no-verify to bypass lint-staged which causes detached HEAD
+            git commit --no-verify -m "fix(auto-heal): apply eslint and prettier auto-fixes"
+            git push origin HEAD:${{ github.event.pull_request.head.ref }}
+            echo "✅ Auto-healed changes committed and pushed"
+          else
+            echo "ℹ️ No auto-healing changes to commit"
+          fi
 
       - name: 🔍 TypeScript Check
         if: matrix.check == 'type-check'
