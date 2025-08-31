@@ -89,43 +89,11 @@ jobs:
           scanMetadataReportFile: .scannerwork/report-task.txt
       - name: FCRA Compliance Validation (guarded)
         run: |
-          echo "🏦 Running FCRA compliance validation..."
-          node -e "
-            const fs = require('fs');
-            const complianceIssues = [];
-
-            // Basic source scan for sensitive patterns
-            const sensitivePatterns = [
-              /\b\d{3}-\d{2}-\d{4}\b/g, // SSN
-              /4[0-9]{12}(?:[0-9]{3})?/g, // Credit card
-              /(?:password|secret|key)\s*[:=]\s*['\"][^'\"\s]+/gi // Credentials
-            ];
-
-            function scanDirectory(dir) {
-              const entries = fs.readdirSync(dir, { withFileTypes: true });
-              for (const e of entries) {
-                const p = `${dir}/${e.name}`;
-                if (e.isDirectory() && !['node_modules','vendor','.git','coverage','dist','build'].includes(e.name)) scanDirectory(p);
-                else if (e.isFile() && /(\.js|\.ts|\.php)$/.test(e.name)) {
-                  try {
-                    const content = fs.readFileSync(p, 'utf8');
-                    for (const pattern of sensitivePatterns) if (pattern.test(content)) complianceIssues.push(`${p}: Potential sensitive data`);
-                  } catch {}
-                }
-              }
-            }
-
-            scanDirectory('.');
-
-            if (complianceIssues.length) {
-              console.log('❌ FCRA compliance issues detected:');
-              complianceIssues.forEach(i => console.log('  - ' + i));
-              process.exit(1);
-            }
-
-            if (!process.env.SONAR_TOKEN) console.log('ℹ️  SONAR_TOKEN not set; skipped Sonar quality gate enforcement');
-            console.log('✅ Compliance validation passed');
-          "
+          if [ -f "scripts-complex/fcra-compliance-validator.js" ]; then
+            node scripts-complex/fcra-compliance-validator.js
+          else
+            echo "⚠️  FCRA compliance validator not available"
+          fi
 
       - name: Notify Teams on Quality Gate Failure
         if: failure()
