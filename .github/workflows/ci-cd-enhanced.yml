@@ -85,6 +85,12 @@ jobs:
       - name: 📦 Install Dependencies
         run: npm ci --no-audit
 
+      - name: 🧭 Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-browsers-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+
       - name: 🔍 Validate Package Structure
         run: |
           npm run validate || echo "Validation script not found, skipping..."
@@ -278,8 +284,9 @@ Auto-healed by GitHub Actions quality gates
             if [ -z "$PLAYWRIGHT_BASE_URL" ]; then PLAYWRIGHT_BASE_URL="http://localhost:3000"; fi
             export PLAYWRIGHT_WEB_SERVER="${{ vars.PLAYWRIGHT_WEB_SERVER }}"
             if [ -z "$PLAYWRIGHT_WEB_SERVER" ]; then PLAYWRIGHT_WEB_SERVER="node scripts/simple-static-server.js"; fi
-
-            npx playwright install --with-deps
+            # Cache browsers and install Chromium only for faster runs
+            echo "Caching Playwright browsers via actions/cache in a separate step"
+            npx playwright install chromium
             npm run test:e2e || true
             # Run auto-healing demo to capture learnings
             npm run ai:auto-heal || true

@@ -1,28 +1,30 @@
-name: 🧠 Generate AI Learnings
+name: 🧠 AI Generate Learnings
 
 on:
   workflow_dispatch:
     inputs:
-      pr_number:
-        description: 'PR number to generate learnings for'
-        required: true
-        type: string
-  issue_comment:
-    types: [created]
+      base_url:
+        description: 'Base URL for E2E'
+        required: false
+        default: 'http://localhost:3000'
+      web_server:
+        description: 'Command to start web server'
+        required: false
+        default: 'node scripts/simple-static-server.js'
+
+permissions:
+  contents: read
 
 jobs:
-  generate-learnings:
-    if: github.event_name == 'workflow_dispatch' || (github.event.issue.pull_request && contains(github.event.comment.body, '/generate-learnings'))
+  generate:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      pull-requests: write
-    
+    env:
+      ENABLE_E2E: true
+      PLAYWRIGHT_BASE_URL: ${{ inputs.base_url }}
+      PLAYWRIGHT_WEB_SERVER: ${{ inputs.web_server }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -30,38 +32,32 @@ jobs:
           node-version: '20'
           cache: npm
 
-      - name: Install deps
-        run: npm ci --no-audit
-
       - name: Cache Playwright browsers
         uses: actions/cache@v4
         with:
           path: ~/.cache/ms-playwright
           key: playwright-browsers-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
 
-      - name: Install Playwright browsers
-        run: npx playwright install --with-deps chromium
+      - name: Install deps
+        run: npm ci --no-audit
 
-      - name: Run E2E to generate learnings
-        run: |
-          npm run test:e2e || true
-          npm run ai:auto-heal || true
+      - name: Install Playwright (Chromium only)
+        run: npx playwright install chromium
 
-      - name: Upload learnings
+      - name: Run E2E (Chromium) to generate artifacts
+        run: npm run test:e2e || true
+
+      - name: Run auto-heal demo to export learnings
+        run: npm run ai:auto-heal || true
+
+      - name: Upload test-results
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: ai-learnings-${{ github.run_id }}
-          path: test-results/
+          name: healing-learnings
+          path: |
+            test-results/
+            playwright-report/
+          if-no-files-found: warn
           retention-days: 7
 
-      - name: Comment with learnings
-        if: github.event.issue.pull_request
-        uses: actions/github-script@v7
-        with:
-          script: |
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: '🧠 AI learnings generated! Use `/apply-fixes` to apply them.'
-            })
