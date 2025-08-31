@@ -31,16 +31,14 @@ jobs:
       - name: Install deps
         run: npm ci --no-audit
 
-      - name: Install Playwright browsers
-        run: npx playwright install --with-deps
-
-      - name: Run E2E (Chromium) to generate artifacts (non-blocking)
+      - name: Check for existing learnings
         run: |
-          npm run test:e2e || true
-
-      - name: Run auto-heal demo to export learnings (non-blocking)
-        run: |
-          npm run ai:auto-heal || true
+          if [ -d test-results ]; then
+            echo "Existing learnings found, will apply them"
+            ls -la test-results/ || true
+          else
+            echo "No existing learnings found, skipping E2E generation"
+          fi
 
       - name: Apply safe fixes (lint/format)
         run: |
