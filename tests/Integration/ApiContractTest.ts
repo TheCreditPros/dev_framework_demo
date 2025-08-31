@@ -11,7 +11,7 @@ describe('Laravel + React API Contract Testing', () => {
     try {
       const response = await axios.post(`${API_BASE_URL}/auth/login`, {
         email: 'test@thecreditpros.com',
-        password: 'password123',
+        password: process.env.TEST_PASSWORD || 'test-password',
       });
       authToken = response.data.token;
     } catch {
