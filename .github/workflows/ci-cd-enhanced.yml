@@ -180,6 +180,9 @@ jobs:
     runs-on: ubuntu-latest
     needs: setup
     if: github.event.inputs.skip_tests != 'true'
+    env:
+      # Enable E2E by default for CI runs (can be overridden by repo variable ENABLE_E2E)
+      ENABLE_E2E: true
     strategy:
       matrix:
         test-type: [unit, integration, e2e]
@@ -223,7 +226,13 @@ jobs:
       - name: 🎭 E2E Tests
         if: matrix.test-type == 'e2e'
         run: |
-          if [[ "${{ vars.ENABLE_E2E }}" == "true" ]]; then
+          if [[ "${{ vars.ENABLE_E2E }}" == "true" || "${{ env.ENABLE_E2E }}" == "true" ]]; then
+            # Configure Playwright base URL and lightweight web server defaults if not provided
+            export PLAYWRIGHT_BASE_URL="${{ vars.PLAYWRIGHT_BASE_URL }}"
+            if [ -z "$PLAYWRIGHT_BASE_URL" ]; then PLAYWRIGHT_BASE_URL="http://localhost:3000"; fi
+            export PLAYWRIGHT_WEB_SERVER="${{ vars.PLAYWRIGHT_WEB_SERVER }}"
+            if [ -z "$PLAYWRIGHT_WEB_SERVER" ]; then PLAYWRIGHT_WEB_SERVER="node scripts/simple-static-server.js"; fi
+
             npx playwright install --with-deps
             npm run test:e2e || true
             # Run auto-healing demo to capture learnings
@@ -232,8 +241,17 @@ jobs:
             echo "E2E tests disabled by default; set ENABLE_E2E=true to enable."
           fi
 
+      - name: 📤 Upload Playwright HTML Report
+        if: matrix.test-type == 'e2e' && always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-node${{ matrix.node-version }}
+          path: playwright-report/
+          if-no-files-found: warn
+          retention-days: 7
+
       - name: 📊 Upload Coverage Reports
-        if: matrix.test-type == 'unit' && matrix.node-version == '18'
+        if: matrix.test-type == 'unit' && matrix.node-version == '20'
         uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
@@ -285,7 +303,7 @@ jobs:
       - name: 📊 Download Coverage Reports
         uses: actions/download-artifact@v4
         with:
-          name: test-results-unit-node18
+          name: test-results-unit-node20
           path: ./
 
       - name: 📊 SonarCloud Scan

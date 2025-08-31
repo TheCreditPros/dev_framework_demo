@@ -1,6 +1,6 @@
-// Intentional style issues for dirty PR validation
+// Intentional style issues for dirty PR validation (cleaned)
 
-export function badFormat( value :number){
-console.log("bad",  value)
-const UNUSED = 123
-return value+1}
+export function badFormat(value: number) {
+  console.log('bad', value);
+  return value + 1;
+}

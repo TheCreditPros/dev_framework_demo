@@ -515,7 +515,9 @@ class AutoHealingTestRunner {
   static async runHealingDemo() {
     console.log('🚀 Starting Playwright Auto-Healing Demo...');
 
-    const browser = await chromium.launch({ headless: false });
+    const browser = await chromium.launch({
+      headless: process.env.CI ? true : false,
+    });
     const context = await browser.newContext();
     const page = await context.newPage();
 

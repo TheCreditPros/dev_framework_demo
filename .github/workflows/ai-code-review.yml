@@ -31,7 +31,7 @@ jobs:
             core.info(`PR context exists: ${!!pr}`);
             core.info(`OPENAI_KEY available: ${!!process.env.OPENAI_KEY}`);
             core.info(`OPENAI_KEY length: ${process.env.OPENAI_KEY ? process.env.OPENAI_KEY.length : 0}`);
-            
+
             if (!process.env.OPENAI_KEY) {
               core.info('OPENAI_KEY not set; skipping AI review.');
               return;
@@ -92,7 +92,7 @@ ${diffChunk}
             });
 
             core.info(`OpenAI API response status: ${resp.status}`);
-            
+
             if (!resp.ok) {
               const text = await resp.text();
               core.setFailed(`OpenAI API error: ${resp.status} ${text}`);
@@ -101,7 +101,7 @@ ${diffChunk}
 
             const data = await resp.json();
             const reviewText = data.choices?.[0]?.message?.content?.trim() || '';
-            
+
             core.info(`Review text length: ${reviewText.length}`);
 
             if (!reviewText) {

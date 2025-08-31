@@ -5,10 +5,10 @@ test.describe('Credit Score Display - Broken Selectors Test', () => {
     await page.goto('http://localhost:3000/credit-score');
 
     // Intentionally broken selectors to test auto-healing
-    await page.click('#old-credit-score-button');
-    await page.waitForSelector('.old-score-display');
+    await page.click('[data-testid=credit-score-button]');
+    await page.waitForSelector('[data-testid=score-display]');
 
-    const scoreText = await page.textContent('span.old-score-value');
+    const scoreText = await page.textContent('[data-testid=score-value]');
     expect(parseInt(scoreText)).toBeGreaterThanOrEqual(300);
     expect(parseInt(scoreText)).toBeLessThanOrEqual(850);
   });

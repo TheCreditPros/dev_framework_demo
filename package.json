@@ -8,6 +8,7 @@
     "test:watch": "vitest --watch",
     "test:coverage": "vitest --coverage",
     "test:ci": "vitest run --reporter=verbose --maxWorkers=1",
+    "test:e2e": "playwright test",
     "lint": "eslint .",
     "lint:ci": "eslint . --max-warnings=0",
     "lint:fix": "eslint . --fix",
