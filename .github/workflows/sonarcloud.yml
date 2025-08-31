@@ -21,7 +21,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20'
           cache: 'npm'
 
       - name: Setup PHP
@@ -36,7 +36,7 @@ jobs:
 
       - name: Install PHP dependencies (if Laravel project)
         run: |
-          if [ -f "composer.json" ]; then
+          if [ -f "composer.json" ] && [ -f "artisan" ]; then
             composer install --prefer-dist --no-progress --no-suggest
           fi
 
