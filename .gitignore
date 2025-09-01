@@ -41,6 +41,7 @@ Thumbs.db
 .eslintcache/
 reports/
 test-results/
+playwright-report/
 validation-results-*/
 *.log
 coverage/
