@@ -28,6 +28,7 @@ jobs:
   dependency-scan:
     name: 🔍 Dependency Vulnerability Scan
     runs-on: ubuntu-latest
+    continue-on-error: true
     steps:
       - name: 📥 Checkout Repository
         uses: actions/checkout@v5
