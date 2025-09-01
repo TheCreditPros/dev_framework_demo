@@ -165,7 +165,7 @@ jobs:
   container-scan:
     name: 🐳 Container Security Scan
     runs-on: ubuntu-latest
-    if: ${{ hashFiles('Dockerfile*') != '' }}
+    if: false  # Disabled - no Dockerfiles in this project
     steps:
       - name: 📥 Checkout Repository
         uses: actions/checkout@v5
@@ -178,7 +178,6 @@ jobs:
 
       - name: 🔍 Trivy Container Scan
         uses: aquasecurity/trivy-action@master
-        if: ${{ hashFiles('Dockerfile*') != '' }}
         with:
           image-ref: 'security-scan:latest'
           format: 'sarif'
@@ -186,7 +185,6 @@ jobs:
 
       - name: 📊 Upload Trivy Results
         uses: github/codeql-action/upload-sarif@v3
-        if: ${{ hashFiles('Dockerfile*') != '' }}
         with:
           sarif_file: 'trivy-results.sarif'
 
