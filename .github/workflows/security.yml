@@ -166,7 +166,7 @@ jobs:
   container-scan:
     name: 🐳 Container Security Scan
     runs-on: ubuntu-latest
-    if: false  # Disabled - no Dockerfiles in this project
+    if: false # Disabled - no Dockerfiles in this project
     steps:
       - name: 📥 Checkout Repository
         uses: actions/checkout@v5
