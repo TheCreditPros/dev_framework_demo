@@ -61,6 +61,36 @@ Your repository now has:
 - Intelligent PR reviews (PR Agent auto-installed during setup)
 - Auto-correction on commit (lint-staged + repo fixers)
 
+## 🔑 High‑Priority Configuration (Per Repository)
+
+These options let each repository point E2E tests at a real app and enable AI review. If not set, sensible defaults keep the template fully functional.
+
+- E2E App Target (Recommended)
+  - Set repository Variables in GitHub → Settings → Secrets and variables → Actions → Variables
+    - `PLAYWRIGHT_WEB_SERVER`: command that starts your app in CI
+      - Examples
+        - Vite/React: `npm run preview -- --host --port 3000`
+        - Next.js: `npm run start`
+        - Express: `node server.js`
+        - Laravel: `php artisan serve --host=127.0.0.1 --port=3000`
+    - `PLAYWRIGHT_BASE_URL`: URL your app serves (e.g., `http://localhost:3000`)
+  - What happens if not set: CI falls back to a lightweight demo server (`node scripts/simple-static-server.js`) and `http://localhost:3000`.
+
+- AI PR Review (Optional, Non‑Blocking)
+  - Add repository Secret: `OPENAI_KEY`
+  - On each PR, the workflow posts an automated review. If the key is missing or the API is unavailable, the job safely skips and never fails the pipeline.
+
+- Dirty PR Auto‑Healing (Selector + Lint/Format fixes)
+  - To apply safe fixes on a PR, add the label `apply-ai-fixes`.
+  - The workflow auto‑downloads the latest selector learnings artifact (if available), applies `eslint --fix` and Prettier, applies selector learnings, and opens a follow‑up PR only when changes exist.
+  - Optional: Run the manual workflow “AI Generate Learnings” (visible on `main`) to seed/update learnings.
+
+- Optional Toggles
+  - `ENABLE_E2E` (repo Variable): set to `true` to force‑enable E2E in CI (default already enabled in this template).
+  - `ENABLE_INTEGRATION` (repo Variable): set to `true` to enable the integration test matrix.
+
+Note: Keep the default demo server until your app start command is stable. Once your repo uses a real app server for E2E, you can remove `public/` and `scripts/simple-static-server.js` if desired.
+
 ## 🔧 **Complete Toolkit Overview**
 
 ### **Core Framework Components**
