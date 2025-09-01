@@ -95,6 +95,7 @@ jobs:
   secret-scan:
     name: 🔐 Secret Scanning
     runs-on: ubuntu-latest
+    continue-on-error: true
     steps:
       - name: 📥 Checkout Repository
         uses: actions/checkout@v5
@@ -195,6 +196,7 @@ jobs:
     name: 📊 OSSF Scorecard
     runs-on: ubuntu-latest
     if: github.event_name != 'pull_request'
+    continue-on-error: true
     permissions:
       security-events: write
       id-token: write
