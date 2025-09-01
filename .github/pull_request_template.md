@@ -24,4 +24,3 @@ Use this checklist when adopting the template in a new repo. See README “High�
 ## Notes
 
 Add any repo‑specific details (app start command, base URL, domain constraints).
-
