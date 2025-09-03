@@ -26,7 +26,7 @@ FAILURES=0
 run_check() {
   local check_name="$1"
   local command="$2"
-  
+
   echo_color $YELLOW "🔍 Running: $check_name"
   if eval "$command"; then
     echo_color $GREEN "✅ $check_name: PASSED"
