@@ -22,6 +22,26 @@ The AI-SDLC Framework transforms any repository into an **AI-powered development
 - 🛡️ **Universal Security** - Input validation, auth patterns, compliance
 - 💰 **Cost Optimized** - 97% cost reduction vs GPT-4
 
+## 📁 **Project Structure**
+
+This repository contains a **React/TypeScript** AI-SDLC framework demo with the following structure:
+
+```
+├── src/                    # Main React/TypeScript source code
+│   ├── components/         # React components
+│   ├── utils/             # Utility functions
+│   └── test/              # Test setup and utilities
+├── tests/                 # Test files (unit, integration, e2e)
+├── scripts/               # AI framework automation scripts
+├── scripts-complex/       # Advanced AI tools and validators
+├── legacy/                # Legacy PHP/Laravel examples (reference only)
+│   └── php-examples/      # PHP files moved here for clarity
+├── docs/                  # Documentation
+└── .github/               # GitHub Actions workflows
+```
+
+**Note**: The `legacy/php-examples/` directory contains PHP/Laravel files that demonstrate the framework's multi-stack capabilities but are not part of the main React/TypeScript project.
+
 ## 🏗️ **Universal Architecture**
 
 This framework works with **ANY** technology stack:

@@ -4,7 +4,7 @@ import {
   validatePermissiblePurpose,
   validateCreditData,
   calculateScoreImprovement,
-} from '../../src/utils/creditValidation';
+} from '../../../src/utils/creditValidation';
 
 describe('Credit Validation Utilities', () => {
   describe('FCRA Compliance - Credit Score Validation', () => {

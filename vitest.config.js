@@ -7,11 +7,14 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
     setupFiles: ['./src/test/setup.js'],
+    include: ['tests/unit/**/*.{test,spec}.{js,ts,jsx,tsx}'],
     coverage: {
       reporter: ['text', 'json', 'html'],
       exclude: [
         'node_modules/',
         'src/test/',
+        'tests/e2e/',
+        'tests/Integration/',
         '**/*.d.ts',
         '**/*.config.js',
         '**/coverage/**',
@@ -33,6 +36,7 @@ export default defineConfig({
       '**/coverage/**',
       'portal2-admin-refactor/**',
       '**/tests/e2e/**',
+      '**/tests/Integration/**',
       '**/playwright/**',
     ],
   },
