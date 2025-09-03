@@ -37,40 +37,46 @@ run_check() {
   echo ""
 }
 
-# 1. LINTING CHECKS
-echo_color $BLUE "📋 Phase 1: Code Quality & Linting"
+# 1. DEPENDENCY SYNC CHECK (Same as CI)
+echo_color $BLUE "📋 Phase 1: Dependency & Lock File Sync"
+echo_color $BLUE "======================================="
+
+run_check "Package Lock Sync Check" "npm ci --dry-run"
+
+# 2. LINTING CHECKS
+echo_color $BLUE "📋 Phase 2: Code Quality & Linting"
 echo_color $BLUE "=================================="
 
 run_check "ESLint Check" "npm run lint:ci"
 run_check "Code Formatting Check" "npm run format"
 
-# 2. TYPE CHECKING
-echo_color $BLUE "📋 Phase 2: Type Safety"
+# 3. TYPE CHECKING
+echo_color $BLUE "📋 Phase 3: Type Safety"
 echo_color $BLUE "======================"
 
 run_check "TypeScript Type Check" "npm run type-check"
 
-# 3. SECURITY CHECKS
-echo_color $BLUE "📋 Phase 3: Security"
+# 4. SECURITY CHECKS
+echo_color $BLUE "📋 Phase 4: Security"
 echo_color $BLUE "==================="
 
 run_check "Security Audit" "npm audit --audit-level=moderate"
 
-# 4. TESTING
-echo_color $BLUE "📋 Phase 4: Testing"
+# 5. TESTING
+echo_color $BLUE "📋 Phase 5: Testing"
 echo_color $BLUE "=================="
 
 run_check "Unit Tests" "npm run test:ci"
-run_check "Test Coverage" "npm run test:coverage"
+run_check "Test Coverage" "npm run test:coverage -- --run"
 
-# 5. BUILD VERIFICATION
-echo_color $BLUE "📋 Phase 5: Build Verification"
+# 6. BUILD VERIFICATION
+echo_color $BLUE "📋 Phase 6: Build Verification"
 echo_color $BLUE "=============================="
 
 run_check "Build Check" "npm run build"
 
-# 6. GIT STATUS CHECK
-echo_color $BLUE "📋 Phase 6: Git Status"
+# 7. GIT STATUS CHECK
+echo_color $BLUE "📋 Phase 7: Git Status"
 echo_color $BLUE "====================="
 
 run_check "Git Status Clean" "test -z \"$(git status --porcelain)\""
