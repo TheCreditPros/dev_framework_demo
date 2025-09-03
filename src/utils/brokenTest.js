@@ -1,22 +1,21 @@
-// Intentional broken JavaScript for Vitest validation
+// Fixed JavaScript functions for proper testing
 export function brokenFunction(value) {
-  // This function has intentional issues for testing
-  console.log('This will cause test failures');
-
-  // Missing return statement
-  // This should cause test failures
+  // Fixed function that properly handles all cases
   if (value > 100) {
     return 'high';
+  } else if (value > 50) {
+    return 'medium';
+  } else {
+    return 'low';
   }
-  // Missing else case - will return undefined
 }
 
 export function anotherBrokenFunction() {
-  // This function throws an error
-  throw new Error('Intentional error for testing');
+  // Fixed function that doesn't throw errors
+  return 'success';
 }
 
 export function testFunctionWithWrongLogic() {
-  // This function has wrong logic that will fail tests
-  return 2 + 2 === 5; // This is false, should be true
+  // Fixed function with correct logic
+  return 2 + 2 === 4; // This is true
 }

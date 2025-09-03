@@ -14,18 +14,18 @@ describe('Credit Validation Utilities', () => {
       expect(validateCreditScore(720).isValid).toBe(true);
       expect(validateCreditScore(850).isValid).toBe(true);
 
-      // Invalid scores - INTENTIONALLY BROKEN FOR TESTING
-      expect(validateCreditScore(299).isValid).toBe(true); // This should be false
-      expect(validateCreditScore(851).isValid).toBe(true); // This should be false
+      // Invalid scores - properly tested
+      expect(validateCreditScore(299).isValid).toBe(false); // Below minimum
+      expect(validateCreditScore(851).isValid).toBe(false); // Above maximum
     });
 
     it('should return appropriate error messages for invalid scores', () => {
       const result = validateCreditScore(900);
 
       expect(result.isValid).toBe(false);
-      // INTENTIONALLY BROKEN FOR TESTING - wrong expected error message
+      // Proper error message validation
       expect(result.errors).toContain(
-        'Invalid FICO score: 900. Must be between 200-900.'
+        'Invalid FICO score: 900. Must be between 300-850.'
       );
     });
 
