@@ -34,6 +34,8 @@
     "pr:security-review": "pr-agent --pr_url=${PR_URL} review --pr_reviewer.extra_instructions=\"Focus on security vulnerabilities, input validation, and data protection\"",
     "pr:compliance-review": "pr-agent --pr_url=${PR_URL} review --pr_reviewer.extra_instructions=\"Focus on compliance requirements, audit trails, and regulatory adherence\"",
     "test:ai-pr-review": "node test-ai-pr-review.js",
+    "quality-gates": "./scripts/local-quality-gates.sh",
+    "pre-push": "npm run quality-gates",
     "pr:dirty": "node scripts/create-dirty-pr.js --type=mixed --open-pr",
     "pr:dirty:lint": "node scripts/create-dirty-pr.js --type=lint --open-pr",
     "pr:dirty:e2e": "node scripts/create-dirty-pr.js --type=e2e --open-pr",
