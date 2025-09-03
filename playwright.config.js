@@ -15,7 +15,10 @@ export default defineConfig({
     baseURL: process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:3000',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
+    actionTimeout: 10000, // 10 seconds for actions
+    navigationTimeout: 30000, // 30 seconds for navigation
   },
+  timeout: 60000, // 60 seconds total test timeout
   projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
   ...(USE_WEBSERVER
     ? {
