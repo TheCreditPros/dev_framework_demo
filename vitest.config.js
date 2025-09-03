@@ -9,7 +9,7 @@ export default defineConfig({
     setupFiles: ['./src/test/setup.js'],
     include: ['tests/unit/**/*.{test,spec}.{js,ts,jsx,tsx}'],
     coverage: {
-      reporter: ['text', 'json', 'html'],
+      reporter: ['text', 'json', 'html', 'lcov'],
       exclude: [
         'node_modules/',
         'src/test/',
