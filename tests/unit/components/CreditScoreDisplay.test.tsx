@@ -1,7 +1,7 @@
 import { cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { vi } from 'vitest';
-import { CreditScoreDisplay } from '../../src/components/CreditScore/CreditScoreDisplay';
+import { CreditScoreDisplay } from '../../../src/components/CreditScore/CreditScoreDisplay';
 
 describe('CreditScoreDisplay Component', () => {
   const defaultProps = {

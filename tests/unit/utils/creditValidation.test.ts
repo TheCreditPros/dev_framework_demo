@@ -4,7 +4,7 @@ import {
   validatePermissiblePurpose,
   validateCreditData,
   calculateScoreImprovement,
-} from '../../src/utils/creditValidation';
+} from '../../../src/utils/creditValidation';
 
 describe('Credit Validation Utilities', () => {
   describe('FCRA Compliance - Credit Score Validation', () => {
@@ -14,15 +14,16 @@ describe('Credit Validation Utilities', () => {
       expect(validateCreditScore(720).isValid).toBe(true);
       expect(validateCreditScore(850).isValid).toBe(true);
 
-      // Invalid scores
-      expect(validateCreditScore(299).isValid).toBe(false);
-      expect(validateCreditScore(851).isValid).toBe(false);
+      // Invalid scores - properly tested
+      expect(validateCreditScore(299).isValid).toBe(false); // Below minimum
+      expect(validateCreditScore(851).isValid).toBe(false); // Above maximum
     });
 
     it('should return appropriate error messages for invalid scores', () => {
       const result = validateCreditScore(900);
 
       expect(result.isValid).toBe(false);
+      // Proper error message validation
       expect(result.errors).toContain(
         'Invalid FICO score: 900. Must be between 300-850.'
       );

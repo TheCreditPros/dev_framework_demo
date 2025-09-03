@@ -2,7 +2,7 @@
 // React import not required with react-jsx runtime
 import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
-import { CreditScore } from '../../src/components/CreditScore';
+import { CreditScore } from '../../../src/components/CreditScore';
 
 describe('CreditScore Component', () => {
   describe('FCRA Compliance', () => {

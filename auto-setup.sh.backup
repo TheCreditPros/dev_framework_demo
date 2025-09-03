@@ -2,13 +2,8 @@
 
 # Enhanced AI-Powered SDLC Setup Script
 # Supports Laravel + TypeScript React projects
-# Fixed version with proper error handling and dependency resolution
 
 set -e
-
-# Add timeout and retry logic to prevent infinite loops
-MAX_RETRIES=3
-TIMEOUT_SECONDS=300
 
 ### COLORS
 GREEN="\033[0;32m"
@@ -18,36 +13,6 @@ NC="\033[0m"
 
 echo_color() {
   echo -e "${1}${2}${NC}"
-}
-
-# Timeout function to prevent infinite loops
-run_with_timeout() {
-  local timeout=$1
-  shift
-  timeout $timeout "$@" || {
-    echo_color $RED "❌ Command timed out after ${timeout} seconds"
-    return 1
-  }
-}
-
-# Retry function for network operations
-retry_command() {
-  local max_attempts=$1
-  shift
-  local attempt=1
-
-  while [ $attempt -le $max_attempts ]; do
-    echo_color $YELLOW "Attempt $attempt/$max_attempts: $*"
-    if "$@"; then
-      return 0
-    fi
-    echo_color $YELLOW "Attempt $attempt failed, retrying..."
-    ((attempt++))
-    sleep 2
-  done
-
-  echo_color $RED "❌ Command failed after $max_attempts attempts"
-  return 1
 }
 
 echo_color $GREEN "🚀 AI-SDLC Single Command Setup"
@@ -100,18 +65,16 @@ install_pr_agent() {
 ### INSTALL SHARED PACKAGES & HOOKS
 install_common_dependencies() {
   echo_color $YELLOW "📦 Installing shared developer dependencies..."
-
-  # Use retry logic for npm installs to handle network issues
-  retry_command $MAX_RETRIES npm install --save-dev eslint prettier husky lint-staged commitlint @commitlint/config-conventional
+  npm install --save-dev eslint prettier husky lint-staged commitlint @commitlint/config-conventional
 
   # Install Playwright core (Qase reporter optional; not installed by default)
   echo_color $YELLOW "🎭 Installing Playwright test runner..."
-  retry_command $MAX_RETRIES npm install --save-dev @playwright/test
+  npm install --save-dev @playwright/test
 
   # Install TypeScript ESLint support if TypeScript is detected
   if [[ -f "tsconfig.json" ]] || find . -name "*.ts" -o -name "*.tsx" | head -1 | grep -q .; then
     echo_color $YELLOW "📝 TypeScript detected - installing ESLint TypeScript support..."
-    retry_command $MAX_RETRIES npm install --save-dev @typescript-eslint/parser @typescript-eslint/eslint-plugin
+    npm install --save-dev @typescript-eslint/parser @typescript-eslint/eslint-plugin
   fi
 
   # QASE_API_TOKEN handling removed (Qase reporter not installed by default)
@@ -155,7 +118,7 @@ detect_and_setup_project() {
     elif [[ -f "frontend/package.json" ]]; then
       cd frontend
     fi
-    retry_command $MAX_RETRIES npm install --save-dev vitest @testing-library/react @testing-library/vitest-dom jsdom
+    npm install --save-dev vitest @testing-library/react @testing-library/vitest-dom jsdom
     cd ..
     echo_color $GREEN "✔️ Installed Vitest and React testing libraries."
   fi
@@ -168,7 +131,7 @@ detect_and_setup_project() {
     elif [[ -f "admin/package.json" ]]; then
       cd admin
     fi
-    retry_command $MAX_RETRIES npm install --save-dev vitest @testing-library/react @testing-library/vitest-dom
+    npm install --save-dev vitest @testing-library/react @testing-library/vitest-dom
     cd ..
     echo_color $GREEN "✔️ Installed Vitest and React testing libraries."
   fi
@@ -176,7 +139,7 @@ detect_and_setup_project() {
   # React App Detection (root level)
   if [[ -f "package.json" ]] && ! [[ -f "client-frontend/package.json" ]] && ! [[ -f "admin-frontend/package.json" ]]; then
     echo_color $GREEN "📦 React project detected"
-    retry_command $MAX_RETRIES npm install --save-dev vitest @testing-library/react @testing-library/vitest-dom jsdom
+    npm install --save-dev vitest @testing-library/react @testing-library/vitest-dom jsdom
     echo_color $GREEN "✔️ Installed Vitest and React testing libraries."
   fi
 }
