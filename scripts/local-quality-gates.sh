@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Local Quality Gates - Same as CI/CD Pipeline
-# Run this before pushing to ensure all gates pass
+# Essential Quality Gates - Fast & Focused
+# Only the checks that actually block CI
 
 set -e
 
@@ -16,8 +16,8 @@ echo_color() {
   echo -e "${1}${2}${NC}"
 }
 
-echo_color $BLUE "🚀 Running Local Quality Gates (Same as CI/CD)"
-echo_color $BLUE "=============================================="
+echo_color $BLUE "🚀 Essential Quality Gates"
+echo_color $BLUE "========================="
 
 # Track failures
 FAILURES=0
@@ -27,79 +27,32 @@ run_check() {
   local check_name="$1"
   local command="$2"
 
-  echo_color $YELLOW "🔍 Running: $check_name"
+  echo_color $YELLOW "🔍 $check_name"
   if eval "$command"; then
-    echo_color $GREEN "✅ $check_name: PASSED"
+    echo_color $GREEN "✅ $check_name"
   else
-    echo_color $RED "❌ $check_name: FAILED"
+    echo_color $RED "❌ $check_name"
     ((FAILURES++))
   fi
-  echo ""
 }
 
-# 1. DEPENDENCY SYNC CHECK (Same as CI)
-echo_color $BLUE "📋 Phase 1: Dependency & Lock File Sync"
-echo_color $BLUE "======================================="
+# ESSENTIAL CHECKS ONLY (the ones that actually block CI)
+run_check "Dependencies" "npm ci --dry-run"
+run_check "Linting" "npm run lint:ci"
+run_check "Formatting" "npm run format"
+run_check "TypeScript" "npm run type-check"
+run_check "Tests" "npm run test:ci"
+run_check "Build" "npm run build"
 
-run_check "Package Lock Sync Check" "npm ci --dry-run"
-
-# 2. LINTING CHECKS
-echo_color $BLUE "📋 Phase 2: Code Quality & Linting"
-echo_color $BLUE "=================================="
-
-run_check "ESLint Check" "npm run lint:ci"
-run_check "Code Formatting Check" "npm run format"
-
-# 3. TYPE CHECKING
-echo_color $BLUE "📋 Phase 3: Type Safety"
-echo_color $BLUE "======================"
-
-run_check "TypeScript Type Check" "npm run type-check"
-
-# 4. SECURITY CHECKS
-echo_color $BLUE "📋 Phase 4: Security"
-echo_color $BLUE "==================="
-
-run_check "Security Audit" "npm audit --audit-level=moderate"
-
-# 5. TESTING
-echo_color $BLUE "📋 Phase 5: Testing"
-echo_color $BLUE "=================="
-
-run_check "Unit Tests" "npm run test:ci"
-run_check "Test Coverage" "npm run test:coverage -- --run"
-
-# 6. BUILD VERIFICATION
-echo_color $BLUE "📋 Phase 6: Build Verification"
-echo_color $BLUE "=============================="
-
-run_check "Build Check" "npm run build"
-
-# 7. GIT STATUS CHECK
-echo_color $BLUE "📋 Phase 7: Git Status"
-echo_color $BLUE "====================="
-
-run_check "Git Status Clean" "test -z \"$(git status --porcelain)\""
+echo ""
 
 # SUMMARY
-echo_color $BLUE "📊 Quality Gates Summary"
-echo_color $BLUE "========================"
-
 if [ $FAILURES -eq 0 ]; then
-  echo_color $GREEN "🎉 ALL QUALITY GATES PASSED!"
-  echo_color $GREEN "✅ Ready to push to remote repository"
-  echo_color $GREEN "✅ CI/CD pipeline should pass"
+  echo_color $GREEN "🎉 All essential checks passed!"
+  echo_color $GREEN "✅ Ready to push"
   exit 0
 else
-  echo_color $RED "❌ $FAILURES QUALITY GATE(S) FAILED"
-  echo_color $RED "🚫 DO NOT PUSH - Fix issues first"
-  echo_color $YELLOW "💡 Run individual commands to debug:"
-  echo_color $YELLOW "   npm run lint:ci"
-  echo_color $YELLOW "   npm run format"
-  echo_color $YELLOW "   npm run type-check"
-  echo_color $YELLOW "   npm audit --audit-level=moderate"
-  echo_color $YELLOW "   npm run test:ci"
-  echo_color $YELLOW "   npm run test:coverage"
-  echo_color $YELLOW "   npm run build"
+  echo_color $RED "❌ $FAILURES check(s) failed"
+  echo_color $RED "🚫 Fix issues before pushing"
   exit 1
 fi
