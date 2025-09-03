@@ -35,7 +35,7 @@ retry_command() {
   local max_attempts=$1
   shift
   local attempt=1
-  
+
   while [ $attempt -le $max_attempts ]; do
     echo_color $YELLOW "Attempt $attempt/$max_attempts: $*"
     if "$@"; then
@@ -45,7 +45,7 @@ retry_command() {
     ((attempt++))
     sleep 2
   done
-  
+
   echo_color $RED "❌ Command failed after $max_attempts attempts"
   return 1
 }
@@ -100,7 +100,7 @@ install_pr_agent() {
 ### INSTALL SHARED PACKAGES & HOOKS
 install_common_dependencies() {
   echo_color $YELLOW "📦 Installing shared developer dependencies..."
-  
+
   # Use retry logic for npm installs to handle network issues
   retry_command $MAX_RETRIES npm install --save-dev eslint prettier husky lint-staged commitlint @commitlint/config-conventional
 
