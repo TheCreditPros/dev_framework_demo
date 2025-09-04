@@ -457,7 +457,7 @@ validate_configuration() {
 
   echo_color $GREEN "🧪 Run 'npm run validate' to test your setup."
   echo_color $GREEN "🚀 Run 'npm run ci:full' to test CI/CD pipeline."
-  
+
   # Check if PR Agent is available
   if ! command -v pr-agent >/dev/null 2>&1; then
     echo_color $YELLOW "💡 To enable AI PR Agent features:"
