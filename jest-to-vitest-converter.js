@@ -182,7 +182,7 @@ async function main() {
   const errorFiles = results.filter((r) => r.error);
 
   console.log('\n✨ Conversion complete!\n');
-  console.log(`📊 Summary:`);
+  console.log('📊 Summary:');
   console.log(`   - Total files scanned: ${results.length}`);
   console.log(`   - Files modified: ${modifiedFiles.length}`);
   console.log(`   - Files with errors: ${errorFiles.length}`);

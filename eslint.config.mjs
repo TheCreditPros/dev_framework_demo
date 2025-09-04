@@ -25,6 +25,8 @@ export default [
       'validate-setup.js',
       'auto-setup*.sh',
       'setup*.sh',
+      'tests/e2e/**',
+      'tests/Integration/**',
     ],
   },
   {

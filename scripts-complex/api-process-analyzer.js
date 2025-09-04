@@ -704,7 +704,7 @@ class APIProcessAnalyzer {
    * Generate markdown documentation
    */
   generateMarkdownDocumentation(results, outputPath) {
-    let markdown = `# API Process Analysis Documentation\n\n`;
+    let markdown = '# API Process Analysis Documentation\n\n';
     markdown += `Generated on: ${new Date().toISOString()}\n\n`;
 
     for (const result of results) {
@@ -715,7 +715,7 @@ class APIProcessAnalyzer {
           markdown += `### ${processDoc.name}\n\n`;
           markdown += `${processDoc.description}\n\n`;
 
-          markdown += `#### Process Steps\n\n`;
+          markdown += '#### Process Steps\n\n';
           for (const step of processDoc.steps) {
             markdown += `${step.step}. **${step.method}** \`${step.path}\`\n`;
             markdown += `   ${step.summary}\n\n`;
@@ -725,11 +725,11 @@ class APIProcessAnalyzer {
             processDoc.recommendations &&
             processDoc.recommendations.length > 0
           ) {
-            markdown += `#### Recommendations\n\n`;
+            markdown += '#### Recommendations\n\n';
             for (const rec of processDoc.recommendations) {
               markdown += `- ${rec}\n`;
             }
-            markdown += `\n`;
+            markdown += '\n';
           }
         }
       }

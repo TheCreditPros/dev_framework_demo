@@ -116,7 +116,7 @@ function createBranchAndCommit(changes, openPr = false) {
   gitSafe(`git checkout -b ${branch}`) || gitSafe(`git switch -c ${branch}`);
   gitSafe('git add -A');
   const message =
-    `chore(auto-heal): apply selector learnings\n\n` +
+    'chore(auto-heal): apply selector learnings\n\n' +
     changes
       .flatMap((c) =>
         c.replacements.map(

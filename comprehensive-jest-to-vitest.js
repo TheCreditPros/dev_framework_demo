@@ -226,14 +226,14 @@ async function main() {
     return;
   }
 
-  console.log(`🚀 Processing files...\n`);
+  console.log('🚀 Processing files...\n');
   const results = await processInChunks(allFiles, 20);
 
   const modifiedFiles = results.filter((r) => r.modified);
   const errorFiles = results.filter((r) => r.error);
 
   console.log('\n✨ Conversion complete!\n');
-  console.log(`📊 Summary:`);
+  console.log('📊 Summary:');
   console.log(`   - Total files scanned: ${results.length}`);
   console.log(`   - Files modified: ${modifiedFiles.length}`);
   console.log(`   - Files with errors: ${errorFiles.length}`);
