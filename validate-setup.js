@@ -30,11 +30,6 @@ const checks = [
 
 // File existence checks
 const fileChecks = [
-  { file: '.clinerules', name: 'Cline Rules Configuration' },
-  { file: '.clinerules_modular', name: 'Modular Cline Rules', isDirectory: true },
-  { file: 'cline_config', name: 'Cline Configuration Directory', isDirectory: true },
-  { file: 'cline_templates', name: 'Cline Templates Directory', isDirectory: true },
-  { file: 'cline_config/multi-model-strategy.json', name: 'Multi-Model AI Strategy' }
 ];
 
 let passed = 0;
@@ -73,7 +68,7 @@ console.log(`\n📊 Validation Results: ${passed}/${total} checks passed`);
 
 if (passed === total) {
   console.log('🎉 All systems ready for AI-powered development!');
-  console.log('🧠 Cline AI configuration with 97% cost reduction strategy active');
+  console.log('🤖 AI-SDLC framework configuration active');
 } else {
   console.log('⚠️  Some components need attention. Check documentation.');
 }

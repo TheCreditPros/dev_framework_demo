@@ -195,7 +195,7 @@ class QualityGateNotifier {
         ];
         guidance.resources = [
           'Testing Guide: docs/TESTING-README.md',
-          'FCRA Test Patterns: .clinerules',
+          'FCRA Test Patterns: tests/unit/',
           'AI Test Generation: npm run ai:generate-tests',
         ];
         break;
@@ -215,7 +215,7 @@ class QualityGateNotifier {
         ];
         guidance.resources = [
           'Security Guide: docs/SECURITY_TOOLS_INTEGRATION.md',
-          'FCRA Compliance: .clinerules_modular/compliance.md',
+          'FCRA Compliance: docs/compliance.md',
           'Security Scanner: scripts-complex/security-scanner.js',
         ];
         break;
@@ -256,7 +256,7 @@ class QualityGateNotifier {
         guidance.resources = [
           'Coverage Report: coverage/lcov-report/index.html',
           'AI Test Generation: npm run ai:generate-tests',
-          'FCRA Test Patterns: .clinerules',
+          'FCRA Test Patterns: tests/unit/',
         ];
         break;
 
@@ -275,7 +275,7 @@ class QualityGateNotifier {
         ];
         guidance.resources = [
           'ESLint Config: eslint.config.js',
-          'Code Standards: .clinerules',
+          'Code Standards: eslint.config.mjs',
           'TypeScript Guide: docs/react-best-practices-updated.md',
         ];
         break;
@@ -294,8 +294,8 @@ class QualityGateNotifier {
           './ai-sdlc explain "FCRA compliance"',
         ];
         guidance.resources = [
-          'FCRA Guidelines: .clinerules_modular/compliance.md',
-          'TCP Domain Rules: .clinerules_modular/tcp_domain.md',
+          'FCRA Guidelines: docs/compliance.md',
+          'TCP Domain Rules: docs/tcp-domain.md',
           'Compliance Tests: tests/e2e/*compliance*',
         ];
         break;
