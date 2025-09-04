@@ -50,3 +50,29 @@ coverage/
 dist/
 build/
 *.tsbuildinfo
+
+# Backup files
+*.backup
+*.bak
+*~
+
+# Legacy migration artifacts
+*jest-to-vitest*
+*comprehensive-jest*
+*enhanced-jest*
+*final-jest*
+
+# Archive and documentation artifacts
+archive/
+*ARCHIVE*
+*archive*
+
+# Empty directories and temporary files
+--version/
+portal2-admin-refactor/
+ai-review/
+ai-sdlc/
+
+# Test artifacts
+test-workflow.js
+test-setup-levels.sh
