@@ -493,7 +493,7 @@ async function main() {
       console.log("");
       console.log("Examples:");
       console.log(
-        '  teams-user-mapper.js add-user nydamon damon@thecreditpros.com "Damon DeCrescenzo" Engineering CTO'
+        "  teams-user-mapper.js add-user nydamon damon@thecreditpros.com "Damon DeCrescenzo" Engineering CTO"
       );
       console.log(
         "  teams-user-mapper.js add-team security-team jane.smith security.lead"

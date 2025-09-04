@@ -316,32 +316,32 @@ class CreditRepairAutoHealing extends PlaywrightAutoHealing {
     // Credit repair specific selector patterns
     this.creditRepairSelectors = {
       creditScore: [
-        '[data-testid="credit-score"]',
+        "[data-testid="credit-score"]",
         "#credit-score",
         ".credit-score-value",
-        '[aria-label*="credit score"]',
-        'input[name*="score"]',
+        "[aria-label*="credit score"]",
+        "input[name*="score"]",
       ],
       ssnInput: [
-        '[data-testid="ssn"]',
+        "[data-testid="ssn"]",
         "#ssn",
-        'input[name="ssn"]',
-        'input[placeholder*="SSN"]',
+        "input[name="ssn"]",
+        "input[placeholder*="SSN"]",
         ".ssn-input",
       ],
       fcraDisclosure: [
-        '[data-testid="fcra-disclosure"]',
+        "[data-testid="fcra-disclosure"]",
         ".fcra-disclosure",
         "#fcra-notice",
-        '[aria-label*="FCRA"]',
+        "[aria-label*="FCRA"]",
         ".compliance-notice",
       ],
       calculateButton: [
-        '[data-testid="calculate"]',
+        "[data-testid="calculate"]",
         "#calculate-btn",
         ".calculate",
-        'button:has-text("Calculate")',
-        'input[type="submit"]',
+        "button:has-text("Calculate")",
+        "input[type="submit"]",
       ],
     };
   }
@@ -462,7 +462,7 @@ class CreditRepairAutoHealing extends PlaywrightAutoHealing {
     await this.waitForAnyCondition([
       "#results",
       ".calculation-results",
-      '[data-testid="results"]',
+      "[data-testid="results"]",
       () => document.querySelector(".loading") === null,
     ]);
 
@@ -587,7 +587,7 @@ Commands:
 
 Usage in tests:
   const healing = new CreditRepairAutoHealing(page);
-  await healing.smartClick('#button', ['.button', '[data-test="btn"]']);
+  await healing.smartClick("#button", [".button", "[data-test="btn"]"]);
 
 Features:
   ✅ Smart selector fallback system

@@ -20,7 +20,7 @@ const sensitivePatterns = [
     description: "Potential credit card pattern",
   },
   {
-    pattern: /(?:password|secret|key)\s*[:=]\s*['"][^'"\s]+/gi,
+    pattern: /(?:password|secret|key)\s*[:=]\s*[""][^""\s]+/gi,
     description: "Potential credential exposure",
   },
 ];

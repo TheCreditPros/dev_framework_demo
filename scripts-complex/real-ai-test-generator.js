@@ -169,7 +169,7 @@ Generate only the test code, no explanations:`;
     if (sourceCode.includes("<?php")) return "PHP/Laravel";
     if (
       sourceCode.includes("import React") ||
-      sourceCode.includes('from "react"')
+      sourceCode.includes("from "react"")
     )
       return "React";
     if (
@@ -214,11 +214,11 @@ Generate only the test code, no explanations:`;
     return `// Template-generated React tests for ${componentName}
 // Generated on: ${new Date().toISOString()}
 
-import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { ${componentName} } from '../${componentName}';
+import React from "react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { ${componentName} } from "../${componentName}";
 
-describe('${componentName}', () => {
+describe("${componentName}", () => {
   const defaultProps = {
     // Add default props based on component needs
   };
@@ -235,34 +235,34 @@ describe('${componentName}', () => {
     // Cleanup after each test
   });
 
-  it('should render without crashing', () => {
+  it("should render without crashing", () => {
     renderComponent();
     // Add assertions based on component structure
   });
 
-  it('should handle user interactions', async () => {
+  it("should handle user interactions", async () => {
     renderComponent();
     
     // Example interaction test
-    // const button = screen.getByRole('button');
+    // const button = screen.getByRole("button");
     // fireEvent.click(button);
     // await waitFor(() => {
-    //   expect(screen.getByText('Expected Result')).toBeInTheDocument();
+    //   expect(screen.getByText("Expected Result")).toBeInTheDocument();
     // });
   });
 
-  it('should handle props correctly', () => {
-    const testProps = { testProp: 'test value' };
+  it("should handle props correctly", () => {
+    const testProps = { testProp: "test value" };
     renderComponent(testProps);
     
     // Add prop validation tests
   });
 
-  it('should handle edge cases', () => {
+  it("should handle edge cases", () => {
     // Test edge cases like empty props, null values, etc.
   });
 
-  it('should be accessible', () => {
+  it("should be accessible", () => {
     renderComponent();
     // Add accessibility tests
   });
@@ -279,9 +279,9 @@ describe('${componentName}', () => {
     return `// Template-generated JavaScript tests for ${moduleName}
 // Generated on: ${new Date().toISOString()}
 
-${functions.length > 0 ? `import { ${functions.join(", ")} } from '../${moduleName}';` : `const ${moduleName} = require('../${moduleName}');`}
+${functions.length > 0 ? `import { ${functions.join(", ")} } from "../${moduleName}";` : `const ${moduleName} = require("../${moduleName}");`}
 
-describe('${moduleName}', () => {
+describe("${moduleName}", () => {
   beforeEach(() => {
     // Setup before each test
   });
@@ -293,26 +293,26 @@ describe('${moduleName}', () => {
 ${functions
   .map(
     (func) => `
-  describe('${func}', () => {
-    it('should work with valid input', () => {
+  describe("${func}", () => {
+    it("should work with valid input", () => {
       // Test ${func} with valid parameters
-      expect(typeof ${func}).toBe('function');
+      expect(typeof ${func}).toBe("function");
     });
 
-    it('should handle edge cases', () => {
+    it("should handle edge cases", () => {
       // Test ${func} with edge cases
     });
 
-    it('should handle errors gracefully', () => {
+    it("should handle errors gracefully", () => {
       // Test ${func} error handling
     });
   });`
   )
   .join("")}
 
-  it('should export expected functions', () => {
+  it("should export expected functions", () => {
     // Verify module exports
-    ${functions.map((func) => `expect(typeof ${func}).toBe('function');`).join("\n    ")}
+    ${functions.map((func) => `expect(typeof ${func}).toBe("function");`).join("\n    ")}
   });
 });`;
   }

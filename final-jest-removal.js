@@ -60,32 +60,32 @@ const REPLACEMENTS = [
   { from: /vitest framework/gi, to: "vitest framework" },
 
   // Import statement replacements
-  { from: /from\s+['"]jest['"]/g, to: 'from "vitest"' },
-  { from: /from\s+["']@jest\/globals["']/g, to: 'from "vitest"' },
-  { from: /require\(['"]jest['"]\)/g, to: 'require("vitest")' },
-  { from: /require\(['"]@jest\/globals['"]\)/g, to: 'require("vitest")' },
+  { from: /from\s+[""]jest[""]/g, to: "from "vitest"" },
+  { from: /from\s+[""]@jest\/globals[""]/g, to: "from "vitest"" },
+  { from: /require\([""]jest[""]\)/g, to: "require("vitest")" },
+  { from: /require\([""]@jest\/globals[""]\)/g, to: "require("vitest")" },
 
   // Configuration replacements
   { from: /jest\.config\./g, to: "vitest.config." },
   { from: /jest\.setup\./g, to: "vitest.setup." },
   {
     from: /"testEnvironment":\s*"jest-environment-jsdom"/g,
-    to: '"testEnvironment": "jsdom"',
+    to: ""testEnvironment": "jsdom"",
   },
   {
     from: /"testEnvironment":\s*"jest-environment-node"/g,
-    to: '"testEnvironment": "node"',
+    to: ""testEnvironment": "node"",
   },
 
   // Package.json script replacements
-  { from: /"test":\s*"jest"/g, to: '"test": "vitest"' },
+  { from: /"test":\s*"jest"/g, to: ""test": "vitest"" },
   {
     from: /"test:watch":\s*"jest\s+--watch"/g,
-    to: '"test:watch": "vitest --watch"',
+    to: ""test:watch": "vitest --watch"",
   },
   {
     from: /"test:coverage":\s*"jest\s+--coverage"/g,
-    to: '"test:coverage": "vitest --coverage"',
+    to: ""test:coverage": "vitest --coverage"",
   },
   { from: /jest\s+--/g, to: "vitest --" },
 
@@ -187,15 +187,15 @@ async function processFile(filePath) {
       if (content.match(/\bjest\./)) {
         // Check if vi is already imported
         const hasViImport = content.match(
-          /import\s+.*\bvi\b.*from\s+["']vitest["']/
+          /import\s+.*\bvi\b.*from\s+[""]vitest[""]/
         );
-        const hasVitestImport = content.match(/from\s+["']vitest["']/);
+        const hasVitestImport = content.match(/from\s+[""]vitest[""]/);
 
         if (!hasViImport) {
           if (hasVitestImport) {
             // Add vi to existing vitest import
             content = content.replace(
-              /import\s+\{([^}]+)\}\s+from\s+["']vitest["']/,
+              /import\s+\{([^}]+)\}\s+from\s+[""]vitest[""]/,
               (match, imports) => {
                 const importList = imports.split(",").map((i) => i.trim());
                 if (!importList.includes("vi")) {
@@ -222,7 +222,7 @@ async function processFile(filePath) {
 
             // Insert after last import or at beginning
             insertIndex = lastImportIndex >= 0 ? lastImportIndex + 1 : 0;
-            lines.splice(insertIndex, 0, 'import { vi } from "vitest";');
+            lines.splice(insertIndex, 0, "import { vi } from "vitest";");
             content = lines.join("\n");
           }
           modified = true;
@@ -474,7 +474,7 @@ async function main() {
   console.log("   1. Run: npm install (to update dependencies)");
   console.log("   2. Run: npm test (to verify all tests work)");
   console.log(
-    '   3. Commit changes: git add -A && git commit -m "chore: complete vitest to Vitest migration"'
+    "   3. Commit changes: git add -A && git commit -m "chore: complete vitest to Vitest migration""
   );
   console.log("   4. Update CI/CD pipelines if needed");
   console.log(

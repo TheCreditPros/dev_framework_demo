@@ -5,8 +5,8 @@ const { Worker } = require("worker_threads");
 const os = require("os");
 
 const REPLACEMENTS = [
-  { from: /from ['"]jest['"]/, to: 'from "vitest"' },
-  { from: /from ["']@jest\/globals["']/, to: 'from "vitest"' },
+  { from: /from [""]jest[""]/, to: "from "vitest"" },
+  { from: /from [""]@jest\/globals[""]/, to: "from "vitest"" },
   { from: /jest\.fn\(\)/g, to: "vi.fn()" },
   { from: /jest\.mock\(/g, to: "vi.mock(" },
   { from: /jest\.unmock\(/g, to: "vi.unmock(" },
@@ -79,10 +79,10 @@ async function processFile(filePath) {
       content.match(/jest\./)
     ) {
       const hasExistingImports =
-        content.includes("import {") && content.includes('} from "vitest"');
+        content.includes("import {") && content.includes("} from "vitest"");
       if (hasExistingImports) {
         content = content.replace(
-          /import \{([^}]+)\} from ["']vitest["']/,
+          /import \{([^}]+)\} from [""]vitest[""]/,
           (match, imports) => {
             if (!imports.includes("vi")) {
               return `import { vi,${imports}} from "vitest"`;
@@ -91,10 +91,10 @@ async function processFile(filePath) {
           }
         );
       } else if (
-        content.includes('from "vitest"') ||
-        content.includes("from 'vitest'")
+        content.includes("from "vitest"") ||
+        content.includes("from "vitest"")
       ) {
-        const vitestImportRegex = /import \{[^}]+\} from ["']vitest["']/;
+        const vitestImportRegex = /import \{[^}]+\} from [""]vitest[""]/;
         content = content.replace(vitestImportRegex, (match) => {
           const imports = match.match(/\{([^}]+)\}/)[1];
           if (!imports.includes("vi")) {
@@ -113,10 +113,10 @@ async function processFile(filePath) {
               break;
             }
           }
-          lines.splice(importLineIndex, 0, 'import { vi } from "vitest";');
+          lines.splice(importLineIndex, 0, "import { vi } from "vitest";");
           content = lines.join("\n");
         } else {
-          content = 'import { vi } from "vitest";\n' + content;
+          content = "import { vi } from "vitest";\n" + content;
         }
       }
       modified = true;

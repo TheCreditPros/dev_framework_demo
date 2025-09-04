@@ -8,15 +8,15 @@ echo "🔄 Converting single quotes to double quotes..."
 # Function to safely convert quotes in a file
 convert_quotes() {
     local file="$1"
-    
+
     # Skip if file doesn't exist
     if [ ! -f "$file" ]; then
         return
     fi
-    
+
     # Create a temporary file
     local temp_file=$(mktemp)
-    
+
     # Convert quotes using a more sophisticated approach
     # This handles most common cases but avoids breaking escaped quotes
     cat "$file" | \
@@ -28,7 +28,7 @@ convert_quotes() {
         # Handle single quotes at start of line
         s/^'([^']*)'/\1/g
     " > "$temp_file"
-    
+
     # Only replace the original file if the conversion looks valid
     if [ -s "$temp_file" ]; then
         mv "$temp_file" "$file"

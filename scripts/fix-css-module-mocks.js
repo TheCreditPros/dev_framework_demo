@@ -7,7 +7,7 @@ function fixCSSModuleMocks(filePath) {
 
   // Fix CSS module mocks that don't have default exports
   const cssModuleMockPattern =
-    /vi\.mock\(["']@\/styles\/[^"']*\.(?:css|scss)["'],\s*\(\)\s*=>\s*\(\s*\{([^}]*)\}\s*\)/g;
+    /vi\.mock\([""]@\/styles\/[^""]*\.(?:css|scss)["'],\s*\(\)\s*=>\s*\(\s*\{([^}]*)\}\s*\)/g;
 
   content = content.replace(cssModuleMockPattern, (match, mockContent) => {
     // Check if the mock content already has a default export
@@ -22,7 +22,7 @@ function fixCSSModuleMocks(filePath) {
 
   // Fix CSS module mocks with virtual: true that don't have default exports
   const virtualCssModuleMockPattern =
-    /vi\.mock\(["']@\/styles\/[^"']*\.(?:css|scss)["'],\s*\(\)\s*=>\s*\(\s*\{([^}]*)\}\s*,\s*\{\s*virtual:\s*true\s*\}\s*\)/g;
+    /vi\.mock\([""]@\/styles\/[^""]*\.(?:css|scss)["'],\s*\(\)\s*=>\s*\(\s*\{([^}]*)\}\s*,\s*\{\s*virtual:\s*true\s*\}\s*\)/g;
 
   content = content.replace(
     virtualCssModuleMockPattern,
