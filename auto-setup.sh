@@ -155,7 +155,7 @@ detect_and_setup_project() {
     elif [[ -f "frontend/package.json" ]]; then
       cd frontend
     fi
-    retry_command $MAX_RETRIES npm install --save-dev vitest @testing-library/react @testing-library/vitest-dom jsdom
+    retry_command $MAX_RETRIES npm install --save-dev vitest @testing-library/react @testing-library/jest-dom jsdom
     cd ..
     echo_color $GREEN "✔️ Installed Vitest and React testing libraries."
   fi
@@ -168,7 +168,7 @@ detect_and_setup_project() {
     elif [[ -f "admin/package.json" ]]; then
       cd admin
     fi
-    retry_command $MAX_RETRIES npm install --save-dev vitest @testing-library/react @testing-library/vitest-dom
+    retry_command $MAX_RETRIES npm install --save-dev vitest @testing-library/react @testing-library/jest-dom
     cd ..
     echo_color $GREEN "✔️ Installed Vitest and React testing libraries."
   fi
@@ -176,7 +176,7 @@ detect_and_setup_project() {
   # React App Detection (root level)
   if [[ -f "package.json" ]] && ! [[ -f "client-frontend/package.json" ]] && ! [[ -f "admin-frontend/package.json" ]]; then
     echo_color $GREEN "📦 React project detected"
-    retry_command $MAX_RETRIES npm install --save-dev vitest @testing-library/react @testing-library/vitest-dom jsdom
+    retry_command $MAX_RETRIES npm install --save-dev vitest @testing-library/react @testing-library/jest-dom jsdom
     echo_color $GREEN "✔️ Installed Vitest and React testing libraries."
   fi
 }
