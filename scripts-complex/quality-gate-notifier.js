@@ -42,7 +42,7 @@ class QualityGateNotifier {
    */
   async sendQualityGateFailure(failureData) {
     const {
-      gateType, // "test", "security", "performance", "coverage", "lint"
+      gateType, // 'test', 'security', 'performance', 'coverage', 'lint'
       failureReason, // Specific reason for failure
       developer, // GitHub actor
       repository, // Repository name
@@ -191,7 +191,7 @@ class QualityGateNotifier {
           "npm run test:coverage",
           "npm run test:unit",
           "npm run ai:generate-tests",
-          "./ai-sdlc explain "test failures"",
+          './ai-sdlc explain "test failures"',
         ];
         guidance.resources = [
           "Testing Guide: docs/TESTING-README.md",
@@ -211,7 +211,7 @@ class QualityGateNotifier {
           "./scripts-complex/security-scanner.js full",
           "npm audit --audit-level=high",
           "npm run ci:security",
-          "./ai-sdlc explain "security vulnerabilities"",
+          './ai-sdlc explain "security vulnerabilities"',
         ];
         guidance.resources = [
           "Security Guide: docs/SECURITY_TOOLS_INTEGRATION.md",
@@ -231,7 +231,7 @@ class QualityGateNotifier {
           "npm run ci:performance",
           "performance-monitoring-removed",
           "npm run test:performance",
-          "./ai-sdlc explain "performance issues"",
+          './ai-sdlc explain "performance issues"',
         ];
         guidance.resources = [
           "Performance Config: Removed (Lighthouse deprecated)",
@@ -251,7 +251,7 @@ class QualityGateNotifier {
           "npm run test:coverage",
           "npm run ai:generate-tests",
           "npm run test:watch-coverage",
-          "./ai-sdlc explain "low test coverage"",
+          './ai-sdlc explain "low test coverage"',
         ];
         guidance.resources = [
           "Coverage Report: coverage/lcov-report/index.html",
@@ -271,7 +271,7 @@ class QualityGateNotifier {
           "npm run lint:fix",
           "npm run format",
           "npm run type-check",
-          "./ai-sdlc explain "ESLint errors"",
+          './ai-sdlc explain "ESLint errors"',
         ];
         guidance.resources = [
           "ESLint Config: eslint.config.js",
@@ -290,8 +290,8 @@ class QualityGateNotifier {
         guidance.localCommands = [
           "npm run ci:compliance",
           "./scripts-complex/security-scanner.js compliance",
-          "npm run test -- --grep "FCRA"",
-          "./ai-sdlc explain "FCRA compliance"",
+          'npm run test -- --grep "FCRA"',
+          './ai-sdlc explain "FCRA compliance"',
         ];
         guidance.resources = [
           "FCRA Guidelines: docs/compliance.md",
@@ -309,7 +309,7 @@ class QualityGateNotifier {
         guidance.localCommands = [
           "./ai-sdlc status",
           "./ai-sdlc validate",
-          "./ai-sdlc explain "workflow failure"",
+          './ai-sdlc explain "workflow failure"',
         ];
         guidance.resources = [
           "Framework Docs: https://nydamon.github.io/ai-sdlc-docs/",

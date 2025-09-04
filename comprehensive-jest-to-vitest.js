@@ -4,8 +4,8 @@ const path = require("path");
 
 const REPLACEMENTS = [
   // Import replacements
-  { from: /from [""]jest[""]/, to: "from "vitest"" },
-  { from: /from [""]@jest\/globals[""]/, to: "from "vitest"" },
+  { from: /from ['"]jest['"]/, to: 'from "vitest"' },
+  { from: /from ["']@jest\/globals["']/, to: 'from "vitest"' },
 
   // Jest object replacements
   { from: /jest\.fn\(\)/g, to: "vi.fn()" },
@@ -45,16 +45,16 @@ const REPLACEMENTS = [
   { from: /jest-dom/g, to: "jest-dom" }, // Keep jest-dom as is (it's a testing library package)
 
   // Configuration and documentation
-  { from: /\"jest\":\s*\{/g, to: ""vitest": {" },
-  { from: /\'jest\':\s*\{/g, to: ""vitest": {" },
-  { from: /test:\s*[""]jest[""]/g, to: "test: "vitest"" },
+  { from: /\"jest\":\s*\{/g, to: '"vitest": {' },
+  { from: /\'jest\':\s*\{/g, to: "'vitest': {" },
+  { from: /test:\s*['"]jest['"]/g, to: 'test: "vitest"' },
   {
-    from: /test:watch:\s*[""]jest\s+--watch[""]/g,
-    to: "test:watch: "vitest --watch"",
+    from: /test:watch:\s*['"]jest\s+--watch['"]/g,
+    to: 'test:watch: "vitest --watch"',
   },
   {
-    from: /test:coverage:\s*[""]jest\s+--coverage[""]/g,
-    to: "test:coverage: "vitest --coverage"",
+    from: /test:coverage:\s*['"]jest\s+--coverage['"]/g,
+    to: 'test:coverage: "vitest --coverage"',
   },
 ];
 
@@ -111,12 +111,12 @@ async function processFile(filePath) {
         content.match(/jest\./)
       ) {
         const hasExistingVitestImport =
-          content.includes("from "vitest"") ||
-          content.includes("from "vitest"");
+          content.includes('from "vitest"') ||
+          content.includes("from 'vitest'");
         if (hasExistingVitestImport) {
           // Add vi to existing import
           content = content.replace(
-            /import \{([^}]+)\} from [""]vitest[""]/,
+            /import \{([^}]+)\} from ["']vitest["']/,
             (match, imports) => {
               if (!imports.includes("vi")) {
                 return `import { vi,${imports}} from "vitest"`;
@@ -136,10 +136,10 @@ async function processFile(filePath) {
                 break;
               }
             }
-            lines.splice(importLineIndex, 0, "import { vi } from "vitest";");
+            lines.splice(importLineIndex, 0, 'import { vi } from "vitest";');
             content = lines.join("\n");
           } else {
-            content = "import { vi } from "vitest";\n" + content;
+            content = 'import { vi } from "vitest";\n' + content;
           }
         }
         modified = true;

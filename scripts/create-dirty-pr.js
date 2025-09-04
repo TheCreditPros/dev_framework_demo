@@ -52,7 +52,7 @@ return value+1}
 function dirtyE2EFiles() {
   const target = "tests/e2e/dirty-heal.spec.js";
   const content =
-    "import { test, expect } from "@playwright/test";\n\n// Intentionally fragile selectors to trigger auto-heal learnings\nconst BASE = process.env.PLAYWRIGHT_BASE_URL || "http://localhost:3000";\n\ntest.describe("Dirty Auto-Heal Validation", () => {\n  test("uses outdated selectors to trigger learnings", async ({ page }) => {\n    await page.goto(BASE);\n    await page.click("#old-nonexistent-button");\n    await page.waitForTimeout(300);\n    // Expectation is not strict; this test is allowed to fail in CI (|| true)\n    expect(true).toBe(true);\n  });\n});\n";
+    "import { test, expect } from '@playwright/test';\n\n// Intentionally fragile selectors to trigger auto-heal learnings\nconst BASE = process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:3000';\n\ntest.describe('Dirty Auto-Heal Validation', () => {\n  test('uses outdated selectors to trigger learnings', async ({ page }) => {\n    await page.goto(BASE);\n    await page.click('#old-nonexistent-button');\n    await page.waitForTimeout(300);\n    // Expectation is not strict; this test is allowed to fail in CI (|| true)\n    expect(true).toBe(true);\n  });\n});\n";
   writeFile(target, content);
   return [target];
 }

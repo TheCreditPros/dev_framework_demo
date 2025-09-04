@@ -25,7 +25,7 @@ function main() {
     process.exit(1);
   }
 
-  const json = safe("gh pr list --search "dirty PR" --json number,headRefName");
+  const json = safe('gh pr list --search "dirty PR" --json number,headRefName');
   if (!json) {
     console.log("ℹ️ No PRs found matching search.");
     return;

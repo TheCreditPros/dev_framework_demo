@@ -197,7 +197,7 @@ class MultiStackDetector {
       REACT_SPA: ["npm install", "npm run dev"],
     };
 
-    return commands[projectType] || ["echo "Unknown project type""];
+    return commands[projectType] || ['echo "Unknown project type"'];
   }
 
   // Helper methods

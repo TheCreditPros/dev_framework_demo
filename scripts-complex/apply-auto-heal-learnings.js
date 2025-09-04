@@ -128,7 +128,7 @@ function createBranchAndCommit(changes, openPr = false) {
 
   if (openPr && gitSafe("gh --version")) {
     gitSafe(
-      "gh pr create --title "chore(auto-heal): apply selector learnings" --body "Automated selector updates from Playwright auto-healing learnings.""
+      'gh pr create --title "chore(auto-heal): apply selector learnings" --body "Automated selector updates from Playwright auto-healing learnings."'
     );
   } else if (openPr) {
     console.log("ℹ️  gh CLI not found; push and open PR manually.");
