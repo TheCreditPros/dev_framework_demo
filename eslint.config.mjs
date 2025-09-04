@@ -3,6 +3,7 @@ import tsPlugin from '@typescript-eslint/eslint-plugin';
 import tsParser from '@typescript-eslint/parser';
 
 export default [
+  js.configs.recommended,
   {
     ignores: [
       '**/node_modules/**',
@@ -26,7 +27,6 @@ export default [
       'setup*.sh',
     ],
   },
-  js.configs.recommended,
   {
     files: ['**/*.{js,jsx,mjs,cjs}'],
     languageOptions: {

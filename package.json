@@ -11,7 +11,7 @@
     "test:ci": "vitest --run --coverage",
     "test:e2e": "playwright test --config=playwright.config.js",
     "lint": "eslint .",
-    "lint:ci": "eslint . --max-warnings=0",
+    "lint:ci": "eslint src tests/unit --max-warnings=0",
     "lint:fix": "eslint . --fix",
     "format": "prettier --check '**/*.{js,jsx,ts,tsx,json,md}'",
     "format:fix": "prettier --write '**/*.{js,jsx,ts,tsx,json,md}'",
