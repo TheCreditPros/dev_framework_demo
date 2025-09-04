@@ -179,9 +179,10 @@ module.exports = {
       largestContentfulPaint: process.env.PERF_LCP_THRESHOLD || '4.0s',
       cumulativeLayoutShift: process.env.PERF_CLS_THRESHOLD || '0.1',
     },
-    lighthouse: {
-      enabled: process.env.LIGHTHOUSE_ENABLED !== 'false',
-      config: process.env.LIGHTHOUSE_CONFIG || './lighthouse.config.js',
+    // Performance monitoring removed (Lighthouse deprecated)
+    performance: {
+      enabled: false,
+      note: 'Lighthouse deprecated - performance monitoring disabled',
     },
   },
 

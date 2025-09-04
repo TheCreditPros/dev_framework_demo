@@ -1,7 +1,1 @@
-#!/usr/bin/env sh
-
-# Minimal, fast, low-friction pre-commit
-# - Only fixes and formats staged files
-# - Heavy tasks are opt-in via pre-push or CI
-
 npx lint-staged

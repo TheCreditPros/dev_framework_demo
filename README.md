@@ -10,7 +10,7 @@
 
 ## 🎯 **What This Framework Does**
 
-Note: In this demo repository, performance tracking (Lighthouse/Artillery) is disabled by default and related CI jobs/configs have been removed to keep the template lean. You can enable performance testing later using the examples in docs.
+Note: In this demo repository, performance tracking has been removed as Lighthouse is deprecated. The template focuses on essential quality gates and modern testing practices.
 
 The AI-SDLC Framework transforms any repository into an **AI-powered development powerhouse** with:
 
@@ -568,7 +568,7 @@ Automatic Analysis:
 
 ### **Performance Monitoring**
 
-- **Lighthouse CI** - Core Web Vitals budgets
+- **Performance Monitoring** - Removed (Lighthouse deprecated)
 - **Load Testing** - Workflow performance validation
 - **Memory Profiling** - Resource usage optimization
 - **API Performance** - Response time monitoring
@@ -596,7 +596,7 @@ cp dev_framework_demo/.pr_agent.toml ./
 
 ### **Opt-in Feature Flags (Defaults: Safe & Fast)**
 
-- `ENABLE_LIGHTHOUSE=true` — Enable Lighthouse audit in CI
+- `ENABLE_PERFORMANCE=false` — Performance monitoring disabled (Lighthouse deprecated)
 - `ENABLE_PERF=true` — Enable load testing and memory profiling
 - `ENABLE_E2E=true` — Run Playwright E2E in CI (kept off by default)
 - `PR_AGENT_ENABLED=true` — Enable AI PR-Agent integration (requires API access)

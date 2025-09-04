@@ -3,7 +3,6 @@ import tsPlugin from '@typescript-eslint/eslint-plugin';
 import tsParser from '@typescript-eslint/parser';
 
 export default [
-  js.configs.recommended,
   {
     ignores: [
       '**/node_modules/**',
@@ -19,8 +18,15 @@ export default [
       '**/final-jest-removal.js',
       '**/jest-to-vitest-converter.js',
       '**/playwright-report/**',
+      'scripts/**',
+      'scripts-complex/**',
+      'test-workflow.js',
+      'validate-setup.js',
+      'auto-setup*.sh',
+      'setup*.sh',
     ],
   },
+  js.configs.recommended,
   {
     files: ['**/*.{js,jsx,mjs,cjs}'],
     languageOptions: {

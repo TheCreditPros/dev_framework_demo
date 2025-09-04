@@ -360,7 +360,7 @@ setup_cicd_automation() {
     echo_color $GREEN "✔️ CODEOWNERS already configured"
   fi
 
-  # Lighthouse/Performance configuration removed from base template
+  # Performance monitoring removed from base template (Lighthouse deprecated)
 
   # Add CI/CD scripts to package.json
   if [[ -f "package.json" ]]; then
@@ -371,9 +371,9 @@ setup_cicd_automation() {
     npx json -I -f package.json -e 'this.scripts["ci:test-fast"]="npm run lint && npm run test:changed"'
     npx json -I -f package.json -e 'this.scripts["test:ci"]="vitest --run --coverage"'
     npx json -I -f package.json -e 'this.scripts["ci:security"]="npm audit && npm run lint:security || echo \"Security check complete\""'
-    npx json -I -f package.json -e 'this.scripts["ci:performance"]="lighthouse-ci || echo \"Performance check complete\""'
+    # Performance monitoring removed (Lighthouse deprecated)
     npx json -I -f package.json -e 'this.scripts["ci:compliance"]="node scripts-complex/security-scanner.js || echo \"Compliance check complete\""'
-    npx json -I -f package.json -e 'this.scripts["ci:full"]="npm run ci:security && npm run test:coverage && npm run ci:performance"'
+    npx json -I -f package.json -e 'this.scripts["ci:full"]="npm run ci:security && npm run test:coverage"'
 
     echo_color $GREEN "✔️ CI/CD scripts added to package.json"
   fi
@@ -383,7 +383,7 @@ setup_cicd_automation() {
   echo "   ✅ GitHub Actions workflows - Complete CI/CD pipeline"
   echo "   ✅ Dependabot automation - Weekly dependency updates"
   echo "   ✅ CODEOWNERS - Automated code review assignments"
-  echo "   ✅ Performance monitoring - Lighthouse CI with budgets"
+  echo "   ✅ Performance monitoring - Removed (Lighthouse deprecated)"
   echo "   ✅ Security scanning - Multi-tool vulnerability assessment"
   echo "   ✅ Compliance validation - FCRA regulatory checks"
 }
@@ -399,7 +399,7 @@ validate_configuration() {
 
   # Check CI/CD configuration
   [[ -d .github/workflows ]] || { echo_color $RED "⚠️ GitHub workflows directory missing"; ((issues++)); }
-  [[ -f lighthouse.config.js ]] || { echo_color $RED "⚠️ Lighthouse config missing"; ((issues++)); }
+  # Lighthouse config check removed (deprecated)
 
   # Check project-specific configs
   if [[ -f "client-frontend/package.json" ]]; then

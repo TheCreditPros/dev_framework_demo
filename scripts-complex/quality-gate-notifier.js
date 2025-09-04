@@ -229,12 +229,12 @@ class QualityGateNotifier {
         ];
         guidance.localCommands = [
           'npm run ci:performance',
-          'lighthouse-ci',
+          'performance-monitoring-removed',
           'npm run test:performance',
           './ai-sdlc explain "performance issues"',
         ];
         guidance.resources = [
-          'Performance Config: lighthouse.config.js',
+          'Performance Config: Removed (Lighthouse deprecated)',
           'Performance Guide: docs/ci-cd-implementation-guide.md',
           'Budget Thresholds: Core Web Vitals < 2.5s',
         ];
