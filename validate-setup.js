@@ -9,34 +9,33 @@ const checks = [
   {
     name: 'Git Hooks',
     command: 'ls .git/hooks/pre-commit',
-    success: 'Pre-commit hooks installed'
+    success: 'Pre-commit hooks installed',
   },
   {
     name: 'ESLint',
     command: 'npx eslint --version',
-    success: 'ESLint available'
+    success: 'ESLint available',
   },
   {
     name: 'Prettier',
     command: 'npx prettier --version',
-    success: 'Prettier available'
+    success: 'Prettier available',
   },
   {
     name: 'Husky',
     command: 'npx husky --version',
-    success: 'Husky available'
-  }
+    success: 'Husky available',
+  },
 ];
 
 // File existence checks
-const fileChecks = [
-];
+const fileChecks = [];
 
 let passed = 0;
 let total = checks.length + fileChecks.length;
 
 // Command checks
-checks.forEach(check => {
+checks.forEach((check) => {
   try {
     execSync(check.command, { stdio: 'ignore' });
     console.log(`✅ ${check.success}`);
@@ -47,11 +46,11 @@ checks.forEach(check => {
 });
 
 // File existence checks
-fileChecks.forEach(check => {
+fileChecks.forEach((check) => {
   try {
-    const exists = check.isDirectory ?
-      fs.statSync(check.file).isDirectory() :
-      fs.statSync(check.file).isFile();
+    const exists = check.isDirectory
+      ? fs.statSync(check.file).isDirectory()
+      : fs.statSync(check.file).isFile();
 
     if (exists) {
       console.log(`✅ ${check.name} configured`);
