@@ -30,7 +30,7 @@ fi
 # Check our ESLint config
 if [ -f "eslint.config.mjs" ]; then
     echo "✅ Found eslint.config.mjs"
-    
+
     # Check if it has double quotes configuration
     if grep -q '"quotes": \["error", "double"\]' eslint.config.mjs; then
         echo "✅ ESLint configured for DOUBLE QUOTES"
@@ -44,7 +44,7 @@ fi
 # Check Prettier config
 if [ -f ".prettierrc" ]; then
     echo "✅ Found .prettierrc"
-    
+
     if grep -q '"singleQuote": false' .prettierrc; then
         echo "✅ Prettier configured for DOUBLE QUOTES"
     else
