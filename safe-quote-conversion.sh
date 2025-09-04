@@ -6,15 +6,15 @@ echo "🔄 Safe quote conversion (preserving regex patterns)..."
 # Function to safely convert quotes in a file
 safe_convert_quotes() {
     local file="$1"
-    
+
     # Skip if file doesn't exist
     if [ ! -f "$file" ]; then
         return
     fi
-    
+
     # Create a temporary file
     local temp_file=$(mktemp)
-    
+
     # Convert quotes more carefully - only convert simple string literals
     cat "$file" | \
     sed -E "
@@ -26,7 +26,7 @@ safe_convert_quotes() {
         # Handle single quotes at start of line (but not regex)
         s/^'([^']*)'([^/])/\"\1\"\2/g
     " > "$temp_file"
-    
+
     # Only replace if the file looks valid (no obvious syntax errors)
     if [ -s "$temp_file" ] && ! grep -q "SyntaxError\|Unexpected token" "$temp_file" 2>/dev/null; then
         mv "$temp_file" "$file"
