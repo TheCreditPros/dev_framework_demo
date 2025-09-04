@@ -75,25 +75,56 @@ check_prerequisites() {
 }
 
 install_pr_agent() {
-  echo_color $YELLOW "🤖 Ensuring AI PR Agent (pr-agent) is installed..."
+  echo_color $YELLOW "🤖 Checking AI PR Agent (pr-agent) availability..."
   if command -v pr-agent >/dev/null 2>&1; then
     echo_color $GREEN "✔️ PR Agent already available"
     return 0
   fi
 
+  echo_color $BLUE "📋 PR Agent is a Python tool for AI-powered PR reviews"
+  echo_color $BLUE "📋 It's optional but recommended for enhanced PR automation"
+
   if command -v pipx >/dev/null 2>&1; then
-    pipx install pr-agent || true
+    echo_color $YELLOW "🔧 Installing PR Agent via pipx..."
+    pipx install pr-agent || {
+      echo_color $YELLOW "⚠️ pipx installation failed, trying pip..."
+      if command -v pip >/dev/null 2>&1; then
+        pip install --user pr-agent || {
+          echo_color $YELLOW "⚠️ pip installation also failed"
+          echo_color $BLUE "💡 You can install PR Agent manually later:"
+          echo_color $BLUE "   pip install pr-agent"
+          echo_color $BLUE "   or: pipx install pr-agent"
+          return 1
+        }
+      else
+        echo_color $YELLOW "⚠️ Neither pipx nor pip available"
+        echo_color $BLUE "💡 Install Python and pip first, then run:"
+        echo_color $BLUE "   pip install pr-agent"
+        return 1
+      fi
+    }
   elif command -v pip >/dev/null 2>&1; then
-    pip install --user pr-agent || true
-    echo "If pr-agent is not found, add \"$HOME/.local/bin\" to your PATH"
+    echo_color $YELLOW "🔧 Installing PR Agent via pip..."
+    pip install --user pr-agent || {
+      echo_color $YELLOW "⚠️ pip installation failed"
+      echo_color $BLUE "💡 You can try installing with: pip install pr-agent"
+      return 1
+    }
+    echo_color $BLUE "💡 If pr-agent is not found, add \"$HOME/.local/bin\" to your PATH"
   else
-    echo_color $YELLOW "⚠️ Neither pipx nor pip found. Skipping automatic PR Agent install."
+    echo_color $YELLOW "⚠️ Python package managers (pip/pipx) not found"
+    echo_color $BLUE "💡 PR Agent requires Python. Install Python first, then:"
+    echo_color $BLUE "   pip install pr-agent"
+    echo_color $BLUE "   or: pipx install pr-agent"
+    return 1
   fi
 
   if command -v pr-agent >/dev/null 2>&1; then
-    echo_color $GREEN "✔️ PR Agent installed"
+    echo_color $GREEN "✔️ PR Agent installed successfully"
+    echo_color $BLUE "💡 Set GITHUB_TOKEN environment variable to use PR Agent"
   else
-    echo_color $RED "❌ PR Agent not available. Install manually via pipx or pip and set GITHUB_TOKEN."
+    echo_color $YELLOW "⚠️ PR Agent installation incomplete"
+    echo_color $BLUE "💡 Install manually: pip install pr-agent"
   fi
 }
 
@@ -426,6 +457,14 @@ validate_configuration() {
 
   echo_color $GREEN "🧪 Run 'npm run validate' to test your setup."
   echo_color $GREEN "🚀 Run 'npm run ci:full' to test CI/CD pipeline."
+  
+  # Check if PR Agent is available
+  if ! command -v pr-agent >/dev/null 2>&1; then
+    echo_color $YELLOW "💡 To enable AI PR Agent features:"
+    echo_color $BLUE "   1. Install Python: https://python.org"
+    echo_color $BLUE "   2. Install PR Agent: pip install pr-agent"
+    echo_color $BLUE "   3. Set GITHUB_TOKEN environment variable"
+  fi
 }
 
 ### CREATE VALIDATION SCRIPT

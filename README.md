@@ -59,6 +59,12 @@ This framework works with **ANY** technology stack:
 
 ## 🚀 **Quick Start (5 Minutes)**
 
+### **Prerequisites**
+
+- **Node.js** (v18+ recommended)
+- **Python** (v3.8+ for AI PR Agent - optional but recommended)
+- **Git** (for version control)
+
 ### **1. Clone the Framework**
 
 ```bash
