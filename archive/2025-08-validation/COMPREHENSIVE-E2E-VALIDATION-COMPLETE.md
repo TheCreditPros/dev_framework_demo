@@ -64,15 +64,15 @@ Based on previous runs and current architecture:
 ### **✅ Playwright Configuration** (`playwright.config.js`)
 
 ```javascript
-projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }];
+projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }];
 // ✅ Optimized to Chromium-only for 66% performance improvement
 ```
 
 ### **✅ CI/CD Configuration** (`.github/workflows/ci-cd-enhanced.yml`)
 
 ```yaml
-PLAYWRIGHT_WEB_SERVER: 'node scripts/simple-static-server.js'
-PLAYWRIGHT_BASE_URL: 'http://localhost:3000'
+PLAYWRIGHT_WEB_SERVER: "node scripts/simple-static-server.js"
+PLAYWRIGHT_BASE_URL: "http://localhost:3000"
 # ✅ Lightweight server configuration validated
 ```
 

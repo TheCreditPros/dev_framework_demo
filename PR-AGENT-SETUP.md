@@ -109,7 +109,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           pr_url: ${{ github.event.pull_request.html_url }}
-          command: 'review'
+          command: "review"
 
       - name: PR Agent Describe
         uses: Codium-ai/pr-agent@main
@@ -118,7 +118,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           pr_url: ${{ github.event.pull_request.html_url }}
-          command: 'describe'
+          command: "describe"
 ```
 
 ## Interactive Commands in PRs
@@ -139,7 +139,7 @@ Create `.pr-agent.yaml` for custom settings:
 
 ```yaml
 model:
-  type: 'gpt-4'
+  type: "gpt-4"
   temperature: 0.2
 
 review:

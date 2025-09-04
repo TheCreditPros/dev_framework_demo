@@ -1,8 +1,8 @@
-const fs = require('fs');
-const path = require('path');
+const fs = require("fs");
+const path = require("path");
 
 function fixCSSModuleMocks(filePath) {
-  let content = fs.readFileSync(filePath, 'utf8');
+  let content = fs.readFileSync(filePath, "utf8");
   let modified = false;
 
   // Fix CSS module mocks that don't have default exports
@@ -11,11 +11,11 @@ function fixCSSModuleMocks(filePath) {
 
   content = content.replace(cssModuleMockPattern, (match, mockContent) => {
     // Check if the mock content already has a default export
-    if (!mockContent.includes('default:')) {
+    if (!mockContent.includes("default:")) {
       modified = true;
       // Extract the mock properties and wrap them in a default export
       const properties = mockContent.trim();
-      return `vi.mock("@/styles/${path.basename(filePath).replace('.test.jsx', '.css')}", () => ({ default: { ${properties} } })`;
+      return `vi.mock("@/styles/${path.basename(filePath).replace(".test.jsx", ".css")}", () => ({ default: { ${properties} } })`;
     }
     return match;
   });
@@ -27,17 +27,17 @@ function fixCSSModuleMocks(filePath) {
   content = content.replace(
     virtualCssModuleMockPattern,
     (match, mockContent) => {
-      if (!mockContent.includes('default:')) {
+      if (!mockContent.includes("default:")) {
         modified = true;
         const properties = mockContent.trim();
-        return `vi.mock("@/styles/${path.basename(filePath).replace('.test.jsx', '.css')}", () => ({ default: { ${properties} } }), { virtual: true })`;
+        return `vi.mock("@/styles/${path.basename(filePath).replace(".test.jsx", ".css")}", () => ({ default: { ${properties} } }), { virtual: true })`;
       }
       return match;
     }
   );
 
   if (modified) {
-    fs.writeFileSync(filePath, content, 'utf8');
+    fs.writeFileSync(filePath, content, "utf8");
     console.log(`✅ Fixed CSS module mocks: ${filePath}`);
     return true;
   }
@@ -56,7 +56,7 @@ function findTestFiles(dir) {
 
       if (stat.isDirectory()) {
         scanDirectory(fullPath);
-      } else if (item.endsWith('.test.jsx') || item.endsWith('.test.js')) {
+      } else if (item.endsWith(".test.jsx") || item.endsWith(".test.js")) {
         testFiles.push(fullPath);
       }
     }
@@ -67,9 +67,9 @@ function findTestFiles(dir) {
 }
 
 function fixAllCSSModuleMocks(projectRoot) {
-  console.log('🔧 Fixing CSS module mocks...');
+  console.log("🔧 Fixing CSS module mocks...");
 
-  const testFiles = findTestFiles(path.join(projectRoot, 'src'));
+  const testFiles = findTestFiles(path.join(projectRoot, "src"));
   let fixedCount = 0;
 
   for (const filePath of testFiles) {
@@ -81,5 +81,5 @@ function fixAllCSSModuleMocks(projectRoot) {
   console.log(`✅ Fixed CSS module mocks in ${fixedCount} files`);
 }
 
-const projectRoot = path.resolve(__dirname, '..');
+const projectRoot = path.resolve(__dirname, "..");
 fixAllCSSModuleMocks(projectRoot);

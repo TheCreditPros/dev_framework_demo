@@ -3,7 +3,6 @@ import tsPlugin from '@typescript-eslint/eslint-plugin';
 import tsParser from '@typescript-eslint/parser';
 
 export default [
-  js.configs.recommended,
   {
     ignores: [
       '**/node_modules/**',
@@ -28,6 +27,64 @@ export default [
       'tests/e2e/**',
       'tests/Integration/**',
     ],
+  },
+  {
+    files: ['**/*.{ts,tsx}'],
+    languageOptions: {
+      parser: tsParser,
+      parserOptions: {
+        ecmaVersion: 'latest',
+        sourceType: 'module',
+        ecmaFeatures: {
+          jsx: true,
+        },
+      },
+      globals: {
+        console: 'readonly',
+        process: 'readonly',
+        Buffer: 'readonly',
+        __dirname: 'readonly',
+        __filename: 'readonly',
+        global: 'readonly',
+        FormData: 'readonly',
+        File: 'readonly',
+        document: 'readonly',
+        window: 'readonly',
+        navigator: 'readonly',
+        // Test globals
+        describe: 'readonly',
+        it: 'readonly',
+        test: 'readonly',
+        expect: 'readonly',
+        beforeEach: 'readonly',
+        afterEach: 'readonly',
+        beforeAll: 'readonly',
+        afterAll: 'readonly',
+        vi: 'readonly',
+        // Browser globals
+        fetch: 'readonly',
+        URL: 'readonly',
+        btoa: 'readonly',
+        localStorage: 'readonly',
+        HTMLInputElement: 'readonly',
+      },
+    },
+    plugins: {
+      '@typescript-eslint': tsPlugin,
+    },
+    rules: {
+      // Essential TypeScript rules
+      '@typescript-eslint/no-unused-vars': [
+        'warn',
+        { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
+      ],
+      '@typescript-eslint/no-explicit-any': 'warn',
+      '@typescript-eslint/no-non-null-assertion': 'warn',
+      'no-unused-vars': 'off',
+      'prefer-const': 'warn',
+      'no-var': 'error',
+      'quotes': ['error', 'double'],
+    },
   },
   {
     files: ['**/*.{js,jsx,mjs,cjs}'],
@@ -78,61 +135,7 @@ export default [
       'prefer-const': 'warn',
       'no-var': 'error',
       'no-useless-escape': 'warn',
-    },
-  },
-  {
-    files: ['**/*.{ts,tsx}'],
-    languageOptions: {
-      parser: tsParser,
-      parserOptions: {
-        ecmaVersion: 'latest',
-        sourceType: 'module',
-        ecmaFeatures: {
-          jsx: true,
-        },
-      },
-      globals: {
-        console: 'readonly',
-        process: 'readonly',
-        Buffer: 'readonly',
-        __dirname: 'readonly',
-        __filename: 'readonly',
-        global: 'readonly',
-        FormData: 'readonly',
-        File: 'readonly',
-        document: 'readonly',
-        window: 'readonly',
-        navigator: 'readonly',
-        // Test globals
-        describe: 'readonly',
-        it: 'readonly',
-        test: 'readonly',
-        expect: 'readonly',
-        beforeEach: 'readonly',
-        afterEach: 'readonly',
-        beforeAll: 'readonly',
-        afterAll: 'readonly',
-        vi: 'readonly',
-        // Browser globals
-        fetch: 'readonly',
-        URL: 'readonly',
-        btoa: 'readonly',
-        localStorage: 'readonly',
-        HTMLInputElement: 'readonly',
-      },
-    },
-    plugins: {
-      '@typescript-eslint': tsPlugin,
-    },
-    rules: {
-      ...tsPlugin.configs.recommended.rules,
-      '@typescript-eslint/no-unused-vars': [
-        'warn',
-        { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
-      ],
-      'no-unused-vars': 'off',
-      'prefer-const': 'warn',
-      'no-var': 'error',
+      'quotes': ['error', 'double'],
     },
   },
 ];

@@ -3,15 +3,15 @@
  * Relocate Laravel example from repo root to examples/laravel/
  * Safe to run multiple times; skips files that were already moved.
  */
-const fs = require('fs');
-const path = require('path');
+const fs = require("fs");
+const path = require("path");
 
 const moves = [
-  { from: 'app', to: 'examples/laravel/app' },
-  { from: 'database', to: 'examples/laravel/database' },
-  { from: 'composer.json', to: 'examples/laravel/composer.json' },
-  { from: 'phpunit.xml', to: 'examples/laravel/phpunit.xml' },
-  { from: 'phpstan.neon', to: 'examples/laravel/phpstan.neon' },
+  { from: "app", to: "examples/laravel/app" },
+  { from: "database", to: "examples/laravel/database" },
+  { from: "composer.json", to: "examples/laravel/composer.json" },
+  { from: "phpunit.xml", to: "examples/laravel/phpunit.xml" },
+  { from: "phpstan.neon", to: "examples/laravel/phpstan.neon" },
 ];
 
 function ensureDir(p) {
@@ -49,6 +49,6 @@ for (const m of moves) {
 
 if (moved === 0)
   console.log(
-    'ℹ️  Nothing to move. Laravel example is already under examples/laravel/.'
+    "ℹ️  Nothing to move. Laravel example is already under examples/laravel/."
   );
-else console.log('✅ Laravel example relocated to examples/laravel/.');
+else console.log("✅ Laravel example relocated to examples/laravel/.");

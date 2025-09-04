@@ -100,14 +100,14 @@ Auto-healing captures and exports selector learnings:
 // FCRA-compliant testing
 await healing.validateFCRACompliance();
 await healing.enterCreditScore(750); // Validates 300-850 range
-await healing.enterSSN('123-45-6789'); // Secure formatting
+await healing.enterSSN("123-45-6789"); // Secure formatting
 ```
 
 ### Test Data Generation
 
 ```javascript
 // Generate realistic test scenarios
-const testData = CreditRepairAutoHealing.generateTestData('fair_credit');
+const testData = CreditRepairAutoHealing.generateTestData("fair_credit");
 // Returns: { creditScore: 650, ssn: '***-**-4321', income: 50000 }
 ```
 
@@ -186,8 +186,8 @@ tests/
 '[data-testid="credit-score"]';
 
 // Fallback to semantic selectors
-'#credit-score';
-'.credit-score-value';
+"#credit-score";
+".credit-score-value";
 '[aria-label*="credit score"]';
 ```
 

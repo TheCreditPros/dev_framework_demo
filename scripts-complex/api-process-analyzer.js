@@ -7,60 +7,60 @@
  */
 
 // Load environment variables
-require('dotenv').config();
+require("dotenv").config();
 
-const fs = require('fs');
-const path = require('path');
+const fs = require("fs");
+const path = require("path");
 
 class APIProcessAnalyzer {
   constructor(fsModule = null) {
     this.fs = fsModule || fs;
     this.projectRoot = process.cwd();
-    this.reportsDir = path.join(this.projectRoot, 'reports', 'api-processes');
+    this.reportsDir = path.join(this.projectRoot, "reports", "api-processes");
     this.setupReportsDirectory();
 
     // Common multi-step process patterns in credit repair applications
     this.creditRepairProcesses = {
-      'credit-report-retrieval': {
-        name: 'Credit Report Retrieval',
+      "credit-report-retrieval": {
+        name: "Credit Report Retrieval",
         steps: [
-          'authenticate',
-          'validate-permissible-purpose',
-          'fetch-credit-report',
-          'store-audit-trail',
+          "authenticate",
+          "validate-permissible-purpose",
+          "fetch-credit-report",
+          "store-audit-trail",
         ],
         description:
-          'Complete credit report retrieval workflow with FCRA compliance',
+          "Complete credit report retrieval workflow with FCRA compliance",
       },
-      'dispute-submission': {
-        name: 'Dispute Submission',
+      "dispute-submission": {
+        name: "Dispute Submission",
         steps: [
-          'validate-dispute-data',
-          'create-dispute-record',
-          'submit-to-bureau',
-          'track-dispute-status',
+          "validate-dispute-data",
+          "create-dispute-record",
+          "submit-to-bureau",
+          "track-dispute-status",
         ],
-        description: 'Credit dispute submission and tracking process',
+        description: "Credit dispute submission and tracking process",
       },
-      'account-setup': {
-        name: 'Client Account Setup',
+      "account-setup": {
+        name: "Client Account Setup",
         steps: [
-          'client-registration',
-          'identity-verification',
-          'credit-pull-authorization',
-          'service-agreement',
+          "client-registration",
+          "identity-verification",
+          "credit-pull-authorization",
+          "service-agreement",
         ],
-        description: 'New client onboarding and account setup workflow',
+        description: "New client onboarding and account setup workflow",
       },
-      'payment-processing': {
-        name: 'Payment Processing',
+      "payment-processing": {
+        name: "Payment Processing",
         steps: [
-          'validate-payment-info',
-          'process-payment',
-          'update-account-balance',
-          'send-receipt',
+          "validate-payment-info",
+          "process-payment",
+          "update-account-balance",
+          "send-receipt",
         ],
-        description: 'Payment processing and account update workflow',
+        description: "Payment processing and account update workflow",
       },
     };
   }
@@ -77,21 +77,21 @@ class APIProcessAnalyzer {
   findAPISpecifications() {
     const specFiles = [];
     const specPatterns = [
-      'openapi.yaml',
-      'openapi.yml',
-      'openapi.json',
-      'swagger.yaml',
-      'swagger.yml',
-      'swagger.json',
+      "openapi.yaml",
+      "openapi.yml",
+      "openapi.json",
+      "swagger.yaml",
+      "swagger.yml",
+      "swagger.json",
     ];
 
     // Search in common locations
     const searchPaths = [
       this.projectRoot,
-      path.join(this.projectRoot, 'docs'),
-      path.join(this.projectRoot, 'api'),
-      path.join(this.projectRoot, 'spec'),
-      path.join(this.projectRoot, 'specs'),
+      path.join(this.projectRoot, "docs"),
+      path.join(this.projectRoot, "api"),
+      path.join(this.projectRoot, "spec"),
+      path.join(this.projectRoot, "specs"),
     ];
 
     for (const searchPath of searchPaths) {
@@ -114,11 +114,11 @@ class APIProcessAnalyzer {
   parseSpec(content, specPath) {
     const ext = path.extname(specPath).toLowerCase();
 
-    if (ext === '.json') {
+    if (ext === ".json") {
       return JSON.parse(content);
     } else {
       // Try YAML parsing
-      const yaml = require('js-yaml');
+      const yaml = require("js-yaml");
       return yaml.load(content);
     }
   }
@@ -137,7 +137,7 @@ class APIProcessAnalyzer {
     for (const [path, pathItem] of Object.entries(spec.paths)) {
       for (const [method, operation] of Object.entries(pathItem)) {
         if (
-          ['get', 'post', 'put', 'delete', 'patch'].includes(
+          ["get", "post", "put", "delete", "patch"].includes(
             method.toLowerCase()
           )
         ) {
@@ -189,9 +189,9 @@ class APIProcessAnalyzer {
 
     // Extract tag from path
     const pathParts = path
-      .split('/')
-      .filter((part) => part && !part.startsWith('{'));
-    return pathParts.length > 0 ? pathParts[0] : 'default';
+      .split("/")
+      .filter((part) => part && !part.startsWith("{"));
+    return pathParts.length > 0 ? pathParts[0] : "default";
   }
 
   /**
@@ -225,9 +225,9 @@ class APIProcessAnalyzer {
    */
   formatTagName(tag) {
     return tag
-      .split('-')
+      .split("-")
       .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(' ');
+      .join(" ");
   }
 
   /**
@@ -277,12 +277,12 @@ class APIProcessAnalyzer {
     for (const process of processes) {
       if (!process.hasDocumentation.isWellDocumented) {
         issues.push({
-          type: 'documentation',
-          severity: 'medium',
+          type: "documentation",
+          severity: "medium",
           message: `Process "${process.name}" lacks adequate documentation (${process.hasDocumentation.documentedSteps}/${process.hasDocumentation.totalSteps} steps documented)`,
           process: process.name,
           recommendation:
-            'Add detailed descriptions and examples for each step',
+            "Add detailed descriptions and examples for each step",
         });
       }
 
@@ -293,12 +293,12 @@ class APIProcessAnalyzer {
           operation.operation.summary.length < 20
         ) {
           issues.push({
-            type: 'step-description',
-            severity: 'low',
+            type: "step-description",
+            severity: "low",
             message: `Step "${operation.method} ${operation.path}" in process "${process.name}" has insufficient description`,
             process: process.name,
             step: `${operation.method} ${operation.path}`,
-            recommendation: 'Add a detailed summary (minimum 20 characters)',
+            recommendation: "Add a detailed summary (minimum 20 characters)",
           });
         }
       }
@@ -327,12 +327,12 @@ class APIProcessAnalyzer {
 
         if (missingSteps.length > 0) {
           issues.push({
-            type: 'missing-steps',
-            severity: 'high',
-            message: `Process "${process.name}" missing required steps: ${missingSteps.join(', ')}`,
+            type: "missing-steps",
+            severity: "high",
+            message: `Process "${process.name}" missing required steps: ${missingSteps.join(", ")}`,
             process: process.name,
             missingSteps,
-            recommendation: `Add the following steps to ensure compliance: ${missingSteps.join(', ')}`,
+            recommendation: `Add the following steps to ensure compliance: ${missingSteps.join(", ")}`,
           });
         }
       }
@@ -349,8 +349,8 @@ class APIProcessAnalyzer {
 
     for (const [key, process] of Object.entries(this.creditRepairProcesses)) {
       if (
-        tagLower.includes(key.replace('-', '')) ||
-        key.includes(tagLower.replace('-', ''))
+        tagLower.includes(key.replace("-", "")) ||
+        key.includes(tagLower.replace("-", ""))
       ) {
         return process;
       }
@@ -365,12 +365,12 @@ class APIProcessAnalyzer {
   extractStepName(operationIdOrPath) {
     if (operationIdOrPath) {
       return operationIdOrPath
-        .replace(/[^a-zA-Z0-9-]/g, '-')
+        .replace(/[^a-zA-Z0-9-]/g, "-")
         .toLowerCase()
-        .replace(/^-+|-+$/g, '');
+        .replace(/^-+|-+$/g, "");
     }
 
-    return 'unknown-step';
+    return "unknown-step";
   }
 
   /**
@@ -388,9 +388,9 @@ class APIProcessAnalyzer {
           method: op.method,
           path: op.path,
           operationId: op.operationId,
-          summary: op.operation.summary || 'No summary provided',
+          summary: op.operation.summary || "No summary provided",
           description:
-            op.operation.description || 'No detailed description provided',
+            op.operation.description || "No detailed description provided",
           parameters: this.extractParameters(op.operation),
           responses: this.extractResponses(op.operation),
           security: op.operation.security || [],
@@ -424,7 +424,7 @@ class APIProcessAnalyzer {
       );
     }
 
-    return 'Automated process analysis';
+    return "Automated process analysis";
   }
 
   /**
@@ -477,7 +477,7 @@ class APIProcessAnalyzer {
       process.hasDocumentation.documentationRatio < 0.8
     ) {
       recommendations.push(
-        'Improve documentation for each step with detailed descriptions and examples'
+        "Improve documentation for each step with detailed descriptions and examples"
       );
     }
 
@@ -485,11 +485,11 @@ class APIProcessAnalyzer {
     const stepsWithErrors = process.operations.filter(
       (op) =>
         op.operation.responses &&
-        (op.operation.responses['400'] || op.operation.responses['500'])
+        (op.operation.responses["400"] || op.operation.responses["500"])
     );
 
     if (stepsWithErrors.length < process.operations.length * 0.5) {
-      recommendations.push('Add comprehensive error handling to all steps');
+      recommendations.push("Add comprehensive error handling to all steps");
     }
 
     // Check for security
@@ -499,7 +499,7 @@ class APIProcessAnalyzer {
 
     if (securedSteps.length < process.operations.length) {
       recommendations.push(
-        'Ensure all steps have appropriate security measures'
+        "Ensure all steps have appropriate security measures"
       );
     }
 
@@ -513,12 +513,12 @@ class APIProcessAnalyzer {
     const recommendations = [];
 
     // High severity issues
-    const highSeverity = issues.filter((issue) => issue.severity === 'high');
+    const highSeverity = issues.filter((issue) => issue.severity === "high");
     if (highSeverity.length > 0) {
       recommendations.push({
-        priority: 'high',
-        title: 'Critical Process Issues',
-        description: 'These issues must be addressed immediately',
+        priority: "high",
+        title: "Critical Process Issues",
+        description: "These issues must be addressed immediately",
         items: highSeverity.map((issue) => ({
           issue: issue.message,
           recommendation: issue.recommendation,
@@ -528,13 +528,13 @@ class APIProcessAnalyzer {
 
     // Medium severity issues
     const mediumSeverity = issues.filter(
-      (issue) => issue.severity === 'medium'
+      (issue) => issue.severity === "medium"
     );
     if (mediumSeverity.length > 0) {
       recommendations.push({
-        priority: 'medium',
-        title: 'Process Documentation Improvements',
-        description: 'These improvements will enhance process clarity',
+        priority: "medium",
+        title: "Process Documentation Improvements",
+        description: "These improvements will enhance process clarity",
         items: mediumSeverity.map((issue) => ({
           issue: issue.message,
           recommendation: issue.recommendation,
@@ -546,14 +546,14 @@ class APIProcessAnalyzer {
     for (const process of processes) {
       if (process.complexity > 5) {
         recommendations.push({
-          priority: 'low',
-          title: 'Process Simplification',
-          description: 'Consider breaking down complex processes',
+          priority: "low",
+          title: "Process Simplification",
+          description: "Consider breaking down complex processes",
           items: [
             {
               issue: `Process "${process.name}" has ${process.complexity} steps`,
               recommendation:
-                'Break into smaller, more manageable sub-processes',
+                "Break into smaller, more manageable sub-processes",
             },
           ],
         });
@@ -567,13 +567,13 @@ class APIProcessAnalyzer {
    * Analyze API processes from specifications
    */
   async analyzeProcesses() {
-    console.log('🔍 Finding API specifications...');
+    console.log("🔍 Finding API specifications...");
 
     const specFiles = this.findAPISpecifications();
 
     if (specFiles.length === 0) {
-      console.log('⚠️  No API specification files found');
-      return { status: 'warning', message: 'No API specifications found' };
+      console.log("⚠️  No API specification files found");
+      return { status: "warning", message: "No API specifications found" };
     }
 
     console.log(`✅ Found ${specFiles.length} API specification file(s)`);
@@ -584,14 +584,14 @@ class APIProcessAnalyzer {
       console.log(`\n📊 Analyzing processes in: ${specFile}`);
 
       try {
-        const specContent = this.fs.readFileSync(specFile, 'utf8');
+        const specContent = this.fs.readFileSync(specFile, "utf8");
         const spec = this.parseSpec(specContent, specFile);
 
         // Identify sequential operations
         const processes = this.identifySequentialOperations(spec);
 
         if (processes.length === 0) {
-          console.log('⚠️  No multi-step processes identified');
+          console.log("⚠️  No multi-step processes identified");
           continue;
         }
 
@@ -635,10 +635,10 @@ class APIProcessAnalyzer {
         if (allIssues.length > 0) {
           console.log(`⚠️  Found ${allIssues.length} issues:`);
           const highSeverity = allIssues.filter(
-            (i) => i.severity === 'high'
+            (i) => i.severity === "high"
           ).length;
           const mediumSeverity = allIssues.filter(
-            (i) => i.severity === 'medium'
+            (i) => i.severity === "medium"
           ).length;
 
           if (highSeverity > 0)
@@ -650,7 +650,7 @@ class APIProcessAnalyzer {
         console.error(`❌ Failed to analyze ${specFile}:`, error.message);
         allResults.push({
           specFile,
-          status: 'failed',
+          status: "failed",
           error: error.message,
         });
       }
@@ -660,7 +660,7 @@ class APIProcessAnalyzer {
     const reportPath = this.generateReport(allResults);
 
     return {
-      status: 'success',
+      status: "success",
       reportPath,
       results: allResults,
     };
@@ -704,7 +704,7 @@ class APIProcessAnalyzer {
    * Generate markdown documentation
    */
   generateMarkdownDocumentation(results, outputPath) {
-    let markdown = '# API Process Analysis Documentation\n\n';
+    let markdown = "# API Process Analysis Documentation\n\n";
     markdown += `Generated on: ${new Date().toISOString()}\n\n`;
 
     for (const result of results) {
@@ -715,7 +715,7 @@ class APIProcessAnalyzer {
           markdown += `### ${processDoc.name}\n\n`;
           markdown += `${processDoc.description}\n\n`;
 
-          markdown += '#### Process Steps\n\n';
+          markdown += "#### Process Steps\n\n";
           for (const step of processDoc.steps) {
             markdown += `${step.step}. **${step.method}** \`${step.path}\`\n`;
             markdown += `   ${step.summary}\n\n`;
@@ -725,11 +725,11 @@ class APIProcessAnalyzer {
             processDoc.recommendations &&
             processDoc.recommendations.length > 0
           ) {
-            markdown += '#### Recommendations\n\n';
+            markdown += "#### Recommendations\n\n";
             for (const rec of processDoc.recommendations) {
               markdown += `- ${rec}\n`;
             }
-            markdown += '\n';
+            markdown += "\n";
           }
         }
       }
@@ -742,14 +742,14 @@ class APIProcessAnalyzer {
    * Main analysis function
    */
   async analyzeAll() {
-    console.log('🤖 Starting API Process Analysis...');
+    console.log("🤖 Starting API Process Analysis...");
 
     try {
       const results = await this.analyzeProcesses();
 
-      console.log('\n✅ API Process Analysis Complete!');
+      console.log("\n✅ API Process Analysis Complete!");
 
-      if (results.status === 'success') {
+      if (results.status === "success") {
         console.log(`📁 Analysis report: ${results.reportPath}`);
 
         const totalProcesses = results.results.reduce(
@@ -765,15 +765,15 @@ class APIProcessAnalyzer {
         console.log(`⚠️  Total issues identified: ${totalIssues}`);
 
         if (totalIssues === 0) {
-          console.log('🟢 All processes are well-documented and complete!');
+          console.log("🟢 All processes are well-documented and complete!");
         }
       }
 
       return results;
     } catch (error) {
-      console.error('❌ Process analysis failed:', error.message);
+      console.error("❌ Process analysis failed:", error.message);
       return {
-        status: 'failed',
+        status: "failed",
         error: error.message,
       };
     }
@@ -786,38 +786,38 @@ async function main() {
   const command = process.argv[2];
 
   switch (command) {
-    case 'analyze': {
+    case "analyze": {
       const result = await analyzer.analyzeAll();
 
-      if (result.status === 'success') {
-        console.log('\n🎉 Process analysis completed successfully!');
+      if (result.status === "success") {
+        console.log("\n🎉 Process analysis completed successfully!");
         console.log(`📄 Detailed report: ${result.reportPath}`);
-      } else if (result.status === 'failed') {
-        console.error('💥 Process analysis failed');
+      } else if (result.status === "failed") {
+        console.error("💥 Process analysis failed");
         process.exit(1);
       }
       break;
     }
 
     default:
-      console.log('API Process Analyzer for AI-SDLC Framework');
-      console.log('');
-      console.log('Usage:');
-      console.log('  api-process-analyzer.js analyze');
-      console.log('');
-      console.log('Commands:');
-      console.log('  analyze    Identify and analyze multi-step API processes');
-      console.log('');
-      console.log('Features:');
-      console.log('  • Identifies sequential API operations in documentation');
-      console.log('  • Validates multi-step processes are clearly documented');
-      console.log('  • Checks for missing steps or unclear sequences');
-      console.log('  • Generates process flow documentation');
-      console.log('  • Provides recommendations for process improvement');
+      console.log("API Process Analyzer for AI-SDLC Framework");
+      console.log("");
+      console.log("Usage:");
+      console.log("  api-process-analyzer.js analyze");
+      console.log("");
+      console.log("Commands:");
+      console.log("  analyze    Identify and analyze multi-step API processes");
+      console.log("");
+      console.log("Features:");
+      console.log("  • Identifies sequential API operations in documentation");
+      console.log("  • Validates multi-step processes are clearly documented");
+      console.log("  • Checks for missing steps or unclear sequences");
+      console.log("  • Generates process flow documentation");
+      console.log("  • Provides recommendations for process improvement");
       console.log(
-        '  • FCRA compliance validation for credit repair applications'
+        "  • FCRA compliance validation for credit repair applications"
       );
-      console.log('  • Generates detailed analysis reports');
+      console.log("  • Generates detailed analysis reports");
       break;
   }
 }
@@ -828,7 +828,7 @@ module.exports = APIProcessAnalyzer;
 // Run CLI if called directly
 if (require.main === module) {
   main().catch((error) => {
-    console.error('❌ Error:', error.message);
+    console.error("❌ Error:", error.message);
     process.exit(1);
   });
 }

@@ -434,8 +434,8 @@ npm run pr:compliance-review
 ```javascript
 // ai-sdlc.config.js
 module.exports = {
-  version: '3.3.0',
-  projectType: 'AUTO_DETECT', // Automatically detected
+  version: "3.3.0",
+  projectType: "AUTO_DETECT", // Automatically detected
 
   qualityGates: {
     eslint: { enabled: true, autoFix: true },
@@ -448,9 +448,9 @@ module.exports = {
   },
 
   ai: {
-    primary: 'gpt-4o-mini', // Cost-optimized
-    complex: 'claude-3-5-sonnet', // Complex analysis
-    planning: 'deepseek-r1', // Planning tasks
+    primary: "gpt-4o-mini", // Cost-optimized
+    complex: "claude-3-5-sonnet", // Complex analysis
+    planning: "deepseek-r1", // Planning tasks
     costOptimization: true, // 97% cost reduction
   },
 
@@ -462,7 +462,7 @@ module.exports = {
 
   notifications: {
     teams: { enabled: true, webhooks: true },
-    priority: { P0: 'immediate', P1: '5min', P2: '1hour', P3: '24hours' },
+    priority: { P0: "immediate", P1: "5min", P2: "1hour", P3: "24hours" },
   },
 };
 ```

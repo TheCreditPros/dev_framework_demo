@@ -26,7 +26,7 @@
 
 ```javascript
 // playwright.config.js - Line 19
-projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }];
+projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }];
 ```
 
 ✅ **Confirmed**: Chromium-only configuration for 66% performance improvement

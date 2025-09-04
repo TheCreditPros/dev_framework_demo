@@ -126,17 +126,17 @@ branch_protection:
     required_status_checks:
       strict: true
       contexts:
-        - 'ci-cd-enhanced'
-        - 'security-scan'
-        - 'performance-check'
-        - 'pr-agent-review' # Add PR agent as required check
+        - "ci-cd-enhanced"
+        - "security-scan"
+        - "performance-check"
+        - "pr-agent-review" # Add PR agent as required check
     enforce_admins: false # Allow admin bypass for PR agent
     required_pull_request_reviews:
       required_approving_review_count: 1
       dismiss_stale_reviews: true
       require_code_owner_reviews: true
       bypass_pull_request_allowances:
-        apps: ['pr-agent-app'] # Allow PR agent to bypass reviews
+        apps: ["pr-agent-app"] # Allow PR agent to bypass reviews
 ```
 
 ## 🔧 Implementation Steps

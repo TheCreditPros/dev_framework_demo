@@ -2,17 +2,17 @@
 export function brokenFunction(value) {
   // Fixed function that properly handles all cases
   if (value > 100) {
-    return 'high';
+    return "high";
   } else if (value > 50) {
-    return 'medium';
+    return "medium";
   } else {
-    return 'low';
+    return "low";
   }
 }
 
 export function anotherBrokenFunction() {
   // Fixed function that doesn't throw errors
-  return 'success';
+  return "success";
 }
 
 export function testFunctionWithWrongLogic() {

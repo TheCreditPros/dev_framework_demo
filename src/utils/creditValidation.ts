@@ -6,7 +6,7 @@
 export interface CreditData {
   score: number;
   reportDate: string;
-  bureauSource: 'Experian' | 'Equifax' | 'TransUnion';
+  bureauSource: "Experian" | "Equifax" | "TransUnion";
   permissiblePurpose: string;
 }
 
@@ -25,12 +25,12 @@ export function validateCreditScore(score: number): ValidationResult {
   const warnings: string[] = [];
 
   // FCRA Section 607 - Credit score range validation
-  if (typeof score !== 'number') {
-    errors.push('Credit score must be a number');
+  if (typeof score !== "number") {
+    errors.push("Credit score must be a number");
   } else if (score < 300 || score > 850) {
     errors.push(`Invalid FICO score: ${score}. Must be between 300-850.`);
   } else if (score < 350) {
-    warnings.push('Extremely low credit score - verify data accuracy');
+    warnings.push("Extremely low credit score - verify data accuracy");
   }
 
   return {
@@ -49,20 +49,20 @@ export function validatePermissiblePurpose(purpose: string): ValidationResult {
   const warnings: string[] = [];
 
   const validPurposes = [
-    'credit_application',
-    'account_review',
-    'collection_activity',
-    'employment_screening',
-    'insurance_underwriting',
-    'tenant_screening',
-    'legitimate_business_need',
+    "credit_application",
+    "account_review",
+    "collection_activity",
+    "employment_screening",
+    "insurance_underwriting",
+    "tenant_screening",
+    "legitimate_business_need",
   ];
 
-  if (!purpose || typeof purpose !== 'string') {
-    errors.push('Permissible purpose is required per FCRA Section 604');
+  if (!purpose || typeof purpose !== "string") {
+    errors.push("Permissible purpose is required per FCRA Section 604");
   } else if (!validPurposes.includes(purpose)) {
     errors.push(`Invalid permissible purpose: ${purpose}`);
-    warnings.push('Ensure compliance with FCRA Section 604 requirements');
+    warnings.push("Ensure compliance with FCRA Section 604 requirements");
   }
 
   return {
@@ -84,7 +84,7 @@ export function validateCreditData(
 
   // Validate required fields
   if (!data.score) {
-    errors.push('Credit score is required');
+    errors.push("Credit score is required");
   } else {
     const scoreValidation = validateCreditScore(data.score);
     errors.push(...scoreValidation.errors);
@@ -92,7 +92,7 @@ export function validateCreditData(
   }
 
   if (!data.permissiblePurpose) {
-    errors.push('Permissible purpose is required');
+    errors.push("Permissible purpose is required");
   } else {
     const purposeValidation = validatePermissiblePurpose(
       data.permissiblePurpose
@@ -102,7 +102,7 @@ export function validateCreditData(
   }
 
   if (!data.reportDate) {
-    errors.push('Report date is required');
+    errors.push("Report date is required");
   } else {
     const reportDate = new Date(data.reportDate);
     const now = new Date();
@@ -111,13 +111,13 @@ export function validateCreditData(
 
     if (daysDiff > 90) {
       warnings.push(
-        'Credit report is older than 90 days - consider refreshing'
+        "Credit report is older than 90 days - consider refreshing"
       );
     }
   }
 
   if (!data.bureauSource) {
-    errors.push('Bureau source is required');
+    errors.push("Bureau source is required");
   }
 
   return {
@@ -138,7 +138,7 @@ export function calculateScoreImprovement(
   const scoreValidation = validateCreditScore(currentScore);
 
   if (!scoreValidation.isValid) {
-    throw new Error('Invalid current credit score');
+    throw new Error("Invalid current credit score");
   }
 
   // Conservative improvement calculation

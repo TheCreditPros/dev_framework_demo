@@ -1,73 +1,73 @@
-import axios from 'axios';
-import { beforeAll, describe, expect, it } from 'vitest';
+import axios from "axios";
+import { beforeAll, describe, expect, it } from "vitest";
 
 // API Contract Testing between Laravel Backend and React Frontend
-describe('Laravel + React API Contract Testing', () => {
-  const API_BASE_URL = 'http://localhost:8000/api';
+describe("Laravel + React API Contract Testing", () => {
+  const API_BASE_URL = "http://localhost:8000/api";
   let authToken: string;
 
   beforeAll(async () => {
     // Setup test authentication
     try {
       const response = await axios.post(`${API_BASE_URL}/auth/login`, {
-        email: 'test@thecreditpros.com',
-        password: process.env.TEST_PASSWORD || 'test-password',
+        email: "test@thecreditpros.com",
+        password: process.env.TEST_PASSWORD || "test-password",
       });
       authToken = response.data.token;
     } catch {
-      console.warn('API not available for contract testing');
+      console.warn("API not available for contract testing");
     }
   });
 
-  describe('Credit Report API Contract', () => {
-    it('should return credit report with FCRA compliance structure', async () => {
+  describe("Credit Report API Contract", () => {
+    it("should return credit report with FCRA compliance structure", async () => {
       if (!authToken) return; // Skip if API not available
 
       const response = await axios.get(
         `${API_BASE_URL}/credit-reports/test-consumer-123`,
         {
           headers: { Authorization: `Bearer ${authToken}` },
-          params: { permissible_purpose: 'credit_application' },
+          params: { permissible_purpose: "credit_application" },
         }
       );
 
       // Validate response structure matches React component expectations
       expect(response.status).toBe(200);
-      expect(response.data).toHaveProperty('data');
-      expect(response.data).toHaveProperty('meta');
+      expect(response.data).toHaveProperty("data");
+      expect(response.data).toHaveProperty("meta");
 
       // Credit report data structure
-      expect(response.data.data).toHaveProperty('credit_score');
+      expect(response.data.data).toHaveProperty("credit_score");
       expect(response.data.data.credit_score).toBeGreaterThanOrEqual(300);
       expect(response.data.data.credit_score).toBeLessThanOrEqual(850);
 
       // FCRA compliance metadata
-      expect(response.data.meta).toHaveProperty('audit_id');
-      expect(response.data.meta).toHaveProperty('compliance_validated', true);
-      expect(response.data.meta).toHaveProperty('retrieved_at');
+      expect(response.data.meta).toHaveProperty("audit_id");
+      expect(response.data.meta).toHaveProperty("compliance_validated", true);
+      expect(response.data.meta).toHaveProperty("retrieved_at");
     });
 
-    it('should reject invalid permissible purpose', async () => {
+    it("should reject invalid permissible purpose", async () => {
       if (!authToken) return;
 
       try {
         await axios.get(`${API_BASE_URL}/credit-reports/test-consumer-123`, {
           headers: { Authorization: `Bearer ${authToken}` },
-          params: { permissible_purpose: 'curiosity' },
+          params: { permissible_purpose: "curiosity" },
         });
-        expect.fail('Should have thrown FCRA violation error');
+        expect.fail("Should have thrown FCRA violation error");
       } catch (error: unknown) {
         const err = error as {
           response: { status: number; data: { code: string } };
         };
         expect(err.response.status).toBe(403);
-        expect(err.response.data.code).toBe('FCRA_VIOLATION');
+        expect(err.response.data.code).toBe("FCRA_VIOLATION");
       }
     });
   });
 
-  describe('Credit Score Calculation API Contract', () => {
-    it('should calculate FICO score with audit trail', async () => {
+  describe("Credit Score Calculation API Contract", () => {
+    it("should calculate FICO score with audit trail", async () => {
       if (!authToken) return;
 
       const creditData = {
@@ -76,7 +76,7 @@ describe('Laravel + React API Contract Testing', () => {
         length_of_history: 75,
         credit_mix: 60,
         new_credit: 40,
-        permissible_purpose: 'credit_application',
+        permissible_purpose: "credit_application",
       };
 
       const response = await axios.post(
@@ -87,56 +87,56 @@ describe('Laravel + React API Contract Testing', () => {
 
       // Validate calculation response
       expect(response.status).toBe(200);
-      expect(response.data).toHaveProperty('score');
+      expect(response.data).toHaveProperty("score");
       expect(response.data.score).toBeGreaterThanOrEqual(300);
       expect(response.data.score).toBeLessThanOrEqual(850);
 
       // Audit trail validation
-      expect(response.data).toHaveProperty('audit_id');
-      expect(response.data).toHaveProperty('calculation_method', 'FICO_8');
+      expect(response.data).toHaveProperty("audit_id");
+      expect(response.data).toHaveProperty("calculation_method", "FICO_8");
     });
   });
 
-  describe('Error Handling Contract', () => {
-    it('should return user-friendly error messages', async () => {
+  describe("Error Handling Contract", () => {
+    it("should return user-friendly error messages", async () => {
       try {
         await axios.get(`${API_BASE_URL}/credit-reports/invalid-consumer`);
-        expect.fail('Should have thrown error');
+        expect.fail("Should have thrown error");
       } catch (error: unknown) {
         const err = error as {
           response: { data: { error: string; code: string } };
         };
         // Ensure no internal details are exposed
-        expect(err.response.data.error).not.toContain('database');
-        expect(err.response.data.error).not.toContain('internal');
-        expect(err.response.data.error).not.toContain('exception');
+        expect(err.response.data.error).not.toContain("database");
+        expect(err.response.data.error).not.toContain("internal");
+        expect(err.response.data.error).not.toContain("exception");
 
         // Should have user-friendly message
-        expect(err.response.data).toHaveProperty('error');
-        expect(err.response.data).toHaveProperty('code');
+        expect(err.response.data).toHaveProperty("error");
+        expect(err.response.data).toHaveProperty("code");
       }
     });
   });
 
-  describe('Security Contract', () => {
-    it('should require authentication for credit endpoints', async () => {
+  describe("Security Contract", () => {
+    it("should require authentication for credit endpoints", async () => {
       try {
         await axios.get(`${API_BASE_URL}/credit-reports/test-consumer-123`);
-        expect.fail('Should require authentication');
+        expect.fail("Should require authentication");
       } catch (error: unknown) {
         const err = error as { response: { status: number } };
         expect(err.response.status).toBe(401);
       }
     });
 
-    it('should not expose PII in responses', async () => {
+    it("should not expose PII in responses", async () => {
       if (!authToken) return;
 
       const response = await axios.get(
         `${API_BASE_URL}/credit-reports/test-consumer-123`,
         {
           headers: { Authorization: `Bearer ${authToken}` },
-          params: { permissible_purpose: 'credit_application' },
+          params: { permissible_purpose: "credit_application" },
         }
       );
 

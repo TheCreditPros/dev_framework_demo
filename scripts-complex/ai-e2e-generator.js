@@ -8,13 +8,13 @@
  * Automatically generates Playwright E2E tests using AI analysis
  */
 
-const fs = require('fs');
-const path = require('path');
+const fs = require("fs");
+const path = require("path");
 
 class AIE2EGenerator {
   constructor() {
-    console.log('🎭 AI-Powered E2E Test Generator');
-    console.log('📋 Generates comprehensive Playwright tests automatically');
+    console.log("🎭 AI-Powered E2E Test Generator");
+    console.log("📋 Generates comprehensive Playwright tests automatically");
   }
 
   /**
@@ -25,7 +25,7 @@ class AIE2EGenerator {
 
     try {
       // Analyze the source file
-      const sourceCode = fs.readFileSync(sourceFile, 'utf8');
+      const sourceCode = fs.readFileSync(sourceFile, "utf8");
       const componentName = path.basename(sourceFile, path.extname(sourceFile));
 
       // Generate comprehensive E2E test code
@@ -43,14 +43,14 @@ class AIE2EGenerator {
       console.log(`✅ Generated E2E test file: ${testFilePath}`);
 
       return {
-        status: 'success',
+        status: "success",
         sourceFile,
         testFile: testFilePath,
-        framework: 'playwright',
+        framework: "playwright",
       };
     } catch (error) {
       console.error(`❌ Failed to generate E2E tests: ${error.message}`);
-      return { status: 'failed', error: error.message };
+      return { status: "failed", error: error.message };
     }
   }
 
@@ -59,9 +59,9 @@ class AIE2EGenerator {
    */
   createPlaywrightTests(componentName, sourceCode) {
     const hasErrorHandling =
-      sourceCode.includes('error') || sourceCode.includes('Error');
+      sourceCode.includes("error") || sourceCode.includes("Error");
     const hasCreditFunctions =
-      sourceCode.includes('credit') || sourceCode.includes('score');
+      sourceCode.includes("credit") || sourceCode.includes("score");
 
     return `import { test, expect } from '@playwright/test';
 
@@ -99,7 +99,7 @@ ${
     await expect(page.locator('[data-testid="error-message"]')).toBeVisible();
   });
 `
-    : ''
+    : ""
 }
 
 ${
@@ -114,7 +114,7 @@ ${
     await expect(page.locator('[data-testid="success-message"]')).toBeVisible();
   });
 `
-    : ''
+    : ""
 }
 
   test('should be accessible', async ({ page }) => {
@@ -132,7 +132,7 @@ ${
     const relativePath = path.relative(process.cwd(), sourceFilePath);
     const parsedPath = path.parse(relativePath);
     const testFileName = `${parsedPath.name}.e2e.spec.js`;
-    return path.join(process.cwd(), 'tests/e2e', parsedPath.dir, testFileName);
+    return path.join(process.cwd(), "tests/e2e", parsedPath.dir, testFileName);
   }
 }
 
@@ -143,27 +143,27 @@ async function main() {
   const arg = process.argv[3];
 
   switch (command) {
-    case 'generate':
+    case "generate":
       if (!arg) {
-        console.error('❌ Please specify a source file path');
+        console.error("❌ Please specify a source file path");
         process.exit(1);
       }
       await generator.generateE2ETests(arg);
       break;
 
     default:
-      console.log('AI E2E Test Generator for AI-SDLC Framework');
-      console.log('');
-      console.log('Usage:');
+      console.log("AI E2E Test Generator for AI-SDLC Framework");
+      console.log("");
+      console.log("Usage:");
       console.log(
-        '  ai-e2e-generator.js generate <file>   - Generate E2E tests for file'
+        "  ai-e2e-generator.js generate <file>   - Generate E2E tests for file"
       );
-      console.log('');
-      console.log('Features:');
-      console.log('  • AI-powered E2E test scenario generation');
-      console.log('  • Credit repair domain-specific test patterns');
-      console.log('  • Comprehensive error handling validation');
-      console.log('  • Automated Playwright test execution');
+      console.log("");
+      console.log("Features:");
+      console.log("  • AI-powered E2E test scenario generation");
+      console.log("  • Credit repair domain-specific test patterns");
+      console.log("  • Comprehensive error handling validation");
+      console.log("  • Automated Playwright test execution");
       break;
   }
 }
@@ -172,7 +172,7 @@ module.exports = AIE2EGenerator;
 
 if (require.main === module) {
   main().catch((error) => {
-    console.error('❌ Error:', error.message);
+    console.error("❌ Error:", error.message);
     process.exit(1);
   });
 }

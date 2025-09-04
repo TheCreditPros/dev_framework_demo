@@ -15,9 +15,9 @@
  * - Self-healing test maintenance
  */
 
-const { test, chromium } = require('@playwright/test');
-const fs = require('fs');
-const path = require('path');
+const { test, chromium } = require("@playwright/test");
+const fs = require("fs");
+const path = require("path");
 
 class PlaywrightAutoHealing {
   constructor(page, options = {}) {
@@ -151,7 +151,7 @@ class PlaywrightAutoHealing {
     );
 
     // Clear existing value
-    await this.page.fill(workingSelector, '');
+    await this.page.fill(workingSelector, "");
 
     // Fill with retry logic
     for (let attempt = 1; attempt <= this.config.maxRetries; attempt++) {
@@ -197,7 +197,7 @@ class PlaywrightAutoHealing {
       expectedText.toLowerCase(),
       expectedText.toUpperCase(),
       expectedText.trim(),
-      expectedText.replace(/\s+/g, ' '), // Normalize whitespace
+      expectedText.replace(/\s+/g, " "), // Normalize whitespace
     ];
 
     const actualText = await this.page.textContent(workingSelector);
@@ -218,17 +218,17 @@ class PlaywrightAutoHealing {
    */
   async waitForAnyCondition(conditions, timeout = 30000) {
     const promises = conditions.map((condition) => {
-      if (typeof condition === 'string') {
+      if (typeof condition === "string") {
         // Treat as selector
         return this.page.waitForSelector(condition, { timeout });
-      } else if (typeof condition === 'function') {
+      } else if (typeof condition === "function") {
         // Treat as function
         return this.page.waitForFunction(condition, [], { timeout });
-      } else if (condition.type === 'url') {
+      } else if (condition.type === "url") {
         // URL pattern
         return this.page.waitForURL(condition.pattern, { timeout });
       }
-      return Promise.reject(new Error('Invalid condition type'));
+      return Promise.reject(new Error("Invalid condition type"));
     });
 
     return Promise.race(promises);
@@ -245,13 +245,13 @@ class PlaywrightAutoHealing {
       try {
         console.log(`🌐 Navigating to: ${url}`);
         await this.page.goto(url, {
-          waitUntil: 'networkidle',
+          waitUntil: "networkidle",
           timeout: 30000,
           ...options,
         });
 
         // Wait for page to be ready
-        await this.page.waitForLoadState('domcontentloaded');
+        await this.page.waitForLoadState("domcontentloaded");
 
         return url;
       } catch (error) {
@@ -278,15 +278,15 @@ class PlaywrightAutoHealing {
               (this.healingStats.successfulHeals /
                 this.healingStats.totalAttempts) *
               100
-            ).toFixed(2) + '%'
-          : '0%',
+            ).toFixed(2) + "%"
+          : "0%",
     };
   }
 
   /**
    * Export learned fallback selectors for reuse
    */
-  exportLearnings(filePath = './test-results/healing-learnings.json') {
+  exportLearnings(filePath = "./test-results/healing-learnings.json") {
     const learnings = {
       workingFallbacks: Object.fromEntries(this.healingStats.workingFallbacks),
       failedSelectors: this.healingStats.failedSelectors,
@@ -317,29 +317,29 @@ class CreditRepairAutoHealing extends PlaywrightAutoHealing {
     this.creditRepairSelectors = {
       creditScore: [
         '[data-testid="credit-score"]',
-        '#credit-score',
-        '.credit-score-value',
+        "#credit-score",
+        ".credit-score-value",
         '[aria-label*="credit score"]',
         'input[name*="score"]',
       ],
       ssnInput: [
         '[data-testid="ssn"]',
-        '#ssn',
+        "#ssn",
         'input[name="ssn"]',
         'input[placeholder*="SSN"]',
-        '.ssn-input',
+        ".ssn-input",
       ],
       fcraDisclosure: [
         '[data-testid="fcra-disclosure"]',
-        '.fcra-disclosure',
-        '#fcra-notice',
+        ".fcra-disclosure",
+        "#fcra-notice",
         '[aria-label*="FCRA"]',
-        '.compliance-notice',
+        ".compliance-notice",
       ],
       calculateButton: [
         '[data-testid="calculate"]',
-        '#calculate-btn',
-        '.calculate',
+        "#calculate-btn",
+        ".calculate",
         'button:has-text("Calculate")',
         'input[type="submit"]',
       ],
@@ -381,7 +381,7 @@ class CreditRepairAutoHealing extends PlaywrightAutoHealing {
    */
   async enterSSN(ssn, options = {}) {
     // Format SSN if needed (123456789 → ***-**-6789)
-    let formattedSSN = ssn.replace(/\D/g, '');
+    let formattedSSN = ssn.replace(/\D/g, "");
     if (formattedSSN.length === 9) {
       formattedSSN = `${formattedSSN.substr(0, 3)}-${formattedSSN.substr(3, 2)}-${formattedSSN.substr(5)}`;
     }
@@ -409,15 +409,15 @@ class CreditRepairAutoHealing extends PlaywrightAutoHealing {
     // Check that disclosure is visible and contains required text
     const isVisible = await this.page.isVisible(selector);
     if (!isVisible) {
-      throw new Error('FCRA disclosure is not visible');
+      throw new Error("FCRA disclosure is not visible");
     }
 
     const disclosureText = await this.page.textContent(selector);
     const requiredTerms = [
-      'FCRA',
-      'Fair Credit Reporting Act',
-      'consumer report',
-      'permissible purpose',
+      "FCRA",
+      "Fair Credit Reporting Act",
+      "consumer report",
+      "permissible purpose",
     ];
 
     const missingTerms = requiredTerms.filter(
@@ -426,11 +426,11 @@ class CreditRepairAutoHealing extends PlaywrightAutoHealing {
 
     if (missingTerms.length > 0) {
       console.warn(
-        `⚠️ FCRA disclosure may be incomplete. Missing terms: ${missingTerms.join(', ')}`
+        `⚠️ FCRA disclosure may be incomplete. Missing terms: ${missingTerms.join(", ")}`
       );
     }
 
-    console.log('✅ FCRA compliance disclosure validated');
+    console.log("✅ FCRA compliance disclosure validated");
     return selector;
   }
 
@@ -438,7 +438,7 @@ class CreditRepairAutoHealing extends PlaywrightAutoHealing {
    * Credit calculation flow with auto-healing
    */
   async performCreditCalculation(testData, options = {}) {
-    console.log('🧮 Starting credit calculation flow with auto-healing...');
+    console.log("🧮 Starting credit calculation flow with auto-healing...");
 
     // Step 1: Enter credit score
     await this.enterCreditScore(testData.creditScore);
@@ -460,45 +460,45 @@ class CreditRepairAutoHealing extends PlaywrightAutoHealing {
 
     // Step 5: Wait for results
     await this.waitForAnyCondition([
-      '#results',
-      '.calculation-results',
+      "#results",
+      ".calculation-results",
       '[data-testid="results"]',
-      () => document.querySelector('.loading') === null,
+      () => document.querySelector(".loading") === null,
     ]);
 
-    console.log('✅ Credit calculation flow completed');
+    console.log("✅ Credit calculation flow completed");
     return calculateSelector;
   }
 
   /**
    * Generate test data for credit repair scenarios
    */
-  static generateTestData(scenario = 'good_credit') {
+  static generateTestData(scenario = "good_credit") {
     const scenarios = {
       good_credit: {
         creditScore: 750,
-        ssn: '***-**-6789',
+        ssn: "***-**-6789",
         income: 75000,
         debts: [],
       },
       fair_credit: {
         creditScore: 650,
-        ssn: '***-**-4321',
+        ssn: "***-**-4321",
         income: 50000,
-        debts: [{ type: 'credit_card', amount: 5000 }],
+        debts: [{ type: "credit_card", amount: 5000 }],
       },
       poor_credit: {
         creditScore: 550,
-        ssn: '***-**-9123',
+        ssn: "***-**-9123",
         income: 35000,
         debts: [
-          { type: 'credit_card', amount: 8000 },
-          { type: 'auto_loan', amount: 15000 },
+          { type: "credit_card", amount: 8000 },
+          { type: "auto_loan", amount: 15000 },
         ],
       },
       thin_file: {
         creditScore: 620,
-        ssn: '***-**-3456',
+        ssn: "***-**-3456",
         income: 40000,
         debts: [],
       },
@@ -513,7 +513,7 @@ class CreditRepairAutoHealing extends PlaywrightAutoHealing {
  */
 class AutoHealingTestRunner {
   static async runHealingDemo() {
-    console.log('🚀 Starting Playwright Auto-Healing Demo...');
+    console.log("🚀 Starting Playwright Auto-Healing Demo...");
 
     const browser = await chromium.launch({
       headless: process.env.CI ? true : false,
@@ -525,22 +525,22 @@ class AutoHealingTestRunner {
 
     try {
       // Demo: Navigate with fallback URLs
-      await healing.smartGoto('http://localhost:3000', [
-        'http://localhost:8000',
-        'https://example.com',
+      await healing.smartGoto("http://localhost:3000", [
+        "http://localhost:8000",
+        "https://example.com",
       ]);
 
       // Demo: Credit calculation with test data
-      const testData = CreditRepairAutoHealing.generateTestData('fair_credit');
+      const testData = CreditRepairAutoHealing.generateTestData("fair_credit");
       await healing.performCreditCalculation(testData);
 
       // Export learnings
       const stats = healing.getHealingStats();
-      console.log('📊 Healing Statistics:', stats);
+      console.log("📊 Healing Statistics:", stats);
 
       healing.exportLearnings();
     } catch (error) {
-      console.error('❌ Demo failed:', error.message);
+      console.error("❌ Demo failed:", error.message);
     } finally {
       await browser.close();
     }
@@ -572,11 +572,11 @@ if (require.main === module) {
   const command = process.argv[2];
 
   switch (command) {
-    case 'demo':
+    case "demo":
       AutoHealingTestRunner.runHealingDemo();
       break;
 
-    case 'help':
+    case "help":
     default:
       console.log(`
 🔧 Playwright Auto-Healing Utilities

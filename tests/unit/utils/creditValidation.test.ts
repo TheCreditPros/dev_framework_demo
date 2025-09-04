@@ -1,14 +1,14 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect } from "vitest";
 import {
   validateCreditScore,
   validatePermissiblePurpose,
   validateCreditData,
   calculateScoreImprovement,
-} from '../../../src/utils/creditValidation';
+} from "../../../src/utils/creditValidation";
 
-describe('Credit Validation Utilities', () => {
-  describe('FCRA Compliance - Credit Score Validation', () => {
-    it('should validate FICO score range 300-850', () => {
+describe("Credit Validation Utilities", () => {
+  describe("FCRA Compliance - Credit Score Validation", () => {
+    it("should validate FICO score range 300-850", () => {
       // Valid scores
       expect(validateCreditScore(300).isValid).toBe(true);
       expect(validateCreditScore(720).isValid).toBe(true);
@@ -19,43 +19,43 @@ describe('Credit Validation Utilities', () => {
       expect(validateCreditScore(851).isValid).toBe(false); // Above maximum
     });
 
-    it('should return appropriate error messages for invalid scores', () => {
+    it("should return appropriate error messages for invalid scores", () => {
       const result = validateCreditScore(900);
 
       expect(result.isValid).toBe(false);
       // Proper error message validation
       expect(result.errors).toContain(
-        'Invalid FICO score: 900. Must be between 300-850.'
+        "Invalid FICO score: 900. Must be between 300-850."
       );
     });
 
-    it('should handle non-numeric input gracefully', () => {
-      const result = validateCreditScore('invalid' as unknown as number);
+    it("should handle non-numeric input gracefully", () => {
+      const result = validateCreditScore("invalid" as unknown as number);
 
       expect(result.isValid).toBe(false);
-      expect(result.errors).toContain('Credit score must be a number');
+      expect(result.errors).toContain("Credit score must be a number");
     });
 
-    it('should warn for extremely low scores', () => {
+    it("should warn for extremely low scores", () => {
       const result = validateCreditScore(320);
 
       expect(result.isValid).toBe(true);
       expect(result.warnings).toContain(
-        'Extremely low credit score - verify data accuracy'
+        "Extremely low credit score - verify data accuracy"
       );
     });
   });
 
-  describe('FCRA Section 604 - Permissible Purpose Validation', () => {
-    it('should validate legitimate permissible purposes', () => {
+  describe("FCRA Section 604 - Permissible Purpose Validation", () => {
+    it("should validate legitimate permissible purposes", () => {
       const validPurposes = [
-        'credit_application',
-        'account_review',
-        'collection_activity',
-        'employment_screening',
-        'insurance_underwriting',
-        'tenant_screening',
-        'legitimate_business_need',
+        "credit_application",
+        "account_review",
+        "collection_activity",
+        "employment_screening",
+        "insurance_underwriting",
+        "tenant_screening",
+        "legitimate_business_need",
       ];
 
       validPurposes.forEach((purpose) => {
@@ -64,12 +64,12 @@ describe('Credit Validation Utilities', () => {
       });
     });
 
-    it('should reject invalid permissible purposes', () => {
+    it("should reject invalid permissible purposes", () => {
       const invalidPurposes = [
-        'curiosity',
-        'marketing',
-        'personal_interest',
-        'unauthorized_access',
+        "curiosity",
+        "marketing",
+        "personal_interest",
+        "unauthorized_access",
       ];
 
       invalidPurposes.forEach((purpose) => {
@@ -81,35 +81,35 @@ describe('Credit Validation Utilities', () => {
       });
     });
 
-    it('should require permissible purpose', () => {
-      const result = validatePermissiblePurpose('');
+    it("should require permissible purpose", () => {
+      const result = validatePermissiblePurpose("");
 
       expect(result.isValid).toBe(false);
       expect(result.errors).toContain(
-        'Permissible purpose is required per FCRA Section 604'
+        "Permissible purpose is required per FCRA Section 604"
       );
     });
   });
 
-  describe('Complete Credit Data Validation', () => {
-    it('should validate complete valid credit data', () => {
+  describe("Complete Credit Data Validation", () => {
+    it("should validate complete valid credit data", () => {
       const validData = {
         score: 720,
         reportDate: new Date().toISOString(),
-        bureauSource: 'Experian' as const,
-        permissiblePurpose: 'credit_application',
+        bureauSource: "Experian" as const,
+        permissiblePurpose: "credit_application",
       };
 
       const result = validateCreditData(validData);
       expect(result.isValid).toBe(true);
     });
 
-    it('should identify multiple validation errors', () => {
+    it("should identify multiple validation errors", () => {
       const invalidData = {
         score: 900, // Invalid score
-        reportDate: '', // Missing date
+        reportDate: "", // Missing date
         bureauSource: undefined, // Missing bureau
-        permissiblePurpose: 'invalid_purpose', // Invalid purpose
+        permissiblePurpose: "invalid_purpose", // Invalid purpose
       };
 
       const result = validateCreditData(invalidData);
@@ -118,28 +118,28 @@ describe('Credit Validation Utilities', () => {
       expect(result.errors.length).toBeGreaterThan(1);
     });
 
-    it('should warn about old credit reports', () => {
+    it("should warn about old credit reports", () => {
       const oldDate = new Date();
       oldDate.setDate(oldDate.getDate() - 100); // 100 days ago
 
       const dataWithOldReport = {
         score: 720,
         reportDate: oldDate.toISOString(),
-        bureauSource: 'Experian' as const,
-        permissiblePurpose: 'credit_application',
+        bureauSource: "Experian" as const,
+        permissiblePurpose: "credit_application",
       };
 
       const result = validateCreditData(dataWithOldReport);
 
       expect(result.isValid).toBe(true);
       expect(result.warnings).toContain(
-        'Credit report is older than 90 days - consider refreshing'
+        "Credit report is older than 90 days - consider refreshing"
       );
     });
   });
 
-  describe('Score Improvement Calculations', () => {
-    it('should calculate realistic score improvements', () => {
+  describe("Score Improvement Calculations", () => {
+    it("should calculate realistic score improvements", () => {
       const result = calculateScoreImprovement(620, 3);
 
       expect(result.potentialScore).toBeGreaterThan(620);
@@ -147,20 +147,20 @@ describe('Credit Validation Utilities', () => {
       expect(result.potentialScore).toBeLessThanOrEqual(850);
     });
 
-    it('should cap improvements at maximum FICO score', () => {
+    it("should cap improvements at maximum FICO score", () => {
       const result = calculateScoreImprovement(800, 10);
 
       expect(result.potentialScore).toBe(850);
       expect(result.improvementPoints).toBe(50);
     });
 
-    it('should handle invalid current scores', () => {
+    it("should handle invalid current scores", () => {
       expect(() => {
         calculateScoreImprovement(900, 3);
-      }).toThrow('Invalid current credit score');
+      }).toThrow("Invalid current credit score");
     });
 
-    it('should handle zero negative items', () => {
+    it("should handle zero negative items", () => {
       const result = calculateScoreImprovement(720, 0);
 
       expect(result.potentialScore).toBe(720);

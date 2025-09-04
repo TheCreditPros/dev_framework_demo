@@ -1,10 +1,10 @@
 // Comprehensive test file with multiple intentional issues
 const badCode = {
   // Hardcoded SSN - should be auto-masked
-  ssn: '***-**-4321',
+  ssn: "***-**-4321",
 
   // Credit card number - should be flagged (masked for compliance)
-  creditCard: '4532-****-****-9012',
+  creditCard: "4532-****-****-9012",
 
   // Poorly formatted code - should be auto-fixed by Prettier/ESLint
   calculateScore: function (data) {
@@ -15,7 +15,7 @@ const badCode = {
 
   // Credit access without audit trail - should trigger TODO
   getCreditReport: function (userId) {
-    return fetch('/api/credit/' + userId);
+    return fetch("/api/credit/" + userId);
   },
 
   // Missing permissible purpose - should trigger TODO
