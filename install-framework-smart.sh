@@ -16,7 +16,7 @@ echo "📦 Creating backup directory: $BACKUP_DIR"
 # Function to create backup of existing configs
 create_backup() {
     local backup_dir="$1"
-    
+
     # Backup existing configs
     [ -f "eslint.config.mjs" ] && cp eslint.config.mjs "$backup_dir/" 2>/dev/null || true
     [ -f ".prettierrc" ] && cp .prettierrc "$backup_dir/" 2>/dev/null || true
@@ -25,7 +25,7 @@ create_backup() {
     [ -f "commitlint.config.js" ] && cp commitlint.config.js "$backup_dir/" 2>/dev/null || true
     [ -f "validate-setup.js" ] && cp validate-setup.js "$backup_dir/" 2>/dev/null || true
     [ -f "scripts/local-quality-gates.sh" ] && cp scripts/local-quality-gates.sh "$backup_dir/" 2>/dev/null || true
-    
+
     echo "✅ Backup created in $backup_dir"
 }
 
@@ -51,19 +51,19 @@ detect_repo_type() {
     local is_tmp_dir=false
     local is_test_dir=false
     local has_git_remote=false
-    
+
     if [[ "$cwd" == *"/tmp/"* ]] || [[ "$cwd" == *"\\temp\\"* ]]; then
         is_tmp_dir=true
     fi
-    
+
     if [[ "$cwd" == *"test"* ]] || [[ "$cwd" == *"demo"* ]] || [[ "$cwd" == *"example"* ]]; then
         is_test_dir=true
     fi
-    
+
     if git remote -v &> /dev/null; then
         has_git_remote=true
     fi
-    
+
     if [[ "$is_tmp_dir" == true ]] || [[ "$is_test_dir" == true ]]; then
         echo "test"
     elif [[ "$has_git_remote" == true ]]; then
@@ -89,20 +89,20 @@ detect_existing_versions() {
     local package_json="package.json"
     if [ -f "$package_json" ]; then
         echo "🔍 Checking for existing package versions..."
-        
+
         # Check for existing Playwright
         if grep -q '"playwright"' "$package_json"; then
             local existing_version=$(grep -o '"playwright": "[^"]*"' "$package_json" | cut -d'"' -f4)
             echo "⚠️  Existing Playwright version: $existing_version"
             echo "   We will install playwright@^1.49.1 (may cause conflicts)"
         fi
-        
+
         # Check for existing ESLint
         if grep -q '"eslint"' "$package_json"; then
             local existing_version=$(grep -o '"eslint": "[^"]*"' "$package_json" | cut -d'"' -f4)
             echo "⚠️  Existing ESLint version: $existing_version"
         fi
-        
+
         # Check for existing Prettier
         if grep -q '"prettier"' "$package_json"; then
             local existing_version=$(grep -o '"prettier": "[^"]*"' "$package_json" | cut -d'"' -f4)
@@ -114,33 +114,33 @@ detect_existing_versions() {
 # Check for ESLint configuration conflicts
 check_eslint_conflicts() {
     local conflicts=()
-    
+
     if [ -f ".eslintrc.js" ] || [ -f ".eslintrc.json" ] || [ -f ".eslintrc.yaml" ]; then
         conflicts+=("Existing ESLint config found")
     fi
-    
+
     if [ -f ".eslintrc.a11y.cjs" ]; then
         conflicts+=("Accessibility ESLint config found")
     fi
-    
+
     if [ -f "eslint.config.js" ]; then
         conflicts+=("Existing ESLint flat config found")
     fi
-    
+
     if [ ${#conflicts[@]} -gt 0 ]; then
         echo "⚠️  ESLint conflicts detected:"
         for conflict in "${conflicts[@]}"; do
             echo "   - $conflict"
         done
         echo "   Backing up existing configs..."
-        
+
         # Backup existing configs
         [ -f ".eslintrc.js" ] && mv .eslintrc.js .eslintrc.js.backup
         [ -f ".eslintrc.json" ] && mv .eslintrc.json .eslintrc.json.backup
         [ -f ".eslintrc.yaml" ] && mv .eslintrc.yaml .eslintrc.yaml.backup
         [ -f ".eslintrc.a11y.cjs" ] && mv .eslintrc.a11y.cjs .eslintrc.a11y.cjs.backup
         [ -f "eslint.config.js" ] && mv eslint.config.js eslint.config.js.backup
-        
+
         echo "   ✅ Existing configs backed up with .backup extension"
     fi
 }
@@ -266,8 +266,8 @@ export default [
     rules: {
       "@typescript-eslint/no-unused-vars": [
         "warn",
-        { 
-          argsIgnorePattern: "^_", 
+        {
+          argsIgnorePattern: "^_",
           varsIgnorePattern: "^_",
           caughtErrorsIgnorePattern: "^_"
         },
@@ -323,9 +323,9 @@ export default [
     },
     rules: {
       "no-unused-vars": [
-        "warn", 
-        { 
-          argsIgnorePattern: "^_", 
+        "warn",
+        {
+          argsIgnorePattern: "^_",
           varsIgnorePattern: "^_",
           caughtErrorsIgnorePattern: "^_"
         }
@@ -587,7 +587,7 @@ function detectRepositoryType() {
       return false;
     }
   })();
-  
+
   if (isTmpDir || isTestDir) {
     return 'test';
   } else if (hasGitRemote) {
@@ -726,7 +726,7 @@ console.log(`\n📊 Validation Results: ${passed}/${total} checks passed`);
 if (passed === total) {
   console.log("🎉 All systems ready for AI-powered development!");
   console.log("🤖 AI-SDLC framework configuration active");
-  
+
   if (repoType === 'test') {
     console.log("🧪 Test environment - ready for validation");
   } else if (repoType === 'production') {
@@ -749,7 +749,7 @@ echo "🔄 Converting single quotes to double quotes in existing files..."
 convert_quotes_smart() {
     local file="$1"
     local temp_file=$(mktemp)
-    
+
     # More intelligent quote conversion that preserves regex patterns
     sed -E '
         # Skip lines with regex patterns (//...//)
@@ -761,7 +761,7 @@ convert_quotes_smart() {
             }
         }
     ' "$file" > "$temp_file"
-    
+
     # Validate the conversion didn't break anything
     if node -c "$temp_file" 2>/dev/null; then
         mv "$temp_file" "$file"
