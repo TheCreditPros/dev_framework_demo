@@ -20,7 +20,9 @@ create_backup() {
     # Backup existing configs
     [ -f "eslint.config.mjs" ] && cp eslint.config.mjs "$backup_dir/" 2>/dev/null || true
     [ -f ".prettierrc" ] && cp .prettierrc "$backup_dir/" 2>/dev/null || true
-    [ -f ".husky" ] && cp -r .husky "$backup_dir/" 2>/dev/null || true
+    [ -d ".husky" ] && cp -r .husky "$backup_dir/" 2>/dev/null || true
+    [ -f ".lintstagedrc.cjs" ] && cp .lintstagedrc.cjs "$backup_dir/" 2>/dev/null || true
+    [ -f "commitlint.config.cjs" ] && cp commitlint.config.cjs "$backup_dir/" 2>/dev/null || true
     [ -f ".lintstagedrc.js" ] && cp .lintstagedrc.js "$backup_dir/" 2>/dev/null || true
     [ -f "commitlint.config.js" ] && cp commitlint.config.js "$backup_dir/" 2>/dev/null || true
     [ -f "validate-setup.js" ] && cp validate-setup.js "$backup_dir/" 2>/dev/null || true
@@ -61,7 +63,9 @@ detect_repo_type() {
     fi
 
     if git remote -v &> /dev/null; then
-        has_git_remote=true
+        if [ -n "$(git remote -v | head -n1)" ]; then
+            has_git_remote=true
+        fi
     fi
 
     if [[ "$is_tmp_dir" == true ]] || [[ "$is_test_dir" == true ]]; then
@@ -80,7 +84,8 @@ detect_playwright_config() {
     elif [ -f "playwright.config.js" ]; then
         echo "playwright.config.js"
     else
-        echo "playwright.config.js"  # default
+        # No config present
+        echo ""
     fi
 }
 
@@ -90,11 +95,11 @@ detect_existing_versions() {
     if [ -f "$package_json" ]; then
         echo "🔍 Checking for existing package versions..."
 
-        # Check for existing Playwright
-        if grep -q '"playwright"' "$package_json"; then
-            local existing_version=$(grep -o '"playwright": "[^"]*"' "$package_json" | cut -d'"' -f4)
-            echo "⚠️  Existing Playwright version: $existing_version"
-            echo "   We will install playwright@^1.49.1 (may cause conflicts)"
+        # Check for existing Playwright Test
+        if grep -q '"@playwright/test"' "$package_json"; then
+            local existing_version=$(grep -o '"@playwright/test": "[^"]*"' "$package_json" | cut -d'"' -f4)
+            echo "⚠️  Existing @playwright/test version: $existing_version"
+            echo "   We will install @playwright/test@^1.49.1 (may cause conflicts)"
         fi
 
         # Check for existing ESLint
@@ -127,6 +132,10 @@ check_eslint_conflicts() {
         conflicts+=("Existing ESLint flat config found")
     fi
 
+    if [ -f "eslint.config.mjs" ]; then
+        conflicts+=("Existing ESLint flat config (mjs) found")
+    fi
+
     if [ ${#conflicts[@]} -gt 0 ]; then
         echo "⚠️  ESLint conflicts detected:"
         for conflict in "${conflicts[@]}"; do
@@ -140,6 +149,7 @@ check_eslint_conflicts() {
         [ -f ".eslintrc.yaml" ] && mv .eslintrc.yaml .eslintrc.yaml.backup
         [ -f ".eslintrc.a11y.cjs" ] && mv .eslintrc.a11y.cjs .eslintrc.a11y.cjs.backup
         [ -f "eslint.config.js" ] && mv eslint.config.js eslint.config.js.backup
+        [ -f "eslint.config.mjs" ] && mv eslint.config.mjs eslint.config.mjs.backup
 
         echo "   ✅ Existing configs backed up with .backup extension"
     fi
@@ -150,7 +160,11 @@ echo "📁 Repository Type: ${REPO_TYPE}"
 
 # Detect Playwright configuration
 PLAYWRIGHT_CONFIG=$(detect_playwright_config)
-echo "🎭 Playwright Config: ${PLAYWRIGHT_CONFIG}"
+if [ -n "$PLAYWRIGHT_CONFIG" ]; then
+  echo "🎭 Playwright Config: ${PLAYWRIGHT_CONFIG}"
+else
+  echo "🎭 Playwright Config: none detected (using default)"
+fi
 
 # Check for existing package versions
 detect_existing_versions
@@ -175,7 +189,8 @@ fi
 
 echo "✅ Prerequisites check passed"
 
-# Check for ESLint conflicts and backup existing configs
+# Create backup before making changes and check for ESLint conflicts
+create_backup "$BACKUP_DIR"
 check_eslint_conflicts
 
 # Install dependencies
@@ -194,9 +209,14 @@ npm install --save-dev \
     lint-staged@^16.1.6 \
     @commitlint/cli@^19.8.1 \
     @commitlint/config-conventional@^19.8.1 \
-    playwright@^1.49.1
+    @playwright/test@^1.49.1
 
 echo "✅ Dependencies installed"
+
+# Install Playwright browsers (non-fatal)
+if npx --yes playwright --version >/dev/null 2>&1; then
+  npx --yes playwright install >/dev/null 2>&1 || true
+fi
 
 # Create ESLint configuration (same as before)
 echo "⚙️  Creating ESLint configuration..."
@@ -359,12 +379,12 @@ npm pkg set scripts.test="vitest"
 npm pkg set scripts."test:watch"="vitest --watch"
 npm pkg set scripts."test:coverage"="vitest run --coverage"
 npm pkg set scripts."test:ci"="vitest --run --coverage"
-npm pkg set scripts."test:e2e"="playwright test --config=${PLAYWRIGHT_CONFIG}"
+npm pkg set scripts."test:e2e"="playwright test$( [ -n \"$PLAYWRIGHT_CONFIG\" ] && printf ' --config=%s' \"$PLAYWRIGHT_CONFIG\" )"
 npm pkg set scripts.lint="eslint ."
-npm pkg set scripts."lint:ci"="eslint assets --max-warnings=0"
+npm pkg set scripts."lint:ci"="eslint . --max-warnings=0"
 npm pkg set scripts."lint:ci:all"="eslint . --max-warnings=0"
 npm pkg set scripts."lint:fix"="eslint . --fix"
-npm pkg set scripts."lint:fix:ci"="eslint assets --fix"
+npm pkg set scripts."lint:fix:ci"="eslint . --fix"
 npm pkg set scripts."lint:security"="eslint . --max-warnings=0"
 npm pkg set scripts."format:check"="prettier --check '**/*.{js,jsx,ts,tsx,json,md}'"
 npm pkg set scripts."format:fix"="prettier --write '**/*.{js,jsx,ts,tsx,json,md}'"
@@ -415,10 +435,10 @@ else
     git config core.hooksPath .husky
 fi
 
-# Create lint-staged configuration
+# Create lint-staged configuration (CommonJS)
 echo "⚙️  Creating lint-staged configuration..."
-cat > .lintstagedrc.js << 'LINTSTAGED_EOF'
-export default {
+cat > .lintstagedrc.cjs << 'LINTSTAGED_EOF'
+module.exports = {
   "*.{js,jsx,ts,tsx}": [
     "eslint --fix",
     "prettier --write"
@@ -429,10 +449,10 @@ export default {
 };
 LINTSTAGED_EOF
 
-# Create commitlint configuration
+# Create commitlint configuration (CommonJS)
 echo "⚙️  Creating commitlint configuration..."
-cat > commitlint.config.js << 'COMMITLINT_EOF'
-export default {
+cat > commitlint.config.cjs << 'COMMITLINT_EOF'
+module.exports = {
   extends: ['@commitlint/config-conventional'],
   rules: {
     'type-enum': [
@@ -568,8 +588,8 @@ echo "⚙️  Creating smart validation script..."
 cat > validate-setup.js << 'VALIDATE_EOF'
 #!/usr/bin/env node
 
-import { execSync } from "child_process";
-import fs from "fs";
+const { execSync } = require('child_process');
+const fs = require('fs');
 
 
 console.log("🔍 Validating AI-SDLC Setup...\n");
@@ -581,8 +601,8 @@ function detectRepositoryType() {
   const isTestDir = cwd.includes('test') || cwd.includes('demo') || cwd.includes('example');
   const hasGitRemote = (() => {
     try {
-      execSync("git remote -v", { stdio: "pipe" });
-      return true;
+      const out = execSync('git remote -v', { encoding: 'utf8', stdio: 'pipe' }).trim();
+      return out.length > 0;
     } catch {
       return false;
     }
@@ -741,9 +761,6 @@ chmod +x validate-setup.js
 
 echo "✅ Smart validation script created"
 
-# Create backup before making changes
-create_backup "$BACKUP_DIR"
-
 # Convert quotes intelligently and test installation
 echo "🔄 Converting single quotes to double quotes in existing files..."
 convert_quotes_smart() {
@@ -763,7 +780,7 @@ convert_quotes_smart() {
     ' "$file" > "$temp_file"
 
     # Validate the conversion didn't break anything
-    if node -c "$temp_file" 2>/dev/null; then
+    if node --check "$temp_file" 2>/dev/null; then
         mv "$temp_file" "$file"
         echo "✅ Converted quotes in $file"
     else
@@ -772,16 +789,8 @@ convert_quotes_smart() {
     fi
 }
 
-find . -name "*.js" -o -name "*.ts" -o -name "*.jsx" -o -name "*.tsx" | \
-  grep -v node_modules | \
-  grep -v coverage | \
-  grep -v dist | \
-  grep -v build | \
-  while read file; do
-    if [ -f "$file" ]; then
-      convert_quotes_smart "$file"
-    fi
-  done
+find . \( -name "*.js" -o -name "*.jsx" \) -print0 \
+  | xargs -0 -I {} sh -c '[ -f "$1" ] && convert_quotes_smart "$1"' _ {}
 
 echo "✅ Smart quote conversion completed"
 
@@ -811,7 +820,11 @@ echo "✅ Prettier configured for DOUBLE QUOTES"
 echo "✅ Git hooks configured for ${REPO_TYPE} environment"
 echo "✅ Quality gates ready"
 echo "✅ All dependencies installed"
-echo "✅ Playwright config detected: ${PLAYWRIGHT_CONFIG}"
+if [ -n "$PLAYWRIGHT_CONFIG" ]; then
+  echo "✅ Playwright config detected: ${PLAYWRIGHT_CONFIG}"
+else
+  echo "ℹ️  No Playwright config detected; using defaults"
+fi
 echo ""
 echo "Repository Type: ${REPO_TYPE}"
 if [[ "$REPO_TYPE" == "test" ]]; then
@@ -819,7 +832,7 @@ if [[ "$REPO_TYPE" == "test" ]]; then
 elif [[ "$REPO_TYPE" == "production" ]]; then
     echo "🚀 Production environment - Git hooks active and ready"
 else
-    echo "�� Local environment - Git hooks configured"
+    echo "🏠 Local environment - Git hooks configured"
 fi
 echo ""
 echo "📦 Backup Information:"
