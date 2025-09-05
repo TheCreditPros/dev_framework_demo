@@ -8,25 +8,66 @@ set -e
 echo "🚀 AI-SDLC Framework Installation (Smart)"
 echo "========================================="
 
+# Create backup directory for rollback capability
+BACKUP_DIR=".ai-sdlc-backup-$(date +%Y%m%d-%H%M%S)"
+mkdir -p "$BACKUP_DIR"
+echo "📦 Creating backup directory: $BACKUP_DIR"
+
+# Function to create backup of existing configs
+create_backup() {
+    local backup_dir="$1"
+
+    # Backup existing configs
+    [ -f "eslint.config.mjs" ] && cp eslint.config.mjs "$backup_dir/" 2>/dev/null || true
+    [ -f ".prettierrc" ] && cp .prettierrc "$backup_dir/" 2>/dev/null || true
+    [ -d ".husky" ] && cp -r .husky "$backup_dir/" 2>/dev/null || true
+    [ -f ".lintstagedrc.cjs" ] && cp .lintstagedrc.cjs "$backup_dir/" 2>/dev/null || true
+    [ -f "commitlint.config.cjs" ] && cp commitlint.config.cjs "$backup_dir/" 2>/dev/null || true
+    [ -f ".lintstagedrc.js" ] && cp .lintstagedrc.js "$backup_dir/" 2>/dev/null || true
+    [ -f "commitlint.config.js" ] && cp commitlint.config.js "$backup_dir/" 2>/dev/null || true
+    [ -f "validate-setup.js" ] && cp validate-setup.js "$backup_dir/" 2>/dev/null || true
+    [ -f "scripts/local-quality-gates.sh" ] && cp scripts/local-quality-gates.sh "$backup_dir/" 2>/dev/null || true
+
+    echo "✅ Backup created in $backup_dir"
+}
+
+# Function to rollback installation
+rollback_installation() {
+    local backup_dir="$1"
+    if [ -d "$backup_dir" ]; then
+        echo "🔄 Rolling back installation..."
+        cp -r "$backup_dir"/* . 2>/dev/null || true
+        echo "✅ Rollback completed"
+        echo "ℹ️  You can manually restore from $backup_dir if needed"
+    else
+        echo "❌ No backup found for rollback"
+    fi
+}
+
+# Set up error handling for rollback
+trap 'echo "❌ Installation failed. Rolling back..."; rollback_installation "$BACKUP_DIR"; exit 1' ERR
+
 # Detect repository type
 detect_repo_type() {
     local cwd=$(pwd)
     local is_tmp_dir=false
     local is_test_dir=false
     local has_git_remote=false
-    
+
     if [[ "$cwd" == *"/tmp/"* ]] || [[ "$cwd" == *"\\temp\\"* ]]; then
         is_tmp_dir=true
     fi
-    
+
     if [[ "$cwd" == *"test"* ]] || [[ "$cwd" == *"demo"* ]] || [[ "$cwd" == *"example"* ]]; then
         is_test_dir=true
     fi
-    
+
     if git remote -v &> /dev/null; then
-        has_git_remote=true
+        if [ -n "$(git remote -v | head -n1)" ]; then
+            has_git_remote=true
+        fi
     fi
-    
+
     if [[ "$is_tmp_dir" == true ]] || [[ "$is_test_dir" == true ]]; then
         echo "test"
     elif [[ "$has_git_remote" == true ]]; then
@@ -36,8 +77,97 @@ detect_repo_type() {
     fi
 }
 
+# Detect Playwright configuration file
+detect_playwright_config() {
+    if [ -f "playwright.config.ts" ]; then
+        echo "playwright.config.ts"
+    elif [ -f "playwright.config.js" ]; then
+        echo "playwright.config.js"
+    else
+        # No config present
+        echo ""
+    fi
+}
+
+# Detect existing package versions to avoid conflicts
+detect_existing_versions() {
+    local package_json="package.json"
+    if [ -f "$package_json" ]; then
+        echo "🔍 Checking for existing package versions..."
+
+        # Check for existing Playwright Test
+        if grep -q '"@playwright/test"' "$package_json"; then
+            local existing_version=$(grep -o '"@playwright/test": "[^"]*"' "$package_json" | cut -d'"' -f4)
+            echo "⚠️  Existing @playwright/test version: $existing_version"
+            echo "   We will install @playwright/test@^1.49.1 (may cause conflicts)"
+        fi
+
+        # Check for existing ESLint
+        if grep -q '"eslint"' "$package_json"; then
+            local existing_version=$(grep -o '"eslint": "[^"]*"' "$package_json" | cut -d'"' -f4)
+            echo "⚠️  Existing ESLint version: $existing_version"
+        fi
+
+        # Check for existing Prettier
+        if grep -q '"prettier"' "$package_json"; then
+            local existing_version=$(grep -o '"prettier": "[^"]*"' "$package_json" | cut -d'"' -f4)
+            echo "⚠️  Existing Prettier version: $existing_version"
+        fi
+    fi
+}
+
+# Check for ESLint configuration conflicts
+check_eslint_conflicts() {
+    local conflicts=()
+
+    if [ -f ".eslintrc.js" ] || [ -f ".eslintrc.json" ] || [ -f ".eslintrc.yaml" ]; then
+        conflicts+=("Existing ESLint config found")
+    fi
+
+    if [ -f ".eslintrc.a11y.cjs" ]; then
+        conflicts+=("Accessibility ESLint config found")
+    fi
+
+    if [ -f "eslint.config.js" ]; then
+        conflicts+=("Existing ESLint flat config found")
+    fi
+
+    if [ -f "eslint.config.mjs" ]; then
+        conflicts+=("Existing ESLint flat config (mjs) found")
+    fi
+
+    if [ ${#conflicts[@]} -gt 0 ]; then
+        echo "⚠️  ESLint conflicts detected:"
+        for conflict in "${conflicts[@]}"; do
+            echo "   - $conflict"
+        done
+        echo "   Backing up existing configs..."
+
+        # Backup existing configs
+        [ -f ".eslintrc.js" ] && mv .eslintrc.js .eslintrc.js.backup
+        [ -f ".eslintrc.json" ] && mv .eslintrc.json .eslintrc.json.backup
+        [ -f ".eslintrc.yaml" ] && mv .eslintrc.yaml .eslintrc.yaml.backup
+        [ -f ".eslintrc.a11y.cjs" ] && mv .eslintrc.a11y.cjs .eslintrc.a11y.cjs.backup
+        [ -f "eslint.config.js" ] && mv eslint.config.js eslint.config.js.backup
+        [ -f "eslint.config.mjs" ] && mv eslint.config.mjs eslint.config.mjs.backup
+
+        echo "   ✅ Existing configs backed up with .backup extension"
+    fi
+}
+
 REPO_TYPE=$(detect_repo_type)
 echo "📁 Repository Type: ${REPO_TYPE}"
+
+# Detect Playwright configuration
+PLAYWRIGHT_CONFIG=$(detect_playwright_config)
+if [ -n "$PLAYWRIGHT_CONFIG" ]; then
+  echo "🎭 Playwright Config: ${PLAYWRIGHT_CONFIG}"
+else
+  echo "🎭 Playwright Config: none detected (using default)"
+fi
+
+# Check for existing package versions
+detect_existing_versions
 
 # Check if we're in a git repository
 if [ ! -d ".git" ]; then
@@ -59,21 +189,9 @@ fi
 
 echo "✅ Prerequisites check passed"
 
-# Backup existing ESLint configs if they exist
-if [ -f "eslint.config.js" ]; then
-    echo "📦 Backing up existing eslint.config.js"
-    mv eslint.config.js eslint.config.js.backup
-fi
-
-if [ -f ".eslintrc.js" ]; then
-    echo "📦 Backing up existing .eslintrc.js"
-    mv .eslintrc.js .eslintrc.js.backup
-fi
-
-if [ -f ".eslintrc.json" ]; then
-    echo "📦 Backing up existing .eslintrc.json"
-    mv .eslintrc.json .eslintrc.json.backup
-fi
+# Create backup before making changes and check for ESLint conflicts
+create_backup "$BACKUP_DIR"
+check_eslint_conflicts
 
 # Install dependencies
 echo "📦 Installing dependencies..."
@@ -91,9 +209,14 @@ npm install --save-dev \
     lint-staged@^16.1.6 \
     @commitlint/cli@^19.8.1 \
     @commitlint/config-conventional@^19.8.1 \
-    playwright@^1.49.1
+    @playwright/test@^1.49.1
 
 echo "✅ Dependencies installed"
+
+# Install Playwright browsers (non-fatal)
+if npx --yes playwright --version >/dev/null 2>&1; then
+  npx --yes playwright install >/dev/null 2>&1 || true
+fi
 
 # Create ESLint configuration (same as before)
 echo "⚙️  Creating ESLint configuration..."
@@ -163,8 +286,8 @@ export default [
     rules: {
       "@typescript-eslint/no-unused-vars": [
         "warn",
-        { 
-          argsIgnorePattern: "^_", 
+        {
+          argsIgnorePattern: "^_",
           varsIgnorePattern: "^_",
           caughtErrorsIgnorePattern: "^_"
         },
@@ -220,9 +343,9 @@ export default [
     },
     rules: {
       "no-unused-vars": [
-        "warn", 
-        { 
-          argsIgnorePattern: "^_", 
+        "warn",
+        {
+          argsIgnorePattern: "^_",
           varsIgnorePattern: "^_",
           caughtErrorsIgnorePattern: "^_"
         }
@@ -250,18 +373,58 @@ cat > .prettierrc << 'PRETTIER_EOF'
 }
 PRETTIER_EOF
 
+# If no Playwright config exists, create a sensible default
+if [ -z "$PLAYWRIGHT_CONFIG" ]; then
+  echo "⚙️  Creating default Playwright configuration..."
+  cat > playwright.config.js << 'PW_EOF'
+import { defineConfig, devices } from "@playwright/test";
+
+const ENABLE_E2E = process.env.ENABLE_E2E === "true";
+const USE_WEBSERVER = ENABLE_E2E && !!process.env.PLAYWRIGHT_WEB_SERVER;
+
+export default defineConfig({
+  testDir: "./tests/e2e",
+  fullyParallel: true,
+  forbidOnly: !!process.env.CI,
+  retries: process.env.CI ? 2 : 0,
+  workers: process.env.CI ? 1 : undefined,
+  reporter: [["html"]],
+  use: {
+    baseURL: process.env.PLAYWRIGHT_BASE_URL || "http://localhost:3000",
+    trace: "on-first-retry",
+    screenshot: "only-on-failure",
+    actionTimeout: 10000,
+    navigationTimeout: 30000,
+  },
+  timeout: 60000,
+  projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
+  ...(USE_WEBSERVER
+    ? {
+        webServer: {
+          command: process.env.PLAYWRIGHT_WEB_SERVER,
+          url: process.env.PLAYWRIGHT_BASE_URL || "http://localhost:3000",
+          reuseExistingServer: !process.env.CI,
+        },
+      }
+    : {}),
+});
+PW_EOF
+  PLAYWRIGHT_CONFIG="playwright.config.js"
+  echo "✅ Default Playwright config created: $PLAYWRIGHT_CONFIG"
+fi
+
 # Create package.json scripts
 echo "⚙️  Adding scripts to package.json..."
 npm pkg set scripts.test="vitest"
 npm pkg set scripts."test:watch"="vitest --watch"
 npm pkg set scripts."test:coverage"="vitest run --coverage"
 npm pkg set scripts."test:ci"="vitest --run --coverage"
-npm pkg set scripts."test:e2e"="playwright test --config=playwright.config.js"
+npm pkg set scripts."test:e2e"="playwright test$( [ -n \"$PLAYWRIGHT_CONFIG\" ] && printf ' --config=%s' \"$PLAYWRIGHT_CONFIG\" )"
 npm pkg set scripts.lint="eslint ."
-npm pkg set scripts."lint:ci"="eslint assets --max-warnings=0"
+npm pkg set scripts."lint:ci"="eslint . --max-warnings=0"
 npm pkg set scripts."lint:ci:all"="eslint . --max-warnings=0"
 npm pkg set scripts."lint:fix"="eslint . --fix"
-npm pkg set scripts."lint:fix:ci"="eslint assets --fix"
+npm pkg set scripts."lint:fix:ci"="eslint . --fix"
 npm pkg set scripts."lint:security"="eslint . --max-warnings=0"
 npm pkg set scripts."format:check"="prettier --check '**/*.{js,jsx,ts,tsx,json,md}'"
 npm pkg set scripts."format:fix"="prettier --write '**/*.{js,jsx,ts,tsx,json,md}'"
@@ -312,10 +475,10 @@ else
     git config core.hooksPath .husky
 fi
 
-# Create lint-staged configuration
+# Create lint-staged configuration (CommonJS)
 echo "⚙️  Creating lint-staged configuration..."
-cat > .lintstagedrc.js << 'LINTSTAGED_EOF'
-export default {
+cat > .lintstagedrc.cjs << 'LINTSTAGED_EOF'
+module.exports = {
   "*.{js,jsx,ts,tsx}": [
     "eslint --fix",
     "prettier --write"
@@ -326,10 +489,10 @@ export default {
 };
 LINTSTAGED_EOF
 
-# Create commitlint configuration
+# Create commitlint configuration (CommonJS)
 echo "⚙️  Creating commitlint configuration..."
-cat > commitlint.config.js << 'COMMITLINT_EOF'
-export default {
+cat > commitlint.config.cjs << 'COMMITLINT_EOF'
+module.exports = {
   extends: ['@commitlint/config-conventional'],
   rules: {
     'type-enum': [
@@ -465,8 +628,8 @@ echo "⚙️  Creating smart validation script..."
 cat > validate-setup.js << 'VALIDATE_EOF'
 #!/usr/bin/env node
 
-import { execSync } from "child_process";
-import fs from "fs";
+const { execSync } = require('child_process');
+const fs = require('fs');
 
 
 console.log("🔍 Validating AI-SDLC Setup...\n");
@@ -478,13 +641,13 @@ function detectRepositoryType() {
   const isTestDir = cwd.includes('test') || cwd.includes('demo') || cwd.includes('example');
   const hasGitRemote = (() => {
     try {
-      execSync("git remote -v", { stdio: "pipe" });
-      return true;
+      const out = execSync('git remote -v', { encoding: 'utf8', stdio: 'pipe' }).trim();
+      return out.length > 0;
     } catch {
       return false;
     }
   })();
-  
+
   if (isTmpDir || isTestDir) {
     return 'test';
   } else if (hasGitRemote) {
@@ -623,7 +786,7 @@ console.log(`\n📊 Validation Results: ${passed}/${total} checks passed`);
 if (passed === total) {
   console.log("🎉 All systems ready for AI-powered development!");
   console.log("🤖 AI-SDLC framework configuration active");
-  
+
   if (repoType === 'test') {
     console.log("🧪 Test environment - ready for validation");
   } else if (repoType === 'production') {
@@ -638,20 +801,40 @@ chmod +x validate-setup.js
 
 echo "✅ Smart validation script created"
 
-# Convert quotes and test installation
+# Convert quotes intelligently and test installation
 echo "🔄 Converting single quotes to double quotes in existing files..."
-find . -name "*.js" -o -name "*.ts" -o -name "*.jsx" -o -name "*.tsx" | \
-  grep -v node_modules | \
-  grep -v coverage | \
-  grep -v dist | \
-  grep -v build | \
-  while read file; do
-    if [ -f "$file" ]; then
-      sed -i '' "s/'/\"/g" "$file" 2>/dev/null || true
-    fi
-  done
+convert_quotes_smart() {
+    local file="$1"
+    local temp_file=$(mktemp)
 
-echo "✅ Quote conversion completed"
+    # More intelligent quote conversion that preserves regex patterns
+    sed -E '
+        # Skip lines with regex patterns (//...//)
+        /\/[^\/]*\//! {
+            # Skip lines with template literals (backticks)
+            /`/! {
+                # Convert simple string literals only (not in comments or complex patterns)
+                s/'\''([^'\'']*)'\''/"\1"/g
+            }
+        }
+    ' "$file" > "$temp_file"
+
+    # Validate the conversion didn't break anything
+    if node --check "$temp_file" 2>/dev/null; then
+        mv "$temp_file" "$file"
+        echo "✅ Converted quotes in $file"
+    else
+        echo "⚠️  Skipped $file (potential regex conflicts)"
+        rm "$temp_file"
+    fi
+}
+
+# Skip TypeScript files to avoid syntax validation issues
+# (TypeScript files will be handled by the TypeScript compiler)
+find . \( -name "*.js" -o -name "*.jsx" \) -print0 \
+  | xargs -0 -I {} sh -c '[ -f "$1" ] && convert_quotes_smart "$1"' _ {}
+
+echo "✅ Smart quote conversion completed"
 
 # Test the installation
 echo "🧪 Testing installation..."
@@ -679,6 +862,14 @@ echo "✅ Prettier configured for DOUBLE QUOTES"
 echo "✅ Git hooks configured for ${REPO_TYPE} environment"
 echo "✅ Quality gates ready"
 echo "✅ All dependencies installed"
+# Summarize Playwright config presence
+if [ -f "playwright.config.ts" ]; then
+  echo "✅ Playwright config detected: playwright.config.ts"
+elif [ -f "playwright.config.js" ]; then
+  echo "✅ Playwright config detected: playwright.config.js"
+else
+  echo "ℹ️  No Playwright config detected; using defaults"
+fi
 echo ""
 echo "Repository Type: ${REPO_TYPE}"
 if [[ "$REPO_TYPE" == "test" ]]; then
@@ -686,8 +877,12 @@ if [[ "$REPO_TYPE" == "test" ]]; then
 elif [[ "$REPO_TYPE" == "production" ]]; then
     echo "🚀 Production environment - Git hooks active and ready"
 else
-    echo "�� Local environment - Git hooks configured"
+    echo "🏠 Local environment - Git hooks configured"
 fi
+echo ""
+echo "📦 Backup Information:"
+echo "   Backup created in: $BACKUP_DIR"
+echo "   To rollback: rm -rf $BACKUP_DIR && git checkout -- ."
 echo ""
 echo "Next steps:"
 echo "1. Run 'npm run format:fix' to format existing code"
