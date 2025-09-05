@@ -8,6 +8,43 @@ set -e
 echo "🚀 AI-SDLC Framework Installation (Smart)"
 echo "========================================="
 
+# Create backup directory for rollback capability
+BACKUP_DIR=".ai-sdlc-backup-$(date +%Y%m%d-%H%M%S)"
+mkdir -p "$BACKUP_DIR"
+echo "📦 Creating backup directory: $BACKUP_DIR"
+
+# Function to create backup of existing configs
+create_backup() {
+    local backup_dir="$1"
+    
+    # Backup existing configs
+    [ -f "eslint.config.mjs" ] && cp eslint.config.mjs "$backup_dir/" 2>/dev/null || true
+    [ -f ".prettierrc" ] && cp .prettierrc "$backup_dir/" 2>/dev/null || true
+    [ -f ".husky" ] && cp -r .husky "$backup_dir/" 2>/dev/null || true
+    [ -f ".lintstagedrc.js" ] && cp .lintstagedrc.js "$backup_dir/" 2>/dev/null || true
+    [ -f "commitlint.config.js" ] && cp commitlint.config.js "$backup_dir/" 2>/dev/null || true
+    [ -f "validate-setup.js" ] && cp validate-setup.js "$backup_dir/" 2>/dev/null || true
+    [ -f "scripts/local-quality-gates.sh" ] && cp scripts/local-quality-gates.sh "$backup_dir/" 2>/dev/null || true
+    
+    echo "✅ Backup created in $backup_dir"
+}
+
+# Function to rollback installation
+rollback_installation() {
+    local backup_dir="$1"
+    if [ -d "$backup_dir" ]; then
+        echo "🔄 Rolling back installation..."
+        cp -r "$backup_dir"/* . 2>/dev/null || true
+        echo "✅ Rollback completed"
+        echo "ℹ️  You can manually restore from $backup_dir if needed"
+    else
+        echo "❌ No backup found for rollback"
+    fi
+}
+
+# Set up error handling for rollback
+trap 'echo "❌ Installation failed. Rolling back..."; rollback_installation "$BACKUP_DIR"; exit 1' ERR
+
 # Detect repository type
 detect_repo_type() {
     local cwd=$(pwd)
@@ -36,8 +73,87 @@ detect_repo_type() {
     fi
 }
 
+# Detect Playwright configuration file
+detect_playwright_config() {
+    if [ -f "playwright.config.ts" ]; then
+        echo "playwright.config.ts"
+    elif [ -f "playwright.config.js" ]; then
+        echo "playwright.config.js"
+    else
+        echo "playwright.config.js"  # default
+    fi
+}
+
+# Detect existing package versions to avoid conflicts
+detect_existing_versions() {
+    local package_json="package.json"
+    if [ -f "$package_json" ]; then
+        echo "🔍 Checking for existing package versions..."
+        
+        # Check for existing Playwright
+        if grep -q '"playwright"' "$package_json"; then
+            local existing_version=$(grep -o '"playwright": "[^"]*"' "$package_json" | cut -d'"' -f4)
+            echo "⚠️  Existing Playwright version: $existing_version"
+            echo "   We will install playwright@^1.49.1 (may cause conflicts)"
+        fi
+        
+        # Check for existing ESLint
+        if grep -q '"eslint"' "$package_json"; then
+            local existing_version=$(grep -o '"eslint": "[^"]*"' "$package_json" | cut -d'"' -f4)
+            echo "⚠️  Existing ESLint version: $existing_version"
+        fi
+        
+        # Check for existing Prettier
+        if grep -q '"prettier"' "$package_json"; then
+            local existing_version=$(grep -o '"prettier": "[^"]*"' "$package_json" | cut -d'"' -f4)
+            echo "⚠️  Existing Prettier version: $existing_version"
+        fi
+    fi
+}
+
+# Check for ESLint configuration conflicts
+check_eslint_conflicts() {
+    local conflicts=()
+    
+    if [ -f ".eslintrc.js" ] || [ -f ".eslintrc.json" ] || [ -f ".eslintrc.yaml" ]; then
+        conflicts+=("Existing ESLint config found")
+    fi
+    
+    if [ -f ".eslintrc.a11y.cjs" ]; then
+        conflicts+=("Accessibility ESLint config found")
+    fi
+    
+    if [ -f "eslint.config.js" ]; then
+        conflicts+=("Existing ESLint flat config found")
+    fi
+    
+    if [ ${#conflicts[@]} -gt 0 ]; then
+        echo "⚠️  ESLint conflicts detected:"
+        for conflict in "${conflicts[@]}"; do
+            echo "   - $conflict"
+        done
+        echo "   Backing up existing configs..."
+        
+        # Backup existing configs
+        [ -f ".eslintrc.js" ] && mv .eslintrc.js .eslintrc.js.backup
+        [ -f ".eslintrc.json" ] && mv .eslintrc.json .eslintrc.json.backup
+        [ -f ".eslintrc.yaml" ] && mv .eslintrc.yaml .eslintrc.yaml.backup
+        [ -f ".eslintrc.a11y.cjs" ] && mv .eslintrc.a11y.cjs .eslintrc.a11y.cjs.backup
+        [ -f "eslint.config.js" ] && mv eslint.config.js eslint.config.js.backup
+        
+        echo "   ✅ Existing configs backed up with .backup extension"
+    fi
+}
+
 REPO_TYPE=$(detect_repo_type)
 echo "📁 Repository Type: ${REPO_TYPE}"
+
+# Detect Playwright configuration
+PLAYWRIGHT_CONFIG=$(detect_playwright_config)
+echo "🎭 Playwright Config: ${PLAYWRIGHT_CONFIG}"
+
+# Check for existing package versions
+detect_existing_versions
 
 # Check if we're in a git repository
 if [ ! -d ".git" ]; then
@@ -59,21 +175,8 @@ fi
 
 echo "✅ Prerequisites check passed"
 
-# Backup existing ESLint configs if they exist
-if [ -f "eslint.config.js" ]; then
-    echo "📦 Backing up existing eslint.config.js"
-    mv eslint.config.js eslint.config.js.backup
-fi
-
-if [ -f ".eslintrc.js" ]; then
-    echo "📦 Backing up existing .eslintrc.js"
-    mv .eslintrc.js .eslintrc.js.backup
-fi
-
-if [ -f ".eslintrc.json" ]; then
-    echo "📦 Backing up existing .eslintrc.json"
-    mv .eslintrc.json .eslintrc.json.backup
-fi
+# Check for ESLint conflicts and backup existing configs
+check_eslint_conflicts
 
 # Install dependencies
 echo "📦 Installing dependencies..."
@@ -256,7 +359,7 @@ npm pkg set scripts.test="vitest"
 npm pkg set scripts."test:watch"="vitest --watch"
 npm pkg set scripts."test:coverage"="vitest run --coverage"
 npm pkg set scripts."test:ci"="vitest --run --coverage"
-npm pkg set scripts."test:e2e"="playwright test --config=playwright.config.js"
+npm pkg set scripts."test:e2e"="playwright test --config=${PLAYWRIGHT_CONFIG}"
 npm pkg set scripts.lint="eslint ."
 npm pkg set scripts."lint:ci"="eslint assets --max-warnings=0"
 npm pkg set scripts."lint:ci:all"="eslint . --max-warnings=0"
@@ -638,8 +741,37 @@ chmod +x validate-setup.js
 
 echo "✅ Smart validation script created"
 
-# Convert quotes and test installation
+# Create backup before making changes
+create_backup "$BACKUP_DIR"
+
+# Convert quotes intelligently and test installation
 echo "🔄 Converting single quotes to double quotes in existing files..."
+convert_quotes_smart() {
+    local file="$1"
+    local temp_file=$(mktemp)
+    
+    # More intelligent quote conversion that preserves regex patterns
+    sed -E '
+        # Skip lines with regex patterns (//...//)
+        /\/[^\/]*\//! {
+            # Skip lines with template literals (backticks)
+            /`/! {
+                # Convert simple string literals only (not in comments or complex patterns)
+                s/'\''([^'\'']*)'\''/"\1"/g
+            }
+        }
+    ' "$file" > "$temp_file"
+    
+    # Validate the conversion didn't break anything
+    if node -c "$temp_file" 2>/dev/null; then
+        mv "$temp_file" "$file"
+        echo "✅ Converted quotes in $file"
+    else
+        echo "⚠️  Skipped $file (potential regex conflicts)"
+        rm "$temp_file"
+    fi
+}
+
 find . -name "*.js" -o -name "*.ts" -o -name "*.jsx" -o -name "*.tsx" | \
   grep -v node_modules | \
   grep -v coverage | \
@@ -647,11 +779,11 @@ find . -name "*.js" -o -name "*.ts" -o -name "*.jsx" -o -name "*.tsx" | \
   grep -v build | \
   while read file; do
     if [ -f "$file" ]; then
-      sed -i '' "s/'/\"/g" "$file" 2>/dev/null || true
+      convert_quotes_smart "$file"
     fi
   done
 
-echo "✅ Quote conversion completed"
+echo "✅ Smart quote conversion completed"
 
 # Test the installation
 echo "🧪 Testing installation..."
@@ -679,6 +811,7 @@ echo "✅ Prettier configured for DOUBLE QUOTES"
 echo "✅ Git hooks configured for ${REPO_TYPE} environment"
 echo "✅ Quality gates ready"
 echo "✅ All dependencies installed"
+echo "✅ Playwright config detected: ${PLAYWRIGHT_CONFIG}"
 echo ""
 echo "Repository Type: ${REPO_TYPE}"
 if [[ "$REPO_TYPE" == "test" ]]; then
@@ -688,6 +821,10 @@ elif [[ "$REPO_TYPE" == "production" ]]; then
 else
     echo "�� Local environment - Git hooks configured"
 fi
+echo ""
+echo "📦 Backup Information:"
+echo "   Backup created in: $BACKUP_DIR"
+echo "   To rollback: rm -rf $BACKUP_DIR && git checkout -- ."
 echo ""
 echo "Next steps:"
 echo "1. Run 'npm run format:fix' to format existing code"
