@@ -27,7 +27,7 @@ jobs:
         run: |
           echo "PR Author: ${{ github.actor }}"
           echo "PR Title: ${{ github.event.pull_request.title }}"
-          
+
           # Check if this is a security update
           if [[ "${{ github.event.pull_request.title }}" == *"security"* ]] || \
              [[ "${{ github.event.pull_request.title }}" == *"vulnerability"* ]] || \
@@ -73,17 +73,17 @@ jobs:
           echo "📦 Regular dependency update - manual review required"
           gh pr comment "${{ github.event.pull_request.number }}" --body "
           ## 📦 Dependency Update Review Required
-          
+
           This is a regular dependency update that requires manual review.
-          
+
           **Security updates are auto-merged**, but this update needs human approval.
-          
+
           ### Review Checklist:
           - [ ] Check for breaking changes
           - [ ] Verify compatibility with existing code
           - [ ] Review changelog for impact
           - [ ] Ensure all tests pass
-          
+
           Use \`@dependabot merge\` to merge after review.
           "
         env:
@@ -94,14 +94,14 @@ jobs:
         run: |
           gh pr comment "${{ github.event.pull_request.number }}" --body "
           ## 🔒 Security Update Auto-Merge
-          
+
           This security update will be **automatically merged** after all checks pass:
-          
+
           ✅ SonarCloud security analysis
-          ✅ Quality gates validation  
+          ✅ Quality gates validation
           ✅ Dependency vulnerability scan
           ✅ FCRA compliance checks
-          
+
           **No manual intervention required** for security updates.
           "
         env:

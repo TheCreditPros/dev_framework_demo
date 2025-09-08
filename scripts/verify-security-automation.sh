@@ -33,21 +33,21 @@ echo "==========================================="
 # Check Dependabot config
 if [ -f ".github/dependabot.yml" ]; then
     echo -e "${BLUE}📋 Checking Dependabot configuration...${NC}"
-    
+
     # Check for daily schedule
-    if grep -q "interval: 'daily'" .github/dependabot.yml; then
+    if grep -q "interval.*daily" .github/dependabot.yml; then
         check_status "Daily security update schedule configured"
     else
         check_status "Daily security update schedule NOT configured"
     fi
-    
+
     # Check for security updates
     if grep -q "security-updates:" .github/dependabot.yml; then
         check_status "Security updates enabled"
     else
         check_status "Security updates NOT enabled"
     fi
-    
+
     # Check auto-merge workflow
     if [ -f ".github/workflows/dependabot-auto-merge.yml" ]; then
         check_status "Dependabot auto-merge workflow exists"
@@ -65,28 +65,28 @@ echo "=========================================="
 # Check SonarCloud config
 if [ -f "sonar-project.properties" ]; then
     echo -e "${BLUE}📋 Checking SonarCloud configuration...${NC}"
-    
+
     # Check quality gate enforcement
     if grep -q "sonar.buildbreaker.skip=false" sonar-project.properties; then
         check_status "Quality gate enforcement enabled"
     else
         check_status "Quality gate enforcement NOT enabled"
     fi
-    
+
     # Check security hotspots
     if grep -q "sonar.security.hotspots.enabled=true" sonar-project.properties; then
         check_status "Security hotspots enabled"
     else
         check_status "Security hotspots NOT enabled"
     fi
-    
+
     # Check AI CodeFix
     if grep -q "sonar.ai.codefix.enabled=true" sonar-project.properties; then
         check_status "AI CodeFix enabled"
     else
         check_status "AI CodeFix NOT enabled"
     fi
-    
+
     # Check workflow has SONAR_TOKEN
     if grep -q "SONAR_TOKEN" .github/workflows/sonarcloud-pr-analysis.yml; then
         check_status "SonarCloud PR workflow has SONAR_TOKEN"
@@ -104,28 +104,28 @@ echo "=============================================="
 # Check Qodo PR-Agent config
 if [ -f ".pr_agent.toml" ]; then
     echo -e "${BLUE}📋 Checking Qodo PR-Agent configuration...${NC}"
-    
+
     # Check FCRA compliance focus
     if grep -q "FCRA" .pr_agent.toml; then
         check_status "FCRA compliance configuration found"
     else
         check_status "FCRA compliance configuration NOT found"
     fi
-    
+
     # Check security review configuration
     if grep -q "require_security_review" .pr_agent.toml; then
         check_status "Security review requirement configured"
     else
         check_status "Security review requirement NOT configured"
     fi
-    
+
     # Check auto-trigger workflow
     if [ -f ".github/workflows/qodo-auto-trigger.yml" ]; then
         check_status "Qodo auto-trigger workflow exists"
     else
         check_status "Qodo auto-trigger workflow NOT found"
     fi
-    
+
     # Check main AI review workflow
     if [ -f ".github/workflows/ai-code-review.yml" ]; then
         check_status "Main AI code review workflow exists"
@@ -173,14 +173,14 @@ echo -e "${BLUE}📋 Checking security configurations...${NC}"
 if [ -f "package.json" ]; then
     if grep -q "overrides" package.json; then
         check_status "Security overrides in package.json"
-        
+
         # Check specific overrides
         if grep -q "debug.*4.3.4" package.json; then
             check_status "Debug vulnerability override configured"
         else
             check_status "Debug vulnerability override NOT configured"
         fi
-        
+
         if grep -q "cross-spawn" package.json; then
             check_status "Cross-spawn vulnerability override configured"
         else
@@ -247,7 +247,7 @@ echo -e "${BLUE}📋 Checking branch protection status...${NC}"
 # Check if branch protection script exists
 if [ -f "scripts/setup-branch-protection.sh" ]; then
     check_status "Branch protection setup script exists"
-    
+
     if [ -x "scripts/setup-branch-protection.sh" ]; then
         check_status "Branch protection script is executable"
     else
