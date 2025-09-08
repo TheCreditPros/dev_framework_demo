@@ -1131,8 +1131,11 @@ convert_quotes_smart() {
 
 # Skip TypeScript files to avoid syntax validation issues
 # (TypeScript files will be handled by the TypeScript compiler)
-find . \( -name "*.js" -o -name "*.jsx" \) -print0 \
-  | xargs -0 -I {} sh -c '[ -f "$1" ] && convert_quotes_smart "$1"' _ {}
+find . \( -name "*.js" -o -name "*.jsx" \) -print0 | while IFS= read -r -d '' file; do
+    if [ -f "$file" ]; then
+        convert_quotes_smart "$file"
+    fi
+done
 
 echo "✅ Smart quote conversion completed"
 
