@@ -1,5 +1,0 @@
-# Python requirements for AI PR Agent
-# Install with: pip install -r requirements.txt
-# or: pipx install pr-agent
-
-pr-agent>=0.1.0

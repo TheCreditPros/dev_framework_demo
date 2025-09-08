@@ -115,10 +115,10 @@ git clone https://github.com/TheCreditPros/dev_framework_demo.git
 cd your-project
 ```
 
-### **2. Run Auto-Setup (installs PR Agent and hooks)**
+### **2. Run Smart Installation (installs all security automation)**
 
 ```bash
-./auto-setup.sh
+./install-framework-smart.sh
 ```
 
 ### **3. That's It!** 🎉

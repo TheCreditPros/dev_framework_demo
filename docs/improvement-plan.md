@@ -51,7 +51,7 @@ Files to change
 ## 2) Auto‑Install AI PR Tool (PR Agent)
 
 - Treat PR Agent as a required tool with automatic setup.
-  - Add a setup step in `auto-setup.sh` and `setup.sh` to install PR Agent if missing.
+  - PR Agent is now integrated in `install-framework-smart.sh` with native GitHub Actions.
     - Preferred: `pipx install pr-agent` (isolated, reliable PATH) or `pip install pr-agent` as a fallback.
     - Validate with `pr-agent --help` and fail the setup with a clear message if install or token is missing.
   - Ensure `.pr_agent.toml` exists and is valid; honor env var `GITHUB_TOKEN` and/or `PR_AGENT_TOKEN`.
@@ -60,14 +60,13 @@ Files to change
 
 Acceptance Criteria
 
-- Fresh clone + `./setup.sh` results in `pr-agent` available on PATH (or a clear, actionable error if Python/pipx is not available).
+- Fresh clone + `./install-framework-smart.sh` results in complete setup with native GitHub Actions integration.
 - `npm run pr:review` runs without “command not found”.
 - `.pr_agent.toml` is recognized; docs explain required tokens and scopes.
 
 Files to change
 
-- `setup.sh`
-- `auto-setup.sh`
+- `install-framework-smart.sh`
 - `README.md: PR Agent section`
 - `.pr_agent.toml` (doc/comment updates only; secrets via env)
 
@@ -246,7 +245,7 @@ Files to change
     - Else rely on Sonar action output variables or parse `.scannerwork/report-task.txt` as text lines.
 
 - PR Agent installation in setup script (example)
-  - In `setup.sh` / `auto-setup.sh`:
+  - In `install-framework-smart.sh`:
     - Check `command -v pr-agent || { pipx install pr-agent || pip install --user pr-agent; }`
     - Validate `pr-agent --help` and `.pr_agent.toml` presence; instruct to set `GITHUB_TOKEN`.
 
@@ -258,5 +257,5 @@ Files to change
 - `npm test` runs and passes locally without E2E.
 - `git commit` triggers ESLint/Prettier and fixers; produces clean diffs.
 - `git push` runs Vitest with limited workers.
-- `pr-agent --help` available after `./setup.sh`.
+- Native GitHub Actions integration available after `./install-framework-smart.sh`.
 - CI workflows pass (quality, security); no performance jobs present by default.

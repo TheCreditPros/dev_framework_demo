@@ -269,7 +269,7 @@ npm run prepare
 
 - **Enterprise-Grade CI/CD**: Comprehensive GitHub Actions pipeline with quality gates, security scanning, and performance monitoring
 - **Modern React/TypeScript Toolchain**: ESLint 9+, Vitest, Playwright, TypeScript strict mode with excellent developer experience
-- **One-Command Setup**: Complete framework installation via auto-setup.sh
+- **One-Command Setup**: Complete framework installation via install-framework-smart.sh
 - **Credit Repair Compliance**: Built-in FCRA compliance patterns and security frameworks
 - **AI Integration**: Multi-model cost optimization and automated test generation
 
