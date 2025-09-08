@@ -12,8 +12,17 @@ export default [
       "**/site/**",
       "**/docs/site/**",
       "**/temp/**",
+      "**/comprehensive-jest-to-vitest.js",
+      "**/enhanced-jest-to-vitest.js",
+      "**/final-jest-removal.js",
+      "**/jest-to-vitest-converter.js",
+      "**/playwright-report/**",
       "scripts/**",
       "scripts-complex/**",
+      "test-workflow.js",
+      "validate-setup.js",
+      "auto-setup*.sh",
+      "setup*.sh",
       "tests/e2e/**",
       "tests/Integration/**",
     ],
@@ -41,6 +50,7 @@ export default [
         document: "readonly",
         window: "readonly",
         navigator: "readonly",
+        // Test globals
         describe: "readonly",
         it: "readonly",
         test: "readonly",
@@ -50,6 +60,7 @@ export default [
         beforeAll: "readonly",
         afterAll: "readonly",
         vi: "readonly",
+        // Browser globals
         fetch: "readonly",
         URL: "readonly",
         btoa: "readonly",
@@ -61,18 +72,15 @@ export default [
       "@typescript-eslint": tsPlugin,
     },
     rules: {
+      // Essential TypeScript rules
       "@typescript-eslint/no-unused-vars": [
         "warn",
-        {
-          argsIgnorePattern: "^_",
-          varsIgnorePattern: "^_",
-          caughtErrorsIgnorePattern: "^_"
-        },
+        { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
       ],
       "@typescript-eslint/no-explicit-any": "warn",
       "@typescript-eslint/no-non-null-assertion": "warn",
       "no-unused-vars": "off",
-      "prefer-const": ["error", { "destructuring": "any", "ignoreReadBeforeAssign": false }],
+      "prefer-const": "warn",
       "no-var": "error",
       "quotes": ["error", "double"],
     },
@@ -102,6 +110,7 @@ export default [
         document: "readonly",
         window: "readonly",
         navigator: "readonly",
+        // Test globals
         describe: "readonly",
         it: "readonly",
         test: "readonly",
@@ -111,6 +120,7 @@ export default [
         beforeAll: "readonly",
         afterAll: "readonly",
         vi: "readonly",
+        // Browser globals
         fetch: "readonly",
         URL: "readonly",
         btoa: "readonly",
@@ -119,16 +129,9 @@ export default [
       },
     },
     rules: {
-      "no-unused-vars": [
-        "warn",
-        {
-          argsIgnorePattern: "^_",
-          varsIgnorePattern: "^_",
-          caughtErrorsIgnorePattern: "^_"
-        }
-      ],
+      "no-unused-vars": ["warn", { argsIgnorePattern: "^_" }],
       "no-console": "off",
-      "prefer-const": ["error", { "destructuring": "any", "ignoreReadBeforeAssign": false }],
+      "prefer-const": "warn",
       "no-var": "error",
       "no-useless-escape": "warn",
       "quotes": ["error", "double"],
