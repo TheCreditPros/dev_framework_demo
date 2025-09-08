@@ -51,8 +51,8 @@ jobs:
       - name: 📦 Install Dependencies
         run: npm ci --no-audit
 
-      - name: 🧪 Run Tests with Coverage
-        run: npm run test:coverage:sonar
+      - name: 🧪 Run Tests with Coverage  
+        run: npm run test:coverage
 
       - name: 📊 Verify Coverage Report
         run: |

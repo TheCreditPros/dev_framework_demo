@@ -63,7 +63,7 @@ jobs:
       - name: 📝 TypeScript Check
         run: npm run type-check
 
-      - name: 🧪 Unit Tests  
+      - name: 🧪 Unit Tests
         run: npm run test:coverage
 
       - name: 🏗️ Build Check
