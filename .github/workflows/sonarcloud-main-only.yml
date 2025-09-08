@@ -59,6 +59,7 @@ jobs:
           fi
 
       - name: 🔍 Run SonarCloud Analysis
+        if: ${{ secrets.SONAR_TOKEN != '' }}
         uses: SonarSource/sonarcloud-github-action@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -74,6 +75,17 @@ jobs:
             -Dsonar.qualitygate.wait=true
             -Dsonar.qualitygate.timeout=300
             -Dsonar.verbose=true
+
+      - name: ⚠️  SonarCloud Analysis Skipped
+        if: ${{ secrets.SONAR_TOKEN == '' }}
+        run: |
+          echo "⚠️  SonarCloud Analysis Skipped"
+          echo "   SONAR_TOKEN secret is not configured in repository settings"
+          echo "   To enable SonarCloud analysis:"
+          echo "   1. Go to GitHub → Settings → Secrets and variables → Actions"
+          echo "   2. Add a new repository secret named 'SONAR_TOKEN'"
+          echo "   3. Get your token from https://sonarcloud.io/account/security/"
+          echo "   4. Re-run this workflow"
 
       - name: 📊 Upload Coverage Reports
         if: always()

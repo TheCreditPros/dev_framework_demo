@@ -1027,6 +1027,7 @@ echo "3. Test with 'npm run quality-gates'"
 echo "4. Validate with 'node validate-setup.js'"
 echo "5. For SonarCloud analysis:"
 echo "   - Set SONAR_TOKEN in GitHub repository secrets"
+echo "   - Get token from https://sonarcloud.io/account/security/"
 echo "   - Update sonar-project.properties with your project details"
 echo "   - Run 'npm run test:coverage:sonar' to generate coverage"
 if [ "$GIT_HOOKS_CONFIGURED" = true ]; then
