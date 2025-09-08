@@ -462,17 +462,84 @@ HOOK_EOF
 # Make hooks executable
 chmod +x .husky/*
 
-# Configure Git hooks path based on repository type
-if [[ "$REPO_TYPE" == "production" ]]; then
-    echo "🔗 Configuring Git hooks for production..."
-    git config core.hooksPath .husky
-    echo "✅ Git hooks configured for production"
-elif [[ "$REPO_TYPE" == "test" ]]; then
-    echo "🧪 Test repository - Git hooks not configured"
-    echo "ℹ️  Git hooks will be available but not active in test mode"
+# Prompt user for Git hooks configuration
+echo ""
+echo "🔗 Git Hooks Configuration"
+echo "========================="
+echo "The AI-SDLC framework includes Git hooks for:"
+echo "  • Pre-commit: Run linting and formatting checks"
+echo "  • Commit-msg: Enforce conventional commit messages"
+echo "  • Pre-push: Run comprehensive quality gates"
+echo ""
+echo "Repository Type: ${REPO_TYPE}"
+echo ""
+
+# Function to prompt user for Git hooks
+prompt_git_hooks() {
+    local repo_type="$1"
+    local default_choice=""
+    
+    case "$repo_type" in
+        "production")
+            echo "🚀 PRODUCTION REPOSITORY DETECTED"
+            echo "   Git hooks are HIGHLY RECOMMENDED for production repositories"
+            echo "   to ensure code quality and prevent bad commits from being pushed."
+            default_choice="Y"
+            ;;
+        "test")
+            echo "🧪 TEST REPOSITORY DETECTED"
+            echo "   Git hooks are optional for test repositories but can help"
+            echo "   validate the framework installation."
+            default_choice="N"
+            ;;
+        "local")
+            echo "🏠 LOCAL REPOSITORY DETECTED"
+            echo "   Git hooks are recommended for local development to catch"
+            echo "   issues early and maintain code quality."
+            default_choice="Y"
+            ;;
+    esac
+    
+    echo ""
+    echo "Do you want to configure Git hooks for this repository? (y/N)"
+    echo "   This will set 'git config core.hooksPath .husky'"
+    echo "   You can disable them later with: git config --unset core.hooksPath"
+    echo ""
+    
+    while true; do
+        if [ -n "$default_choice" ]; then
+            echo -n "Configure Git hooks? [${default_choice}]: "
+        else
+            echo -n "Configure Git hooks? [y/N]: "
+        fi
+        
+        read -r response
+        response=${response:-$default_choice}
+        
+        case "$response" in
+            [Yy]|[Yy][Ee][Ss])
+                echo "✅ Configuring Git hooks..."
+                git config core.hooksPath .husky
+                echo "✅ Git hooks configured successfully"
+                return 0
+                ;;
+            [Nn]|[Nn][Oo])
+                echo "ℹ️  Git hooks not configured"
+                echo "   You can configure them later with: git config core.hooksPath .husky"
+                return 1
+                ;;
+            *)
+                echo "Please enter 'y' for yes or 'n' for no"
+                ;;
+        esac
+    done
+}
+
+# Prompt user for Git hooks configuration
+if prompt_git_hooks "$REPO_TYPE"; then
+    GIT_HOOKS_CONFIGURED=true
 else
-    echo "🏠 Local repository - Git hooks configured"
-    git config core.hooksPath .husky
+    GIT_HOOKS_CONFIGURED=false
 fi
 
 # Create lint-staged configuration (CommonJS)
@@ -859,7 +926,11 @@ echo "=========================================="
 echo ""
 echo "✅ ESLint configured for DOUBLE QUOTES"
 echo "✅ Prettier configured for DOUBLE QUOTES"
-echo "✅ Git hooks configured for ${REPO_TYPE} environment"
+if [ "$GIT_HOOKS_CONFIGURED" = true ]; then
+    echo "✅ Git hooks configured and active"
+else
+    echo "ℹ️  Git hooks available but not configured"
+fi
 echo "✅ Quality gates ready"
 echo "✅ All dependencies installed"
 # Summarize Playwright config presence
@@ -872,12 +943,31 @@ else
 fi
 echo ""
 echo "Repository Type: ${REPO_TYPE}"
-if [[ "$REPO_TYPE" == "test" ]]; then
-    echo "🧪 Test environment - Git hooks available but not active"
-elif [[ "$REPO_TYPE" == "production" ]]; then
-    echo "🚀 Production environment - Git hooks active and ready"
+if [ "$GIT_HOOKS_CONFIGURED" = true ]; then
+    case "$REPO_TYPE" in
+        "test")
+            echo "🧪 Test environment - Git hooks active and ready"
+            ;;
+        "production")
+            echo "🚀 Production environment - Git hooks active and ready"
+            ;;
+        "local")
+            echo "🏠 Local environment - Git hooks active and ready"
+            ;;
+    esac
 else
-    echo "🏠 Local environment - Git hooks configured"
+    case "$REPO_TYPE" in
+        "test")
+            echo "🧪 Test environment - Git hooks available but not configured"
+            ;;
+        "production")
+            echo "🚀 Production environment - Git hooks available but not configured"
+            echo "   ⚠️  Consider enabling Git hooks for production quality control"
+            ;;
+        "local")
+            echo "🏠 Local environment - Git hooks available but not configured"
+            ;;
+    esac
 fi
 echo ""
 echo "📦 Backup Information:"
@@ -889,6 +979,11 @@ echo "1. Run 'npm run format:fix' to format existing code"
 echo "2. Run 'npm run lint:fix' to fix any linting issues"
 echo "3. Test with 'npm run quality-gates'"
 echo "4. Validate with 'node validate-setup.js'"
-echo "5. Commit your changes to test the hooks (if production)"
+if [ "$GIT_HOOKS_CONFIGURED" = true ]; then
+    echo "5. Commit your changes to test the Git hooks"
+else
+    echo "5. To enable Git hooks later: git config core.hooksPath .husky"
+    echo "6. Commit your changes to test the framework"
+fi
 echo ""
 echo "If you had existing ESLint configs, they were backed up with .backup extension"
