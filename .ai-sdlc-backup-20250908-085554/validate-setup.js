@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
-const { execSync } = require("child_process");
-const fs = require("fs");
+import { execSync } from "child_process";
+import fs from "fs";
 
 console.log("🔍 Validating AI-SDLC Setup...\n");
 
@@ -13,11 +13,8 @@ function detectRepositoryType() {
     cwd.includes("test") || cwd.includes("demo") || cwd.includes("example");
   const hasGitRemote = (() => {
     try {
-      const out = execSync("git remote -v", {
-        encoding: "utf8",
-        stdio: "pipe",
-      }).trim();
-      return out.length > 0;
+      execSync("git remote -v", { stdio: "pipe" });
+      return true;
     } catch {
       return false;
     }

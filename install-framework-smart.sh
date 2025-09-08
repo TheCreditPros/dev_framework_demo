@@ -478,7 +478,7 @@ echo ""
 prompt_git_hooks() {
     local repo_type="$1"
     local default_choice=""
-    
+
     case "$repo_type" in
         "production")
             echo "🚀 PRODUCTION REPOSITORY DETECTED"
@@ -499,23 +499,23 @@ prompt_git_hooks() {
             default_choice="Y"
             ;;
     esac
-    
+
     echo ""
     echo "Do you want to configure Git hooks for this repository? (y/N)"
     echo "   This will set 'git config core.hooksPath .husky'"
     echo "   You can disable them later with: git config --unset core.hooksPath"
     echo ""
-    
+
     while true; do
         if [ -n "$default_choice" ]; then
             echo -n "Configure Git hooks? [${default_choice}]: "
         else
             echo -n "Configure Git hooks? [y/N]: "
         fi
-        
+
         read -r response
         response=${response:-$default_choice}
-        
+
         case "$response" in
             [Yy]|[Yy][Ee][Ss])
                 echo "✅ Configuring Git hooks..."
