@@ -1,22 +1,16 @@
-# SonarCloud Project Setup
-# Automatically creates and configures SonarCloud projects for repositories
+# DEPRECATED: Functionality moved to sonarcloud-pr-analysis.yml and sonarcloud-analysis.yml
+# This workflow is no longer needed as setup logic is integrated into analysis workflows
 
-name: 🔧 SonarCloud Project Setup
+name: 🔧 SonarCloud Project Setup [DEPRECATED]
 
 on:
-  workflow_dispatch: # Manual trigger for testing
+  workflow_dispatch: # Manual trigger only (for cleanup/migration)
     inputs:
       force_recreate:
-        description: 'Force recreate project configuration'
+        description: 'DEPRECATED - Use sonarcloud-analysis.yml instead'
         required: false
-        default: 'false'
+        default: false
         type: boolean
-  push:
-    branches: [main, master]
-    paths:
-      - 'sonar-project.properties'
-      - '.github/workflows/sonarcloud-*.yml'
-      - 'scripts/sonarcloud-project-manager.js'
 
 env:
   NODE_VERSION: '20'

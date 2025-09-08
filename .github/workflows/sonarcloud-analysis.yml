@@ -28,23 +28,18 @@ jobs:
         with:
           fetch-depth: 0 # Shallow clones should be disabled for better analysis
 
-      - name: 🔧 Setup SonarCloud Project
+      - name: 🔧 Extract SonarCloud Configuration
         id: setup-project
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          echo "🔧 Ensuring SonarCloud project exists..."
-          chmod +x scripts/sonarcloud-project-manager.js
-          node scripts/sonarcloud-project-manager.js
+          echo "🔧 Reading SonarCloud configuration..."
 
-          # Extract project configuration
+          # Extract project configuration from properties file
           PROJECT_KEY=$(grep "^sonar.projectKey=" sonar-project.properties | cut -d'=' -f2 || echo "${GITHUB_REPOSITORY_OWNER}_${GITHUB_REPOSITORY##*/}")
           ORGANIZATION=$(grep "^sonar.organization=" sonar-project.properties | cut -d'=' -f2 || echo "${GITHUB_REPOSITORY_OWNER}")
 
           echo "project-key=${PROJECT_KEY}" >> $GITHUB_OUTPUT
           echo "organization=${ORGANIZATION}" >> $GITHUB_OUTPUT
-          echo "✅ Project configuration ready: ${PROJECT_KEY}"
+          echo "✅ Configuration ready: ${PROJECT_KEY}"
 
       - name: 🔧 Setup Node.js
         uses: actions/setup-node@v4

@@ -236,7 +236,7 @@ run_with_timeout 600 npm install --save-dev \
     vitest@^3.2.4 \
     @vitest/coverage-v8@^3.2.4 \
     @testing-library/react@^16.1.0 \
-    @testing-library/jest-dom@^6.6.3 \
+    @testing-library/vitest-dom@^0.1.1 \
     jsdom@^26.1.0 \
     eslint@^9.34.0 \
     @typescript-eslint/eslint-plugin@^8.42.0 \
@@ -458,6 +458,7 @@ echo "✅ SonarCloud configuration created"
 
 # Create SonarCloud Project Manager script
 echo "⚙️  Creating SonarCloud project manager..."
+mkdir -p scripts
 cat > scripts/sonarcloud-project-manager.js << 'SONAR_MANAGER_EOF'
 #!/usr/bin/env node
 
@@ -486,7 +487,7 @@ class SonarCloudProjectManager {
       const repo = process.env.GITHUB_REPOSITORY?.split('/')[1];
 
       if (owner && repo) {
-        return { owner, repo, fullName: \`\${owner}/\${repo}\` };
+        return { owner, repo, fullName: `\${owner}/\${repo}` };
       }
 
       const remoteUrl = execSync('git remote get-url origin', { encoding: 'utf8' }).trim();
@@ -496,23 +497,23 @@ class SonarCloudProjectManager {
         return {
           owner: match[1],
           repo: match[2],
-          fullName: \`\${match[1]}/\${match[2]}\`
+          fullName: `\${match[1]}/\${match[2]}`
         };
       }
 
       throw new Error('Could not determine repository information');
     } catch (error) {
-      throw new Error(\`Failed to get repository info: \${error.message}\`);
+      throw new Error(`Failed to get repository info: \${error.message}`);
     }
   }
 
   generateProjectKey(owner, repo) {
-    return \`\${owner}_\${repo}\`;
+    return `\${owner}_\${repo}`;
   }
 
   async apiRequest(endpoint, method = 'GET', data = null) {
     return new Promise((resolve, reject) => {
-      const url = \`\${this.baseUrl}\${endpoint}\`;
+      const url = `\${this.baseUrl}\${endpoint}`;
       const options = {
         method,
         headers: {

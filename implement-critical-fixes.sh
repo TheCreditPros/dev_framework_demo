@@ -110,14 +110,14 @@ mkdir -p src/test
 if [ ! -f "src/test/setup.js" ]; then
     cat > src/test/setup.js << 'EOF'
 // Test setup for Vitest
-import '@testing-library/jest-dom';
+import '@testing-library/vitest-dom/vitest';
 
 // Mock console methods to reduce noise in tests
 global.console = {
   ...console,
-  log: jest.fn(),
-  warn: jest.fn(),
-  error: jest.fn(),
+  log: vi.fn(),
+  warn: vi.fn(),
+  error: vi.fn(),
 };
 EOF
     log_success "Created test setup file"

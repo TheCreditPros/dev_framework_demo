@@ -69,27 +69,14 @@ strategy:
 
 ## 🤖 Auto-Healing Features
 
-### Smart Selector Fallbacks
+> **Note**: For comprehensive auto-healing documentation, see the main README.md
+
+### Quick Example
 
 ```javascript
-// Example: Credit score input with multiple fallback strategies
+// E2E tests automatically adapt when selectors break
 const healing = new CreditRepairAutoHealing(page);
-await healing.enterCreditScore(750); // Automatically tries multiple selectors
-```
-
-### Learning Export
-
-Auto-healing captures and exports selector learnings:
-
-```json
-{
-  "workingFallbacks": {
-    "[data-testid='credit-score']": "#credit-score"
-  },
-  "stats": {
-    "healingSuccessRate": "85.7%"
-  }
-}
+await healing.enterCreditScore(750); // Uses smart fallback selectors
 ```
 
 ## 🎯 Domain-Specific Features

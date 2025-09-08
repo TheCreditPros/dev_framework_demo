@@ -1,20 +1,16 @@
-# Qodo PR-Agent Auto-Trigger on Security Issues
-# Automatically triggers AI review when security scans fail or vulnerabilities are detected
+# DEPRECATED: Functionality moved to ai-code-review.yml
+# This workflow is no longer needed as auto-trigger logic is integrated into main AI workflow
 
-name: 🤖 Qodo Auto-Trigger on Security Issues
+name: 🤖 Qodo Auto-Trigger [DEPRECATED]
 
 on:
-  check_suite:
-    types: [completed]
-  workflow_run:
-    workflows: ["🔍 SonarCloud PR Analysis", "🚀 Essential CI/CD"]
-    types: [completed]
-  pull_request:
-    types: [opened, synchronize, reopened]
-    # Trigger on security-related PRs
-  schedule:
-    # Run daily to check for new security issues
-    - cron: '0 9 * * *'
+  workflow_dispatch: # Manual trigger only (for cleanup/migration)
+    inputs:
+      migrate_note:
+        description: 'DEPRECATED - Use ai-code-review.yml instead'
+        required: false
+        default: 'This workflow has been merged into ai-code-review.yml'
+        type: string
 
 permissions:
   contents: read

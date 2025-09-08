@@ -29,36 +29,18 @@ jobs:
         with:
           fetch-depth: 0 # Shallow clones should be disabled for better analysis
 
-      - name: 🔧 Setup SonarCloud Project
+      - name: 🔧 Extract SonarCloud Configuration
         id: setup-project
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          echo "🔧 Setting up SonarCloud configuration..."
+          echo "🔧 Reading SonarCloud configuration..."
 
-          # Check if SONAR_TOKEN is available
-          if [ -z "$SONAR_TOKEN" ]; then
-            echo "⚠️ SONAR_TOKEN not available - using fallback configuration"
-            PROJECT_KEY="${GITHUB_REPOSITORY_OWNER}_${GITHUB_REPOSITORY##*/}"
-            ORGANIZATION="${GITHUB_REPOSITORY_OWNER}"
-          else
-            echo "✅ SONAR_TOKEN available - ensuring project exists..."
-            chmod +x scripts/sonarcloud-project-manager.js
-            node scripts/sonarcloud-project-manager.js || {
-              echo "⚠️ Project manager failed - using fallback configuration"
-              PROJECT_KEY="${GITHUB_REPOSITORY_OWNER}_${GITHUB_REPOSITORY##*/}"
-              ORGANIZATION="${GITHUB_REPOSITORY_OWNER}"
-            }
-
-            # Extract project configuration
-            PROJECT_KEY=$(grep "^sonar.projectKey=" sonar-project.properties | cut -d'=' -f2 2>/dev/null || echo "${GITHUB_REPOSITORY_OWNER}_${GITHUB_REPOSITORY##*/}")
-            ORGANIZATION=$(grep "^sonar.organization=" sonar-project.properties | cut -d'=' -f2 2>/dev/null || echo "${GITHUB_REPOSITORY_OWNER}")
-          fi
+          # Extract project configuration from properties file
+          PROJECT_KEY=$(grep "^sonar.projectKey=" sonar-project.properties | cut -d'=' -f2 || echo "${GITHUB_REPOSITORY_OWNER}_${GITHUB_REPOSITORY##*/}")
+          ORGANIZATION=$(grep "^sonar.organization=" sonar-project.properties | cut -d'=' -f2 || echo "${GITHUB_REPOSITORY_OWNER}")
 
           echo "project-key=${PROJECT_KEY}" >> $GITHUB_OUTPUT
           echo "organization=${ORGANIZATION}" >> $GITHUB_OUTPUT
-          echo "✅ Project configuration ready: ${PROJECT_KEY}"
+          echo "✅ Configuration ready: ${PROJECT_KEY}"
 
       - name: 🔧 Setup Node.js
         uses: actions/setup-node@v4
