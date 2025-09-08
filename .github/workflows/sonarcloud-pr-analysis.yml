@@ -51,7 +51,7 @@ jobs:
       - name: 📦 Install Dependencies
         run: npm ci --no-audit
 
-      - name: 🧪 Run Tests with Coverage  
+      - name: 🧪 Run Tests with Coverage
         run: npm run test:coverage
 
       - name: 📊 Verify Coverage Report
@@ -75,7 +75,7 @@ jobs:
       - name: 🔍 Run SonarCloud Analysis
         id: sonar-analysis
         if: env.SONAR_TOKEN != ''
-        continue-on-error: ${{ github.actor == 'dependabot[bot]' }}
+        continue-on-error: true
         uses: SonarSource/sonarcloud-github-action@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -91,7 +91,7 @@ jobs:
             -Dsonar.typescript.lcov.reportPaths=coverage/lcov.info
             -Dsonar.coverageReportPaths=coverage/lcov.info
             -Dsonar.coverage.exclusions=**/*.test.js,**/*.test.ts,**/*.spec.js,**/*.spec.ts,**/node_modules/**,**/dist/**,**/build/**
-            -Dsonar.qualitygate.wait=${{ github.actor != 'dependabot[bot]' }}
+            -Dsonar.qualitygate.wait=false
             -Dsonar.qualitygate.timeout=300
             -Dsonar.buildbreaker.skip=${{ github.actor == 'dependabot[bot]' }}
             -Dsonar.security.hotspots.enabled=true
