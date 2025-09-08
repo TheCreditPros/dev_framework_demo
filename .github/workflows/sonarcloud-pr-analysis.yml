@@ -35,13 +35,26 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          echo "🔧 Ensuring SonarCloud project exists..."
-          chmod +x scripts/sonarcloud-project-manager.js
-          node scripts/sonarcloud-project-manager.js
-
-          # Extract project configuration
-          PROJECT_KEY=$(grep "^sonar.projectKey=" sonar-project.properties | cut -d'=' -f2 || echo "${GITHUB_REPOSITORY_OWNER}_${GITHUB_REPOSITORY##*/}")
-          ORGANIZATION=$(grep "^sonar.organization=" sonar-project.properties | cut -d'=' -f2 || echo "${GITHUB_REPOSITORY_OWNER}")
+          echo "🔧 Setting up SonarCloud configuration..."
+          
+          # Check if SONAR_TOKEN is available
+          if [ -z "$SONAR_TOKEN" ]; then
+            echo "⚠️ SONAR_TOKEN not available - using fallback configuration"
+            PROJECT_KEY="${GITHUB_REPOSITORY_OWNER}_${GITHUB_REPOSITORY##*/}"
+            ORGANIZATION="${GITHUB_REPOSITORY_OWNER}"
+          else
+            echo "✅ SONAR_TOKEN available - ensuring project exists..."
+            chmod +x scripts/sonarcloud-project-manager.js
+            node scripts/sonarcloud-project-manager.js || {
+              echo "⚠️ Project manager failed - using fallback configuration"
+              PROJECT_KEY="${GITHUB_REPOSITORY_OWNER}_${GITHUB_REPOSITORY##*/}"
+              ORGANIZATION="${GITHUB_REPOSITORY_OWNER}"
+            }
+            
+            # Extract project configuration
+            PROJECT_KEY=$(grep "^sonar.projectKey=" sonar-project.properties | cut -d'=' -f2 2>/dev/null || echo "${GITHUB_REPOSITORY_OWNER}_${GITHUB_REPOSITORY##*/}")
+            ORGANIZATION=$(grep "^sonar.organization=" sonar-project.properties | cut -d'=' -f2 2>/dev/null || echo "${GITHUB_REPOSITORY_OWNER}")
+          fi
 
           echo "project-key=${PROJECT_KEY}" >> $GITHUB_OUTPUT
           echo "organization=${ORGANIZATION}" >> $GITHUB_OUTPUT
@@ -78,6 +91,9 @@ jobs:
           fi
 
       - name: 🔍 Run SonarCloud Analysis
+        id: sonar-analysis
+        if: env.SONAR_TOKEN != ''
+        continue-on-error: ${{ github.actor == 'dependabot[bot]' }}
         uses: SonarSource/sonarcloud-github-action@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -93,17 +109,44 @@ jobs:
             -Dsonar.typescript.lcov.reportPaths=coverage/lcov.info
             -Dsonar.coverageReportPaths=coverage/lcov.info
             -Dsonar.coverage.exclusions=**/*.test.js,**/*.test.ts,**/*.spec.js,**/*.spec.ts,**/node_modules/**,**/dist/**,**/build/**
-            -Dsonar.qualitygate.wait=true
+            -Dsonar.qualitygate.wait=${{ github.actor != 'dependabot[bot]' }}
             -Dsonar.qualitygate.timeout=300
-            -Dsonar.buildbreaker.skip=false
+            -Dsonar.buildbreaker.skip=${{ github.actor == 'dependabot[bot]' }}
             -Dsonar.security.hotspots.enabled=true
             -Dsonar.security.review.enabled=true
-            -Dsonar.verbose=true
+            -Dsonar.verbose=false
+
+      - name: 📋 SonarCloud Status Summary
+        if: always()
+        run: |
+          if [ -z "${{ secrets.SONAR_TOKEN }}" ]; then
+            echo "⚠️ SONAR_TOKEN not configured - SonarCloud analysis skipped"
+            echo "📋 This is expected for forks and repositories without SonarCloud setup"
+            echo "🔍 For full analysis, configure SONAR_TOKEN in repository secrets"
+            echo "✅ Allowing PR to proceed without SonarCloud analysis"
+          elif [[ "${{ github.actor }}" == "dependabot[bot]" ]]; then
+            echo "🤖 Dependabot PR detected"
+            if [[ "${{ steps.sonar-analysis.outcome }}" == "failure" ]]; then
+              echo "⚠️ SonarCloud analysis failed but allowing Dependabot PR to proceed"
+              echo "🔍 Dependabot PRs focus on dependency updates, not code quality changes"
+              echo "✅ Auto-merge can proceed for security updates"
+            else
+              echo "✅ SonarCloud analysis completed for Dependabot PR"
+            fi
+          else
+            echo "👤 Regular PR - SonarCloud analysis required"
+            if [[ "${{ steps.sonar-analysis.outcome }}" == "failure" ]]; then
+              echo "❌ SonarCloud analysis failed - PR blocked"
+              exit 1
+            else
+              echo "✅ SonarCloud analysis passed"
+            fi
+          fi
 
       - name: 🚨 Quality Gate Status Check
+        if: steps.sonar-analysis.outcome == 'success' && github.actor != 'dependabot[bot]'
         run: |
           echo "Checking SonarCloud Quality Gate status..."
-          # The action above will fail if quality gate fails due to sonar.buildbreaker.skip=false
           echo "✅ Quality Gate passed - PR can proceed"
 
 
