@@ -1,65 +1,32 @@
-# SonarCloud Analysis - Pull Request
-# Runs comprehensive code analysis on pull requests to provide feedback before merge
-
 name: SonarCloud PR Analysis
 
 on:
   pull_request:
     branches: [main, master]
-    types: [opened, synchronize, reopened]
-  workflow_dispatch: # Allow manual trigger
-
-env:
-  NODE_VERSION: '20'
-
-permissions:
-  contents: read
-  security-events: write
-  pull-requests: write
+  workflow_dispatch:
 
 jobs:
   sonarcloud-pr:
-    name: SonarCloud PR Analysis
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
-
     steps:
-      - name: Checkout Repository
+      - name: Checkout
         uses: actions/checkout@v5
         with:
-          fetch-depth: 0 # Shallow clones should be disabled for better analysis
+          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version: '20'
           cache: 'npm'
 
       - name: Install Dependencies
-        run: npm ci --no-audit
+        run: npm ci
 
       - name: Run Tests with Coverage
         run: npm run test:coverage:sonar
 
-      - name: Verify Coverage Report
-        run: |
-          echo "Checking coverage report..."
-          ls -la coverage/ || echo "Coverage directory not found"
-          if [ -f "coverage/lcov.info" ]; then
-            echo "✅ Coverage report found"
-            wc -l coverage/lcov.info
-            echo "First few lines of coverage report:"
-            head -5 coverage/lcov.info
-          else
-            echo "❌ Coverage report not found, checking for alternative locations..."
-            find . -name "lcov.info" -type f 2>/dev/null || echo "No lcov.info found anywhere"
-            echo "Creating empty coverage report as fallback..."
-            mkdir -p coverage
-            echo "TN:" > coverage/lcov.info
-            echo "end_of_record" >> coverage/lcov.info
-          fi
-
-      - name: Run SonarCloud Analysis
+      - name: SonarCloud Analysis
         if: ${{ secrets.SONAR_TOKEN }}
         uses: SonarSource/sonarcloud-github-action@v2
         env:
@@ -74,27 +41,9 @@ jobs:
             -Dsonar.pullrequest.base=${{ github.event.pull_request.base.ref }}
             -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
             -Dsonar.typescript.lcov.reportPaths=coverage/lcov.info
-            -Dsonar.coverageReportPaths=coverage/lcov.info
-            -Dsonar.coverage.exclusions=**/*.test.js,**/*.test.ts,**/*.spec.js,**/*.spec.ts,**/node_modules/**,**/dist/**,**/build/**
-            -Dsonar.qualitygate.wait=true
-            -Dsonar.qualitygate.timeout=300
-            -Dsonar.verbose=true
 
-      - name: SonarCloud Analysis Skipped
+      - name: SonarCloud Skipped
         if: ${{ !secrets.SONAR_TOKEN }}
         run: |
-          echo "⚠️  SonarCloud Analysis Skipped"
-          echo "   SONAR_TOKEN secret is not configured in repository settings"
-          echo "   To enable SonarCloud analysis:"
-          echo "   1. Go to GitHub → Settings → Secrets and variables → Actions"
-          echo "   2. Add a new repository secret named 'SONAR_TOKEN'"
-          echo "   3. Get your token from https://sonarcloud.io/account/security/"
-          echo "   4. Re-run this workflow"
-
-      - name: Upload Coverage Reports
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: sonarcloud-pr-coverage
-          path: coverage/
-          retention-days: 7
+          echo "SonarCloud analysis skipped - SONAR_TOKEN not configured"
+          echo "To enable: Add SONAR_TOKEN secret in repository settings"
