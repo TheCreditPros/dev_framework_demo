@@ -766,7 +766,7 @@ jobs:
         run: |
           echo "PR Author: ${{ github.actor }}"
           echo "PR Title: ${{ github.event.pull_request.title }}"
-          
+
           # Check if this is a security update
           if [[ "${{ github.event.pull_request.title }}" == *"security"* ]] || \
              [[ "${{ github.event.pull_request.title }}" == *"vulnerability"* ]] || \
@@ -812,17 +812,17 @@ jobs:
           echo "📦 Regular dependency update - manual review required"
           gh pr comment "${{ github.event.pull_request.number }}" --body "
           ## 📦 Dependency Update Review Required
-          
+
           This is a regular dependency update that requires manual review.
-          
+
           **Security updates are auto-merged**, but this update needs human approval.
-          
+
           ### Review Checklist:
           - [ ] Check for breaking changes
           - [ ] Verify compatibility with existing code
           - [ ] Review changelog for impact
           - [ ] Ensure all tests pass
-          
+
           Use \`@dependabot merge\` to merge after review.
           "
         env:
@@ -833,14 +833,14 @@ jobs:
         run: |
           gh pr comment "${{ github.event.pull_request.number }}" --body "
           ## 🔒 Security Update Auto-Merge
-          
+
           This security update will be **automatically merged** after all checks pass:
-          
+
           ✅ SonarCloud security analysis
-          ✅ Quality gates validation  
+          ✅ Quality gates validation
           ✅ Dependency vulnerability scan
           ✅ FCRA compliance checks
-          
+
           **No manual intervention required** for security updates.
           "
         env:
@@ -1106,11 +1106,11 @@ jobs:
         id: security-check
         run: |
           echo "Checking for security-related failures..."
-          
+
           # Check if this is a security-related failure
           if [[ "${{ github.event.check_suite.conclusion }}" == "failure" ]] || \
              [[ "${{ github.event.workflow_run.conclusion }}" == "failure" ]]; then
-            
+
             # Check if it's security-related
             if [[ "${{ github.event.check_suite.app.name }}" == *"security"* ]] || \
                [[ "${{ github.event.workflow_run.name }}" == *"Security"* ]] || \
@@ -1130,7 +1130,7 @@ jobs:
         run: |
           # Get PR number from the commit SHA
           PR_NUMBER=$(gh pr list --state open --json number,headRefOid --jq ".[] | select(.headRefOid==\"${{ github.event.check_suite.head_sha || github.event.workflow_run.head_sha }}\") | .number")
-          
+
           if [[ -n "$PR_NUMBER" ]]; then
             echo "pr_number=$PR_NUMBER" >> $GITHUB_OUTPUT
             echo "Found PR #$PR_NUMBER for security failure"
@@ -1145,23 +1145,23 @@ jobs:
         if: steps.security-check.outputs.security_failure == 'true' && steps.get-pr.outputs.pr_number != ''
         run: |
           echo "🚨 Triggering AI security review for PR #${{ steps.get-pr.outputs.pr_number }}"
-          
+
           # Add security review comment to trigger PR-Agent
           gh pr comment "${{ steps.get-pr.outputs.pr_number }}" --body "
           ## 🚨 Security Issue Detected - AI Review Triggered
-          
+
           A security scan failure has been detected. Triggering comprehensive AI review...
-          
+
           /security-review
           /analyze
-          
+
           **Security Focus Areas:**
           - Vulnerability assessment
-          - FCRA compliance validation  
+          - FCRA compliance validation
           - PII data protection
           - Access control verification
           - Audit trail completeness
-          
+
           This review was automatically triggered due to security scan failures.
           "
         env:
@@ -1191,16 +1191,16 @@ jobs:
         run: |
           echo "Running npm audit..."
           AUDIT_OUTPUT=$(npm audit --audit-level=moderate --json 2>/dev/null || echo '{"vulnerabilities":{}}')
-          
+
           # Count vulnerabilities
           VULN_COUNT=$(echo "$AUDIT_OUTPUT" | jq -r '.metadata.vulnerabilities.total // 0')
           CRITICAL_COUNT=$(echo "$AUDIT_OUTPUT" | jq -r '.metadata.vulnerabilities.critical // 0')
           HIGH_COUNT=$(echo "$AUDIT_OUTPUT" | jq -r '.metadata.vulnerabilities.high // 0')
-          
+
           echo "vulnerabilities=$VULN_COUNT" >> $GITHUB_OUTPUT
           echo "critical=$CRITICAL_COUNT" >> $GITHUB_OUTPUT
           echo "high=$HIGH_COUNT" >> $GITHUB_OUTPUT
-          
+
           if [[ $CRITICAL_COUNT -gt 0 ]] || [[ $HIGH_COUNT -gt 5 ]]; then
             echo "trigger_review=true" >> $GITHUB_OUTPUT
             echo "🚨 High-risk vulnerabilities detected: Critical=$CRITICAL_COUNT, High=$HIGH_COUNT"
@@ -1213,27 +1213,27 @@ jobs:
         if: steps.audit.outputs.trigger_review == 'true' && github.event_name == 'pull_request'
         run: |
           echo "🚨 Triggering AI vulnerability review..."
-          
+
           gh pr comment "${{ github.event.pull_request.number }}" --body "
           ## 🚨 High-Risk Vulnerabilities Detected
-          
+
           **Vulnerability Summary:**
           - 🔴 Critical: ${{ steps.audit.outputs.critical }}
           - 🟠 High: ${{ steps.audit.outputs.high }}
           - 📊 Total: ${{ steps.audit.outputs.vulnerabilities }}
-          
+
           Triggering comprehensive security review...
-          
+
           /security-review
           /compliance-review
-          
+
           **Required Actions:**
           1. Review all critical and high-severity vulnerabilities
           2. Validate FCRA compliance impact
           3. Ensure PII data protection measures
           4. Update dependencies or apply security patches
           5. Re-run security scans after fixes
-          
+
           This review was automatically triggered due to vulnerability detection.
           "
         env:
@@ -1261,22 +1261,22 @@ jobs:
         if: steps.security-update.outputs.is_security == 'true'
         run: |
           echo "🤖 Triggering AI review for Dependabot security update..."
-          
+
           gh pr comment "${{ github.event.pull_request.number }}" --body "
           ## 🤖 Dependabot Security Update - AI Review
-          
+
           This is an automated security update from Dependabot. Triggering AI review to validate:
-          
+
           /security-review
           /analyze
-          
+
           **Security Update Validation:**
           - ✅ Vulnerability resolution verification
           - ✅ FCRA compliance impact assessment
           - ✅ Breaking change analysis
           - ✅ Test coverage validation
           - ✅ Performance impact review
-          
+
           **Auto-Merge Status:** Will auto-merge after all checks pass ✅
           "
         env:
@@ -1316,7 +1316,7 @@ echo "⚙️  Updating SonarCloud workflows with security enforcement..."
 sed -i.bak 's/GITHUB_TOKEN: \${{ secrets.GITHUB_TOKEN }}/GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}\n          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}/' .github/workflows/sonarcloud-pr-analysis.yml
 sed -i.bak 's/-Dsonar.verbose=true/-Dsonar.verbose=true\n            -Dsonar.buildbreaker.skip=false\n            -Dsonar.security.hotspots.enabled=true\n            -Dsonar.security.review.enabled=true/' .github/workflows/sonarcloud-pr-analysis.yml
 
-# Update the main analysis workflow to include buildbreaker and SONAR_TOKEN  
+# Update the main analysis workflow to include buildbreaker and SONAR_TOKEN
 sed -i.bak 's/GITHUB_TOKEN: \${{ secrets.GITHUB_TOKEN }}/GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}\n          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}/' .github/workflows/sonarcloud-analysis.yml
 sed -i.bak 's/-Dsonar.verbose=true/-Dsonar.verbose=true\n            -Dsonar.buildbreaker.skip=false\n            -Dsonar.security.hotspots.enabled=true\n            -Dsonar.security.review.enabled=true/' .github/workflows/sonarcloud-analysis.yml
 
@@ -1494,21 +1494,21 @@ echo "==========================================="
 # Check Dependabot config
 if [ -f ".github/dependabot.yml" ]; then
     echo -e "${BLUE}📋 Checking Dependabot configuration...${NC}"
-    
+
     # Check for daily schedule
     if grep -q "interval: \"daily\"" .github/dependabot.yml; then
         check_status "Daily security update schedule configured"
     else
         check_status "Daily security update schedule NOT configured"
     fi
-    
+
     # Check for security updates
     if grep -q "security-updates:" .github/dependabot.yml; then
         check_status "Security updates enabled"
     else
         check_status "Security updates NOT enabled"
     fi
-    
+
     # Check auto-merge workflow
     if [ -f ".github/workflows/dependabot-auto-merge.yml" ]; then
         check_status "Dependabot auto-merge workflow exists"
@@ -1526,28 +1526,28 @@ echo "=========================================="
 # Check SonarCloud config
 if [ -f "sonar-project.properties" ]; then
     echo -e "${BLUE}📋 Checking SonarCloud configuration...${NC}"
-    
+
     # Check quality gate enforcement
     if grep -q "sonar.buildbreaker.skip=false" sonar-project.properties; then
         check_status "Quality gate enforcement enabled"
     else
         check_status "Quality gate enforcement NOT enabled"
     fi
-    
+
     # Check security hotspots
     if grep -q "sonar.security.hotspots.enabled=true" sonar-project.properties; then
         check_status "Security hotspots enabled"
     else
         check_status "Security hotspots NOT enabled"
     fi
-    
+
     # Check AI CodeFix
     if grep -q "sonar.ai.codefix.enabled=true" sonar-project.properties; then
         check_status "AI CodeFix enabled"
     else
         check_status "AI CodeFix NOT enabled"
     fi
-    
+
     # Check workflow has SONAR_TOKEN
     if grep -q "SONAR_TOKEN" .github/workflows/sonarcloud-pr-analysis.yml; then
         check_status "SonarCloud PR workflow has SONAR_TOKEN"
@@ -1565,28 +1565,28 @@ echo "=============================================="
 # Check Qodo PR-Agent config
 if [ -f ".pr_agent.toml" ]; then
     echo -e "${BLUE}📋 Checking Qodo PR-Agent configuration...${NC}"
-    
+
     # Check FCRA compliance focus
     if grep -q "FCRA" .pr_agent.toml; then
         check_status "FCRA compliance configuration found"
     else
         check_status "FCRA compliance configuration NOT found"
     fi
-    
+
     # Check security review configuration
     if grep -q "require_security_review" .pr_agent.toml; then
         check_status "Security review requirement configured"
     else
         check_status "Security review requirement NOT configured"
     fi
-    
+
     # Check auto-trigger workflow
     if [ -f ".github/workflows/qodo-auto-trigger.yml" ]; then
         check_status "Qodo auto-trigger workflow exists"
     else
         check_status "Qodo auto-trigger workflow NOT found"
     fi
-    
+
     # Check main AI review workflow
     if [ -f ".github/workflows/ai-code-review.yml" ]; then
         check_status "Main AI code review workflow exists"
