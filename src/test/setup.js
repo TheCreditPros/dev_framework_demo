@@ -1,4 +1,4 @@
-require("@testing-library/jest-dom");
+import "@testing-library/jest-dom";
 
 // Mock environment variables for testing
 process.env.NODE_ENV = "test";
