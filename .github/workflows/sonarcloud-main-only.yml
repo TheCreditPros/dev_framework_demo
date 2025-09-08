@@ -59,7 +59,7 @@ jobs:
           fi
 
       - name: 🔍 Run SonarCloud Analysis
-        if: ${{ secrets.SONAR_TOKEN != '' && secrets.SONAR_TOKEN != null }}
+        if: ${{ secrets.SONAR_TOKEN }}
         uses: SonarSource/sonarcloud-github-action@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -77,7 +77,7 @@ jobs:
             -Dsonar.verbose=true
 
       - name: ⚠️  SonarCloud Analysis Skipped
-        if: ${{ secrets.SONAR_TOKEN == '' || secrets.SONAR_TOKEN == null }}
+        if: ${{ !secrets.SONAR_TOKEN }}
         run: |
           echo "⚠️  SonarCloud Analysis Skipped"
           echo "   SONAR_TOKEN secret is not configured in repository settings"
@@ -96,7 +96,7 @@ jobs:
           retention-days: 7
 
       - name: 📝 Comment PR (if applicable)
-        if: github.event_name == 'pull_request' && secrets.SONAR_TOKEN != '' && secrets.SONAR_TOKEN != null
+        if: github.event_name == 'pull_request' && secrets.SONAR_TOKEN
         uses: SonarSource/sonarcloud-github-action@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
