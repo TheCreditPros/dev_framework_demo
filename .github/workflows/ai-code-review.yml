@@ -23,8 +23,9 @@ jobs:
           OPENAI_KEY: ${{ secrets.OPENAI_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          pr_url: ${{ github.event.pull_request.html_url }}
-          command: "review"
+          args: |
+            --pr_url=${{ github.event.pull_request.html_url }}
+            review
 
       - name: 📝 PR Agent Describe
         uses: Codium-ai/pr-agent@main
@@ -32,5 +33,6 @@ jobs:
           OPENAI_KEY: ${{ secrets.OPENAI_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          pr_url: ${{ github.event.pull_request.html_url }}
-          command: "describe"
+          args: |
+            --pr_url=${{ github.event.pull_request.html_url }}
+            describe
