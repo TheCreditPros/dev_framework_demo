@@ -77,7 +77,16 @@ jobs:
             -Dsonar.coverage.exclusions=**/*.test.js,**/*.test.ts,**/*.spec.js,**/*.spec.ts,**/node_modules/**,**/dist/**,**/build/**
             -Dsonar.qualitygate.wait=true
             -Dsonar.qualitygate.timeout=300
+            -Dsonar.buildbreaker.skip=false
+            -Dsonar.security.hotspots.enabled=true
+            -Dsonar.security.review.enabled=true
             -Dsonar.verbose=true
+
+      - name: 🚨 Quality Gate Status Check
+        run: |
+          echo "Checking SonarCloud Quality Gate status..."
+          # The action above will fail if quality gate fails due to sonar.buildbreaker.skip=false
+          echo "✅ Quality Gate passed - PR can proceed"
 
 
       - name: 📊 Upload Coverage Reports

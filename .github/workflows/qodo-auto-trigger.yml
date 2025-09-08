@@ -1,0 +1,213 @@
+# Qodo PR-Agent Auto-Trigger on Security Issues
+# Automatically triggers AI review when security scans fail or vulnerabilities are detected
+
+name: 🤖 Qodo Auto-Trigger on Security Issues
+
+on:
+  check_suite:
+    types: [completed]
+  workflow_run:
+    workflows: ["🔍 SonarCloud PR Analysis", "🚀 Essential CI/CD"]
+    types: [completed]
+  pull_request:
+    types: [opened, synchronize, reopened]
+    # Trigger on security-related PRs
+  schedule:
+    # Run daily to check for new security issues
+    - cron: '0 9 * * *'
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+  checks: read
+
+jobs:
+  security-trigger:
+    name: 🔒 Security Issue Detection
+    runs-on: ubuntu-latest
+    if: github.event_name == 'check_suite' || github.event_name == 'workflow_run'
+
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v5
+
+      - name: 🔍 Check for Security Failures
+        id: security-check
+        run: |
+          echo "Checking for security-related failures..."
+          
+          # Check if this is a security-related failure
+          if [[ "${{ github.event.check_suite.conclusion }}" == "failure" ]] || \
+             [[ "${{ github.event.workflow_run.conclusion }}" == "failure" ]]; then
+            
+            # Check if it's security-related
+            if [[ "${{ github.event.check_suite.app.name }}" == *"security"* ]] || \
+               [[ "${{ github.event.workflow_run.name }}" == *"Security"* ]] || \
+               [[ "${{ github.event.workflow_run.name }}" == *"SonarCloud"* ]]; then
+              echo "security_failure=true" >> $GITHUB_OUTPUT
+              echo "🚨 Security failure detected"
+            else
+              echo "security_failure=false" >> $GITHUB_OUTPUT
+            fi
+          else
+            echo "security_failure=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: 🔍 Get Associated PR
+        id: get-pr
+        if: steps.security-check.outputs.security_failure == 'true'
+        run: |
+          # Get PR number from the commit SHA
+          PR_NUMBER=$(gh pr list --state open --json number,headRefOid --jq ".[] | select(.headRefOid==\"${{ github.event.check_suite.head_sha || github.event.workflow_run.head_sha }}\") | .number")
+          
+          if [[ -n "$PR_NUMBER" ]]; then
+            echo "pr_number=$PR_NUMBER" >> $GITHUB_OUTPUT
+            echo "Found PR #$PR_NUMBER for security failure"
+          else
+            echo "pr_number=" >> $GITHUB_OUTPUT
+            echo "No PR found for this commit"
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 🤖 Trigger Security Review
+        if: steps.security-check.outputs.security_failure == 'true' && steps.get-pr.outputs.pr_number != ''
+        run: |
+          echo "🚨 Triggering AI security review for PR #${{ steps.get-pr.outputs.pr_number }}"
+          
+          # Add security review comment to trigger PR-Agent
+          gh pr comment "${{ steps.get-pr.outputs.pr_number }}" --body "
+          ## 🚨 Security Issue Detected - AI Review Triggered
+          
+          A security scan failure has been detected. Triggering comprehensive AI review...
+          
+          /security-review
+          /analyze
+          
+          **Security Focus Areas:**
+          - Vulnerability assessment
+          - FCRA compliance validation  
+          - PII data protection
+          - Access control verification
+          - Audit trail completeness
+          
+          This review was automatically triggered due to security scan failures.
+          "
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  vulnerability-scan:
+    name: 🔍 Vulnerability Detection Trigger
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' || github.event_name == 'schedule'
+
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v5
+
+      - name: 🔧 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: 📦 Install Dependencies
+        run: npm ci --no-audit
+
+      - name: 🔍 Run Security Audit
+        id: audit
+        continue-on-error: true
+        run: |
+          echo "Running npm audit..."
+          AUDIT_OUTPUT=$(npm audit --audit-level=moderate --json 2>/dev/null || echo '{"vulnerabilities":{}}')
+          
+          # Count vulnerabilities
+          VULN_COUNT=$(echo "$AUDIT_OUTPUT" | jq -r '.metadata.vulnerabilities.total // 0')
+          CRITICAL_COUNT=$(echo "$AUDIT_OUTPUT" | jq -r '.metadata.vulnerabilities.critical // 0')
+          HIGH_COUNT=$(echo "$AUDIT_OUTPUT" | jq -r '.metadata.vulnerabilities.high // 0')
+          
+          echo "vulnerabilities=$VULN_COUNT" >> $GITHUB_OUTPUT
+          echo "critical=$CRITICAL_COUNT" >> $GITHUB_OUTPUT
+          echo "high=$HIGH_COUNT" >> $GITHUB_OUTPUT
+          
+          if [[ $CRITICAL_COUNT -gt 0 ]] || [[ $HIGH_COUNT -gt 5 ]]; then
+            echo "trigger_review=true" >> $GITHUB_OUTPUT
+            echo "🚨 High-risk vulnerabilities detected: Critical=$CRITICAL_COUNT, High=$HIGH_COUNT"
+          else
+            echo "trigger_review=false" >> $GITHUB_OUTPUT
+            echo "✅ No high-risk vulnerabilities detected"
+          fi
+
+      - name: 🤖 Trigger Vulnerability Review
+        if: steps.audit.outputs.trigger_review == 'true' && github.event_name == 'pull_request'
+        run: |
+          echo "🚨 Triggering AI vulnerability review..."
+          
+          gh pr comment "${{ github.event.pull_request.number }}" --body "
+          ## 🚨 High-Risk Vulnerabilities Detected
+          
+          **Vulnerability Summary:**
+          - 🔴 Critical: ${{ steps.audit.outputs.critical }}
+          - 🟠 High: ${{ steps.audit.outputs.high }}
+          - 📊 Total: ${{ steps.audit.outputs.vulnerabilities }}
+          
+          Triggering comprehensive security review...
+          
+          /security-review
+          /compliance-review
+          
+          **Required Actions:**
+          1. Review all critical and high-severity vulnerabilities
+          2. Validate FCRA compliance impact
+          3. Ensure PII data protection measures
+          4. Update dependencies or apply security patches
+          5. Re-run security scans after fixes
+          
+          This review was automatically triggered due to vulnerability detection.
+          "
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  dependabot-security-trigger:
+    name: 🤖 Dependabot Security Review
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' && github.actor == 'dependabot[bot]'
+
+    steps:
+      - name: 🔍 Check if Security Update
+        id: security-update
+        run: |
+          if [[ "${{ github.event.pull_request.title }}" == *"security"* ]] || \
+             [[ "${{ github.event.pull_request.title }}" == *"vulnerability"* ]] || \
+             [[ "${{ github.event.pull_request.body }}" == *"security"* ]]; then
+            echo "is_security=true" >> $GITHUB_OUTPUT
+            echo "🔒 Dependabot security update detected"
+          else
+            echo "is_security=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: 🤖 Trigger Security Review for Dependabot
+        if: steps.security-update.outputs.is_security == 'true'
+        run: |
+          echo "🤖 Triggering AI review for Dependabot security update..."
+          
+          gh pr comment "${{ github.event.pull_request.number }}" --body "
+          ## 🤖 Dependabot Security Update - AI Review
+          
+          This is an automated security update from Dependabot. Triggering AI review to validate:
+          
+          /security-review
+          /analyze
+          
+          **Security Update Validation:**
+          - ✅ Vulnerability resolution verification
+          - ✅ FCRA compliance impact assessment
+          - ✅ Breaking change analysis
+          - ✅ Test coverage validation
+          - ✅ Performance impact review
+          
+          **Auto-Merge Status:** Will auto-merge after all checks pass ✅
+          "
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

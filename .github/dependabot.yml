@@ -10,11 +10,16 @@ updates:
   - package-ecosystem: 'npm'
     directory: '/'
     schedule:
-      interval: 'weekly'
-      day: 'monday'
+      interval: 'daily'  # More frequent for security updates
       time: '09:00'
       timezone: 'America/New_York'
-    open-pull-requests-limit: 10
+    open-pull-requests-limit: 15
+    # Enable auto-merge for security updates
+    pull-request-branch-name:
+      separator: "-"
+    # Security-specific configuration
+    security-updates:
+      enabled: true
     assignees:
       - 'nydamon'
     commit-message:

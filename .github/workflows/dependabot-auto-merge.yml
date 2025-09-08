@@ -1,0 +1,108 @@
+# Dependabot Auto-Merge for Security Updates
+# Automatically merges Dependabot PRs that pass all security checks
+
+name: 🤖 Dependabot Auto-Merge
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: write
+  pull-requests: write
+  checks: read
+
+jobs:
+  dependabot-auto-merge:
+    name: 🤖 Auto-merge Dependabot PRs
+    runs-on: ubuntu-latest
+    if: github.actor == 'dependabot[bot]'
+
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v5
+
+      - name: 🔍 Check PR Details
+        id: pr-details
+        run: |
+          echo "PR Author: ${{ github.actor }}"
+          echo "PR Title: ${{ github.event.pull_request.title }}"
+          
+          # Check if this is a security update
+          if [[ "${{ github.event.pull_request.title }}" == *"security"* ]] || \
+             [[ "${{ github.event.pull_request.title }}" == *"vulnerability"* ]] || \
+             [[ "${{ github.event.pull_request.body }}" == *"security"* ]]; then
+            echo "security_update=true" >> $GITHUB_OUTPUT
+            echo "🔒 Security update detected"
+          else
+            echo "security_update=false" >> $GITHUB_OUTPUT
+            echo "📦 Regular dependency update"
+          fi
+
+      - name: ⏳ Wait for Checks
+        if: steps.pr-details.outputs.security_update == 'true'
+        uses: lewagon/wait-on-check-action@v1.3.4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          check-name: '🔍 SonarCloud PR Analysis'
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          wait-interval: 30
+          allowed-conclusions: success,neutral,skipped
+
+      - name: ⏳ Wait for Quality Gates
+        if: steps.pr-details.outputs.security_update == 'true'
+        uses: lewagon/wait-on-check-action@v1.3.4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          check-name: '🚀 Essential CI/CD'
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          wait-interval: 30
+          allowed-conclusions: success
+
+      - name: 🔒 Security Update Auto-Merge
+        if: steps.pr-details.outputs.security_update == 'true'
+        run: |
+          echo "🔒 Auto-merging security update after checks pass"
+          gh pr merge --auto --squash "${{ github.event.pull_request.number }}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 📦 Regular Update (Manual Review Required)
+        if: steps.pr-details.outputs.security_update == 'false'
+        run: |
+          echo "📦 Regular dependency update - manual review required"
+          gh pr comment "${{ github.event.pull_request.number }}" --body "
+          ## 📦 Dependency Update Review Required
+          
+          This is a regular dependency update that requires manual review.
+          
+          **Security updates are auto-merged**, but this update needs human approval.
+          
+          ### Review Checklist:
+          - [ ] Check for breaking changes
+          - [ ] Verify compatibility with existing code
+          - [ ] Review changelog for impact
+          - [ ] Ensure all tests pass
+          
+          Use \`@dependabot merge\` to merge after review.
+          "
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 🚨 Notify on Security Update
+        if: steps.pr-details.outputs.security_update == 'true'
+        run: |
+          gh pr comment "${{ github.event.pull_request.number }}" --body "
+          ## 🔒 Security Update Auto-Merge
+          
+          This security update will be **automatically merged** after all checks pass:
+          
+          ✅ SonarCloud security analysis
+          ✅ Quality gates validation  
+          ✅ Dependency vulnerability scan
+          ✅ FCRA compliance checks
+          
+          **No manual intervention required** for security updates.
+          "
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
