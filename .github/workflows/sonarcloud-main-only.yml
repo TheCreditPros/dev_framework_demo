@@ -96,7 +96,7 @@ jobs:
           retention-days: 7
 
       - name: 📝 Comment PR (if applicable)
-        if: github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request' && secrets.SONAR_TOKEN != ''
         uses: SonarSource/sonarcloud-github-action@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
