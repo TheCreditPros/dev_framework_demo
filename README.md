@@ -1,8 +1,8 @@
-# 🚀 AI-SDLC Framework v3.3.1
+# 🚀 AI-SDLC Framework v3.3.2
 
 > **Universal Development Automation Platform** - Works with any technology stack, any project type, any team size.
 
-[![AI-SDLC Framework](https://img.shields.io/badge/AI--SDLC-v3.3.1-blue.svg)](https://github.com/TheCreditPros/dev_framework_demo)
+[![AI-SDLC Framework](https://img.shields.io/badge/AI--SDLC-v3.3.2-blue.svg)](https://github.com/TheCreditPros/dev_framework_demo)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Framework Status](https://img.shields.io/badge/Status-Production%20Ready-green.svg)](https://github.com/TheCreditPros/dev_framework_demo)
@@ -24,6 +24,7 @@ The AI-SDLC Framework transforms any repository into an **AI-powered development
 - 💰 **Cost Optimized** - 97% cost reduction vs GPT-4
 - ✨ **Smart Repository Detection** - Automatically adapts to any environment
 - 🔧 **Enhanced Quality Gates** - Better error reporting and auto-fixing
+- 🔍 **SonarCloud Integration** - PR-based code analysis with developer feedback
 
 ## 📁 **Project Structure**
 
@@ -59,6 +60,45 @@ This framework works with **ANY** technology stack:
 ✅ .NET + C# + SQL Server
 ✅ And many more...
 ```
+
+## 🔍 **SonarCloud PR Analysis**
+
+The framework includes **comprehensive SonarCloud integration** that provides the standard developer experience:
+
+### **How It Works**
+
+1. **Automatic PR Analysis**: SonarCloud runs on every pull request
+2. **Developer Feedback**: Quality issues and coverage metrics appear in PR comments
+3. **Pre-Merge Validation**: Developers can fix issues before merging
+4. **Quality Gates**: Prevents merging of problematic code
+
+### **Setup (One-Time)**
+
+```bash
+# 1. Get your SonarCloud token
+# Visit: https://sonarcloud.io/account/security/
+
+# 2. Add token to GitHub repository secrets
+# GitHub → Settings → Secrets and variables → Actions
+# Add secret: SONAR_TOKEN = your_token_here
+
+# 3. That's it! SonarCloud will now analyze all PRs
+```
+
+### **What You Get**
+
+- ✅ **Code Quality Analysis** - Bugs, vulnerabilities, code smells
+- ✅ **Coverage Reports** - JavaScript/TypeScript test coverage
+- ✅ **Security Hotspots** - Potential security issues
+- ✅ **Maintainability** - Technical debt and complexity metrics
+- ✅ **PR Comments** - Rich feedback directly in pull requests
+- ✅ **Quality Gates** - Automatic blocking of low-quality code
+
+### **Workflows Included**
+
+- **PR Analysis** (`.github/workflows/sonarcloud-pr-analysis.yml`) - Runs on PR events
+- **Main Branch Analysis** (`.github/workflows/sonarcloud-analysis.yml`) - Runs on main branch pushes
+- **Dynamic Configuration** - Automatically adapts to your repository
 
 ## 🚀 **Quick Start (5 Minutes)**
 
@@ -361,7 +401,7 @@ git config core.hooksPath
 - **Intelligent code review** - Faster PR reviews
 - **Quality gates** - Prevents costly bugs in production
 
-## 🎉 **What's New in v3.3.1**
+## 🎉 **What's New in v3.3.2**
 
 ### **✨ Smart Repository Detection**
 
@@ -391,6 +431,17 @@ git config core.hooksPath
 - **Clear Information**: Explains what Git hooks do and their benefits
 - **Easy Management**: Simple commands to enable/disable hooks later
 - **Transparent Process**: Users understand exactly what's being configured
+
+### **🔍 SonarCloud PR Analysis Integration**
+
+- **Standard PR Workflow**: SonarCloud analysis runs automatically on pull requests
+- **Developer Feedback**: Quality issues and coverage metrics displayed directly in PR comments
+- **Pre-Merge Validation**: Developers can fix issues before merging code
+- **Dynamic Project Identification**: Automatically configures project keys and organization
+- **Comprehensive Coverage Analysis**: JavaScript/TypeScript coverage with proper exclusions
+- **Quality Gate Integration**: Prevents merging of problematic code
+- **Main Branch Analysis**: Additional workflow for overall project health tracking
+- **Easy Setup**: Just add `SONAR_TOKEN` secret to enable full functionality
 
 ## 📦 **Available Scripts**
 

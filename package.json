@@ -1,6 +1,6 @@
 {
   "name": "ai-sdlc-framework",
-  "version": "3.3.1",
+  "version": "3.3.2",
   "description": "Universal AI-SDLC Framework for any technology stack - AI-powered development automation with quality gates, testing, and intelligent PR reviews",
   "type": "module",
   "main": "index.js",
