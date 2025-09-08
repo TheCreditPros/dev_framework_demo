@@ -5,6 +5,39 @@
 
 set -e
 
+# Add timeout and debug logging to prevent hanging
+export TIMEOUT_SECONDS=1800  # 30 minutes max
+export DEBUG_MODE=${DEBUG_MODE:-false}
+
+# Debug logging function
+debug_log() {
+    if [[ "$DEBUG_MODE" == "true" ]]; then
+        echo "[DEBUG $(date '+%H:%M:%S')] $1" >&2
+    fi
+}
+
+# Timeout wrapper for long-running commands
+run_with_timeout() {
+    local timeout_duration=$1
+    shift
+    debug_log "Running with timeout ${timeout_duration}s: $*"
+
+    if command -v timeout >/dev/null 2>&1; then
+        timeout "$timeout_duration" "$@"
+    else
+        # Fallback for systems without timeout command
+        "$@"
+    fi
+}
+
+# Set up signal handlers to prevent hanging
+cleanup_on_exit() {
+    debug_log "Script interrupted or completed"
+    # Kill any background processes
+    jobs -p | xargs -r kill 2>/dev/null || true
+}
+trap cleanup_on_exit EXIT INT TERM
+
 echo "🚀 AI-SDLC Framework Installation (Smart)"
 echo "========================================="
 
@@ -197,7 +230,9 @@ check_eslint_conflicts
 
 # Install dependencies
 echo "📦 Installing dependencies..."
-npm install --save-dev \
+debug_log "Starting npm install with timeout protection"
+
+run_with_timeout 600 npm install --save-dev \
     vitest@^3.2.4 \
     @vitest/coverage-v8@^3.2.4 \
     @testing-library/react@^16.1.0 \
@@ -212,6 +247,8 @@ npm install --save-dev \
     @commitlint/cli@^19.8.1 \
     @commitlint/config-conventional@^19.8.1 \
     @playwright/test@^1.49.1
+
+debug_log "npm install completed successfully"
 
 echo "✅ Dependencies installed"
 
@@ -461,7 +498,7 @@ jobs:
       - name: 🔧 Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version: \${{ env.NODE_VERSION }}
           cache: 'npm'
 
       - name: 📦 Install Dependencies
@@ -491,14 +528,14 @@ jobs:
       - name: 🔍 Run SonarCloud Analysis
         uses: SonarSource/sonarcloud-github-action@v2
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: \${{ secrets.GITHUB_TOKEN }}
         with:
           args: >
             -Dsonar.projectKey=${GITHUB_REPOSITORY//\//_}
             -Dsonar.organization=${GITHUB_REPOSITORY_OWNER}
-            -Dsonar.pullrequest.key=${{ github.event.pull_request.number }}
-            -Dsonar.pullrequest.branch=${{ github.event.pull_request.head.ref }}
-            -Dsonar.pullrequest.base=${{ github.event.pull_request.base.ref }}
+            -Dsonar.pullrequest.key=\${{ github.event.pull_request.number }}
+            -Dsonar.pullrequest.branch=\${{ github.event.pull_request.head.ref }}
+            -Dsonar.pullrequest.base=\${{ github.event.pull_request.base.ref }}
             -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
             -Dsonar.typescript.lcov.reportPaths=coverage/lcov.info
             -Dsonar.coverageReportPaths=coverage/lcov.info
@@ -551,7 +588,7 @@ jobs:
       - name: 🔧 Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version: \${{ env.NODE_VERSION }}
           cache: 'npm'
 
       - name: 📦 Install Dependencies
@@ -581,7 +618,7 @@ jobs:
       - name: 🔍 Run SonarCloud Analysis
         uses: SonarSource/sonarcloud-github-action@v2
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: \${{ secrets.GITHUB_TOKEN }}
         with:
           args: >
             -Dsonar.projectKey=${GITHUB_REPOSITORY//\//_}
@@ -764,13 +801,13 @@ jobs:
       - name: 🔍 Check PR Details
         id: pr-details
         run: |
-          echo "PR Author: ${{ github.actor }}"
-          echo "PR Title: ${{ github.event.pull_request.title }}"
+          echo "PR Author: \${{ github.actor }}"
+          echo "PR Title: \${{ github.event.pull_request.title }}"
 
           # Check if this is a security update
-          if [[ "${{ github.event.pull_request.title }}" == *"security"* ]] || \
-             [[ "${{ github.event.pull_request.title }}" == *"vulnerability"* ]] || \
-             [[ "${{ github.event.pull_request.body }}" == *"security"* ]]; then
+          if [[ "\${{ github.event.pull_request.title }}" == *"security"* ]] || \
+             [[ "\${{ github.event.pull_request.title }}" == *"vulnerability"* ]] || \
+             [[ "\${{ github.event.pull_request.body }}" == *"security"* ]]; then
             echo "security_update=true" >> $GITHUB_OUTPUT
             echo "🔒 Security update detected"
           else
@@ -782,9 +819,9 @@ jobs:
         if: steps.pr-details.outputs.security_update == 'true'
         uses: lewagon/wait-on-check-action@v1.3.4
         with:
-          ref: ${{ github.event.pull_request.head.sha }}
+          ref: \${{ github.event.pull_request.head.sha }}
           check-name: '🔍 SonarCloud PR Analysis'
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          repo-token: \${{ secrets.GITHUB_TOKEN }}
           wait-interval: 30
           allowed-conclusions: success,neutral,skipped
 
@@ -792,9 +829,9 @@ jobs:
         if: steps.pr-details.outputs.security_update == 'true'
         uses: lewagon/wait-on-check-action@v1.3.4
         with:
-          ref: ${{ github.event.pull_request.head.sha }}
+          ref: \${{ github.event.pull_request.head.sha }}
           check-name: '🚀 Essential CI/CD'
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          repo-token: \${{ secrets.GITHUB_TOKEN }}
           wait-interval: 30
           allowed-conclusions: success
 
@@ -802,15 +839,15 @@ jobs:
         if: steps.pr-details.outputs.security_update == 'true'
         run: |
           echo "🔒 Auto-merging security update after checks pass"
-          gh pr merge --auto --squash "${{ github.event.pull_request.number }}"
+          gh pr merge --auto --squash "\${{ github.event.pull_request.number }}"
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: \${{ secrets.GITHUB_TOKEN }}
 
       - name: 📦 Regular Update (Manual Review Required)
         if: steps.pr-details.outputs.security_update == 'false'
         run: |
           echo "📦 Regular dependency update - manual review required"
-          gh pr comment "${{ github.event.pull_request.number }}" --body "
+          gh pr comment "\${{ github.event.pull_request.number }}" --body "
           ## 📦 Dependency Update Review Required
 
           This is a regular dependency update that requires manual review.
@@ -826,12 +863,12 @@ jobs:
           Use \`@dependabot merge\` to merge after review.
           "
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: \${{ secrets.GITHUB_TOKEN }}
 
       - name: 🚨 Notify on Security Update
         if: steps.pr-details.outputs.security_update == 'true'
         run: |
-          gh pr comment "${{ github.event.pull_request.number }}" --body "
+          gh pr comment "\${{ github.event.pull_request.number }}" --body "
           ## 🔒 Security Update Auto-Merge
 
           This security update will be **automatically merged** after all checks pass:
@@ -844,7 +881,7 @@ jobs:
           **No manual intervention required** for security updates.
           "
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: \${{ secrets.GITHUB_TOKEN }}
 DEPENDABOT_WORKFLOW_EOF
 
 echo "✅ Dependabot auto-merge workflow created"
@@ -1046,19 +1083,19 @@ jobs:
       - name: 🤖 PR Agent Review
         uses: Codium-ai/pr-agent@main
         env:
-          OPENAI_KEY: ${{ secrets.OPENAI_KEY }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OPENAI_KEY: \${{ secrets.OPENAI_KEY }}
+          GITHUB_TOKEN: \${{ secrets.GITHUB_TOKEN }}
         with:
-          pr_url: ${{ github.event.pull_request.html_url }}
+          pr_url: \${{ github.event.pull_request.html_url }}
           command: "review"
 
       - name: 📝 PR Agent Describe
         uses: Codium-ai/pr-agent@main
         env:
-          OPENAI_KEY: ${{ secrets.OPENAI_KEY }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OPENAI_KEY: \${{ secrets.OPENAI_KEY }}
+          GITHUB_TOKEN: \${{ secrets.GITHUB_TOKEN }}
         with:
-          pr_url: ${{ github.event.pull_request.html_url }}
+          pr_url: \${{ github.event.pull_request.html_url }}
           command: "describe"
 QODO_WORKFLOW_EOF
 
@@ -1108,13 +1145,13 @@ jobs:
           echo "Checking for security-related failures..."
 
           # Check if this is a security-related failure
-          if [[ "${{ github.event.check_suite.conclusion }}" == "failure" ]] || \
-             [[ "${{ github.event.workflow_run.conclusion }}" == "failure" ]]; then
+          if [[ "\${{ github.event.check_suite.conclusion }}" == "failure" ]] || \
+             [[ "\${{ github.event.workflow_run.conclusion }}" == "failure" ]]; then
 
             # Check if it's security-related
-            if [[ "${{ github.event.check_suite.app.name }}" == *"security"* ]] || \
-               [[ "${{ github.event.workflow_run.name }}" == *"Security"* ]] || \
-               [[ "${{ github.event.workflow_run.name }}" == *"SonarCloud"* ]]; then
+            if [[ "\${{ github.event.check_suite.app.name }}" == *"security"* ]] || \
+               [[ "\${{ github.event.workflow_run.name }}" == *"Security"* ]] || \
+               [[ "\${{ github.event.workflow_run.name }}" == *"SonarCloud"* ]]; then
               echo "security_failure=true" >> $GITHUB_OUTPUT
               echo "🚨 Security failure detected"
             else
@@ -1129,7 +1166,7 @@ jobs:
         if: steps.security-check.outputs.security_failure == 'true'
         run: |
           # Get PR number from the commit SHA
-          PR_NUMBER=$(gh pr list --state open --json number,headRefOid --jq ".[] | select(.headRefOid==\"${{ github.event.check_suite.head_sha || github.event.workflow_run.head_sha }}\") | .number")
+          PR_NUMBER=$(gh pr list --state open --json number,headRefOid --jq ".[] | select(.headRefOid==\"\${{ github.event.check_suite.head_sha || github.event.workflow_run.head_sha }}\") | .number")
 
           if [[ -n "$PR_NUMBER" ]]; then
             echo "pr_number=$PR_NUMBER" >> $GITHUB_OUTPUT
@@ -1139,15 +1176,15 @@ jobs:
             echo "No PR found for this commit"
           fi
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: \${{ secrets.GITHUB_TOKEN }}
 
       - name: 🤖 Trigger Security Review
         if: steps.security-check.outputs.security_failure == 'true' && steps.get-pr.outputs.pr_number != ''
         run: |
-          echo "🚨 Triggering AI security review for PR #${{ steps.get-pr.outputs.pr_number }}"
+          echo "🚨 Triggering AI security review for PR #\${{ steps.get-pr.outputs.pr_number }}"
 
           # Add security review comment to trigger PR-Agent
-          gh pr comment "${{ steps.get-pr.outputs.pr_number }}" --body "
+          gh pr comment "\${{ steps.get-pr.outputs.pr_number }}" --body "
           ## 🚨 Security Issue Detected - AI Review Triggered
 
           A security scan failure has been detected. Triggering comprehensive AI review...
@@ -1165,7 +1202,7 @@ jobs:
           This review was automatically triggered due to security scan failures.
           "
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: \${{ secrets.GITHUB_TOKEN }}
 
   vulnerability-scan:
     name: 🔍 Vulnerability Detection Trigger
@@ -1214,13 +1251,13 @@ jobs:
         run: |
           echo "🚨 Triggering AI vulnerability review..."
 
-          gh pr comment "${{ github.event.pull_request.number }}" --body "
+          gh pr comment "\${{ github.event.pull_request.number }}" --body "
           ## 🚨 High-Risk Vulnerabilities Detected
 
           **Vulnerability Summary:**
-          - 🔴 Critical: ${{ steps.audit.outputs.critical }}
-          - 🟠 High: ${{ steps.audit.outputs.high }}
-          - 📊 Total: ${{ steps.audit.outputs.vulnerabilities }}
+          - 🔴 Critical: \${{ steps.audit.outputs.critical }}
+          - 🟠 High: \${{ steps.audit.outputs.high }}
+          - 📊 Total: \${{ steps.audit.outputs.vulnerabilities }}
 
           Triggering comprehensive security review...
 
@@ -1237,7 +1274,7 @@ jobs:
           This review was automatically triggered due to vulnerability detection.
           "
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: \${{ secrets.GITHUB_TOKEN }}
 
   dependabot-security-trigger:
     name: 🤖 Dependabot Security Review
@@ -1248,9 +1285,9 @@ jobs:
       - name: 🔍 Check if Security Update
         id: security-update
         run: |
-          if [[ "${{ github.event.pull_request.title }}" == *"security"* ]] || \
-             [[ "${{ github.event.pull_request.title }}" == *"vulnerability"* ]] || \
-             [[ "${{ github.event.pull_request.body }}" == *"security"* ]]; then
+          if [[ "\${{ github.event.pull_request.title }}" == *"security"* ]] || \
+             [[ "\${{ github.event.pull_request.title }}" == *"vulnerability"* ]] || \
+             [[ "\${{ github.event.pull_request.body }}" == *"security"* ]]; then
             echo "is_security=true" >> $GITHUB_OUTPUT
             echo "🔒 Dependabot security update detected"
           else
@@ -1262,7 +1299,7 @@ jobs:
         run: |
           echo "🤖 Triggering AI review for Dependabot security update..."
 
-          gh pr comment "${{ github.event.pull_request.number }}" --body "
+          gh pr comment "\${{ github.event.pull_request.number }}" --body "
           ## 🤖 Dependabot Security Update - AI Review
 
           This is an automated security update from Dependabot. Triggering AI review to validate:
@@ -1280,8 +1317,8 @@ jobs:
           **Auto-Merge Status:** Will auto-merge after all checks pass ✅
           "
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-QUDO_AUTO_EOF
+          GITHUB_TOKEN: \${{ secrets.GITHUB_TOKEN }}
+QODO_AUTO_EOF
 
 echo "✅ Qodo auto-trigger workflow created"
 
@@ -1313,11 +1350,11 @@ echo "✅ SonarCloud configuration updated with AI CodeFix and security enforcem
 echo "⚙️  Updating SonarCloud workflows with security enforcement..."
 
 # Update the PR analysis workflow to include buildbreaker and SONAR_TOKEN
-sed -i.bak 's/GITHUB_TOKEN: \${{ secrets.GITHUB_TOKEN }}/GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}\n          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}/' .github/workflows/sonarcloud-pr-analysis.yml
+sed -i.bak 's/GITHUB_TOKEN: \\${{ secrets.GITHUB_TOKEN }}/GITHUB_TOKEN: \\${{ secrets.GITHUB_TOKEN }}\\n          SONAR_TOKEN: \\${{ secrets.SONAR_TOKEN }}/' .github/workflows/sonarcloud-pr-analysis.yml
 sed -i.bak 's/-Dsonar.verbose=true/-Dsonar.verbose=true\n            -Dsonar.buildbreaker.skip=false\n            -Dsonar.security.hotspots.enabled=true\n            -Dsonar.security.review.enabled=true/' .github/workflows/sonarcloud-pr-analysis.yml
 
 # Update the main analysis workflow to include buildbreaker and SONAR_TOKEN
-sed -i.bak 's/GITHUB_TOKEN: \${{ secrets.GITHUB_TOKEN }}/GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}\n          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}/' .github/workflows/sonarcloud-analysis.yml
+sed -i.bak 's/GITHUB_TOKEN: \\${{ secrets.GITHUB_TOKEN }}/GITHUB_TOKEN: \\${{ secrets.GITHUB_TOKEN }}\\n          SONAR_TOKEN: \\${{ secrets.SONAR_TOKEN }}/' .github/workflows/sonarcloud-analysis.yml
 sed -i.bak 's/-Dsonar.verbose=true/-Dsonar.verbose=true\n            -Dsonar.buildbreaker.skip=false\n            -Dsonar.security.hotspots.enabled=true\n            -Dsonar.security.review.enabled=true/' .github/workflows/sonarcloud-analysis.yml
 
 # Remove backup files
