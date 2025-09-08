@@ -1,19 +1,9 @@
-import "@testing-library/jest-dom";
-import { vi } from "vitest";
+require("@testing-library/jest-dom");
 
 // Mock environment variables for testing
 process.env.NODE_ENV = "test";
 process.env.TCP_DOMAIN = "credit_repair";
 process.env.FCRA_COMPLIANCE_MODE = "true";
-
-// Mock console methods in test environment
-global.console = {
-  ...console,
-  // Suppress console.log in tests unless explicitly needed
-  log: vi.fn(),
-  warn: vi.fn(),
-  error: vi.fn(),
-};
 
 // Credit repair domain test utilities
 global.mockCreditData = {
