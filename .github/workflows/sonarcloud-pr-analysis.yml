@@ -36,7 +36,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           echo "🔧 Setting up SonarCloud configuration..."
-          
+
           # Check if SONAR_TOKEN is available
           if [ -z "$SONAR_TOKEN" ]; then
             echo "⚠️ SONAR_TOKEN not available - using fallback configuration"
@@ -50,7 +50,7 @@ jobs:
               PROJECT_KEY="${GITHUB_REPOSITORY_OWNER}_${GITHUB_REPOSITORY##*/}"
               ORGANIZATION="${GITHUB_REPOSITORY_OWNER}"
             }
-            
+
             # Extract project configuration
             PROJECT_KEY=$(grep "^sonar.projectKey=" sonar-project.properties | cut -d'=' -f2 2>/dev/null || echo "${GITHUB_REPOSITORY_OWNER}_${GITHUB_REPOSITORY##*/}")
             ORGANIZATION=$(grep "^sonar.organization=" sonar-project.properties | cut -d'=' -f2 2>/dev/null || echo "${GITHUB_REPOSITORY_OWNER}")

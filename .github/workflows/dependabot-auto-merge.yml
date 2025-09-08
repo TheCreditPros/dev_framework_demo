@@ -64,25 +64,25 @@ jobs:
         if: steps.pr-details.outputs.security_update == 'true'
         run: |
           echo "🔒 Evaluating security update for auto-merge..."
-          
+
           # Check if essential quality gates passed (required)
           QUALITY_STATUS=$(gh api repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/commits/${{ github.event.pull_request.head.sha }}/check-runs --jq '.check_runs[] | select(.name | test("Essential Quality Gates|Essential Security")) | .conclusion' | grep -v "success" || echo "")
-          
+
           if [[ -n "$QUALITY_STATUS" ]]; then
             echo "❌ Essential quality gates failed - blocking auto-merge"
             gh pr comment "${{ github.event.pull_request.number }}" --body "🔒 **Security Update Auto-Merge Blocked**
-            
+
             Essential quality gates must pass before auto-merge:
             - Quality gates or security checks failed
             - Manual review required even for security updates
-            
+
             Please check the failing tests and fix any issues."
             exit 1
           fi
-          
+
           echo "✅ Essential checks passed - proceeding with auto-merge"
           echo "ℹ️ Note: SonarCloud failures are allowed for Dependabot PRs"
-          
+
           gh pr merge --auto --squash "${{ github.event.pull_request.number }}" || {
             echo "⚠️ Auto-merge failed, attempting direct merge..."
             gh pr merge --squash "${{ github.event.pull_request.number }}"
@@ -121,7 +121,7 @@ jobs:
           This security update will be **automatically merged** after essential checks pass:
 
           ✅ Essential Quality Gates (required)
-          ✅ Essential Security Gates (required)  
+          ✅ Essential Security Gates (required)
           ✅ Qodo PR-Agent Review (required)
           ℹ️ SonarCloud Analysis (informational only for Dependabot)
 
