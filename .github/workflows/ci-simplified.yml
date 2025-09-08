@@ -58,13 +58,13 @@ jobs:
         run: npm run lint:ci
 
       - name: 🎨 Formatting Check
-        run: npm run format
+        run: npm run format:check
 
       - name: 📝 TypeScript Check
         run: npm run type-check
 
-      - name: 🧪 Unit Tests
-        run: npm run test:ci
+      - name: 🧪 Unit Tests  
+        run: npm run test:coverage
 
       - name: 🏗️ Build Check
         run: npm run build
