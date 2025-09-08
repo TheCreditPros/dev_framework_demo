@@ -10,6 +10,7 @@
     "test:ci": "vitest run --no-watch --reporter=verbose tests/unit",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest run --coverage --no-watch",
+    "test:coverage:sonar": "vitest run --coverage --no-watch --reporter=verbose",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "lint:ci": "eslint .",

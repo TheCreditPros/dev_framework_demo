@@ -456,6 +456,206 @@ SONAR_EOF
 
 echo "✅ SonarCloud configuration created"
 
+# Create SonarCloud Project Manager script
+echo "⚙️  Creating SonarCloud project manager..."
+cat > scripts/sonarcloud-project-manager.js << 'SONAR_MANAGER_EOF'
+#!/usr/bin/env node
+
+/**
+ * SonarCloud Project Manager
+ * Automatically manages SonarCloud projects via API integration
+ */
+
+const https = require('https');
+const { execSync } = require('child_process');
+
+class SonarCloudProjectManager {
+  constructor() {
+    this.baseUrl = 'https://sonarcloud.io/api';
+    this.token = process.env.SONAR_TOKEN;
+    this.githubToken = process.env.GITHUB_TOKEN;
+
+    if (!this.token) {
+      throw new Error('SONAR_TOKEN environment variable is required');
+    }
+  }
+
+  getRepositoryInfo() {
+    try {
+      const owner = process.env.GITHUB_REPOSITORY_OWNER;
+      const repo = process.env.GITHUB_REPOSITORY?.split('/')[1];
+
+      if (owner && repo) {
+        return { owner, repo, fullName: \`\${owner}/\${repo}\` };
+      }
+
+      const remoteUrl = execSync('git remote get-url origin', { encoding: 'utf8' }).trim();
+      const match = remoteUrl.match(/github\.com[:/]([^/]+)\/(.+?)(?:\.git)?\$/);
+
+      if (match) {
+        return {
+          owner: match[1],
+          repo: match[2],
+          fullName: \`\${match[1]}/\${match[2]}\`
+        };
+      }
+
+      throw new Error('Could not determine repository information');
+    } catch (error) {
+      throw new Error(\`Failed to get repository info: \${error.message}\`);
+    }
+  }
+
+  generateProjectKey(owner, repo) {
+    return \`\${owner}_\${repo}\`;
+  }
+
+  async apiRequest(endpoint, method = 'GET', data = null) {
+    return new Promise((resolve, reject) => {
+      const url = \`\${this.baseUrl}\${endpoint}\`;
+      const options = {
+        method,
+        headers: {
+          'Authorization': \`Bearer \${this.token}\`,
+          'Content-Type': 'application/json',
+          'User-Agent': 'AI-SDLC-Framework/1.0'
+        }
+      };
+
+      const req = https.request(url, options, (res) => {
+        let body = '';
+        res.on('data', chunk => body += chunk);
+        res.on('end', () => {
+          try {
+            const response = body ? JSON.parse(body) : {};
+            if (res.statusCode >= 200 && res.statusCode < 300) {
+              resolve(response);
+            } else {
+              reject(new Error(\`API request failed: \${res.statusCode} - \${response.errors?.[0]?.msg || body}\`));
+            }
+          } catch (error) {
+            reject(new Error(\`Failed to parse API response: \${error.message}\`));
+          }
+        });
+      });
+
+      req.on('error', reject);
+
+      if (data) {
+        req.write(JSON.stringify(data));
+      }
+
+      req.end();
+    });
+  }
+
+  async projectExists(projectKey) {
+    try {
+      await this.apiRequest(\`/projects/search?projects=\${projectKey}\`);
+      return true;
+    } catch (error) {
+      if (error.message.includes('404')) {
+        return false;
+      }
+      throw error;
+    }
+  }
+
+  async createProject(projectKey, projectName, organization, repositoryInfo) {
+    console.log(\`🔧 Creating SonarCloud project: \${projectKey}\`);
+
+    try {
+      const createData = {
+        project: projectKey,
+        name: projectName,
+        organization: organization
+      };
+
+      await this.apiRequest('/projects/create', 'POST', createData);
+      console.log(\`✅ Project created successfully: \${projectKey}\`);
+
+      return true;
+    } catch (error) {
+      console.error(\`❌ Failed to create project: \${error.message}\`);
+      throw error;
+    }
+  }
+
+  async validateAccess(organization) {
+    try {
+      console.log('🔍 Validating SonarCloud access...');
+
+      await this.apiRequest('/authentication/validate');
+      console.log('✅ SONAR_TOKEN is valid');
+
+      return true;
+    } catch (error) {
+      console.error(\`❌ Access validation failed: \${error.message}\`);
+      throw error;
+    }
+  }
+
+  async run() {
+    try {
+      console.log('🚀 SonarCloud Project Manager Starting...\\n');
+
+      const repoInfo = this.getRepositoryInfo();
+      console.log(\`📁 Repository: \${repoInfo.fullName}\`);
+
+      const projectKey = this.generateProjectKey(repoInfo.owner, repoInfo.repo);
+      const organization = repoInfo.owner.toLowerCase();
+      const projectName = \`\${repoInfo.repo.replace(/[-_]/g, ' ')} - AI-SDLC Framework\`;
+
+      console.log(\`🔑 Project Key: \${projectKey}\`);
+      console.log(\`🏢 Organization: \${organization}\`);
+      console.log(\`📝 Project Name: \${projectName}\\n\`);
+
+      await this.validateAccess(organization);
+
+      const exists = await this.projectExists(projectKey);
+
+      if (exists) {
+        console.log(\`✅ SonarCloud project already exists: \${projectKey}\`);
+      } else {
+        console.log(\`❌ SonarCloud project does not exist: \${projectKey}\`);
+        await this.createProject(projectKey, projectName, organization, repoInfo);
+      }
+
+      console.log('\\n📊 Generated Configuration:');
+      console.log('SONAR_PROJECT_KEY=' + projectKey);
+      console.log('SONAR_ORGANIZATION=' + organization);
+      console.log('SONAR_PROJECT_NAME=' + projectName);
+
+      console.log('\\n🎉 SonarCloud project management completed successfully!');
+      return {
+        projectKey,
+        organization,
+        projectName,
+        exists: exists,
+        created: !exists
+      };
+
+    } catch (error) {
+      console.error(\`\\n❌ SonarCloud project management failed: \${error.message}\`);
+      process.exit(1);
+    }
+  }
+}
+
+if (require.main === module) {
+  const manager = new SonarCloudProjectManager();
+  manager.run().catch(error => {
+    console.error('Fatal error:', error.message);
+    process.exit(1);
+  });
+}
+
+module.exports = SonarCloudProjectManager;
+SONAR_MANAGER_EOF
+
+chmod +x scripts/sonarcloud-project-manager.js
+echo "✅ SonarCloud project manager created"
+
 # Create SonarCloud workflow files
 echo "⚙️  Creating SonarCloud workflow files..."
 
