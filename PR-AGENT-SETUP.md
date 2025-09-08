@@ -1,8 +1,8 @@
-# PR-Agent Setup Guide
+# Qodo PR-Agent Setup Guide
 
 ## Overview
 
-PR-Agent is an AI-powered tool that automatically reviews pull requests, provides improvement suggestions, and helps maintain code quality standards.
+[Qodo PR-Agent](https://github.com/qodo-ai/pr-agent) is an AI-powered tool that automatically reviews pull requests, provides improvement suggestions, and helps maintain code quality standards. This is the official open-source version with 8.9k+ stars and comprehensive features.
 
 ## Installation
 
@@ -12,11 +12,9 @@ PR-Agent is an AI-powered tool that automatically reviews pull requests, provide
 pip install pr-agent
 ```
 
-### Option 2: NPM Package (For Node.js projects)
+### Option 2: GitHub Actions Integration (Recommended)
 
-```bash
-npm install --save-dev @codiumai/pr-agent
-```
+The AI-SDLC Framework uses the official `Codium-ai/pr-agent@main` GitHub Action for seamless integration.
 
 ## Configuration
 
@@ -85,10 +83,10 @@ PR_URL=https://github.com/org/repo/pull/123 npm run pr:improve
 
 ## GitHub Actions Integration
 
-Create `.github/workflows/pr-agent.yml`:
+The AI-SDLC Framework includes a pre-configured workflow at `.github/workflows/ai-code-review.yml`:
 
 ```yaml
-name: PR Agent
+name: 🤖 Qodo PR-Agent Review
 
 on:
   pull_request:
@@ -96,13 +94,18 @@ on:
   issue_comment:
     types: [created, edited]
 
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
 jobs:
   pr-agent:
     runs-on: ubuntu-latest
     if: github.event.pull_request.draft == false
 
     steps:
-      - name: PR Agent Review
+      - name: 🤖 PR Agent Review
         uses: Codium-ai/pr-agent@main
         env:
           OPENAI_KEY: ${{ secrets.OPENAI_KEY }}
@@ -111,7 +114,7 @@ jobs:
           pr_url: ${{ github.event.pull_request.html_url }}
           command: "review"
 
-      - name: PR Agent Describe
+      - name: 📝 PR Agent Describe
         uses: Codium-ai/pr-agent@main
         env:
           OPENAI_KEY: ${{ secrets.OPENAI_KEY }}
@@ -125,13 +128,43 @@ jobs:
 
 Once configured, you can use these commands in PR comments:
 
-- `/review` - Trigger a code review
+- `/review` - Trigger a comprehensive code review
 - `/describe` - Generate PR description
 - `/improve` - Get improvement suggestions
 - `/ask <question>` - Ask questions about the code
+- `/analyze` - Analyze PR changes and impact
 - `/update_changelog` - Update CHANGELOG.md
 - `/add_docs` - Generate documentation
+- `/find_similar_issue` - Find similar issues
 - `/help` - Show all available commands
+
+## Available NPM Scripts
+
+The AI-SDLC Framework provides these convenient scripts:
+
+```bash
+# Basic PR operations
+npm run pr:review              # Full code review
+npm run pr:describe            # Generate PR description
+npm run pr:improve             # Get improvement suggestions
+npm run pr:ask                 # Ask questions about code
+npm run pr:analyze             # Analyze PR changes
+
+# Specialized reviews
+npm run pr:security-review     # Security-focused review
+npm run pr:compliance-review   # FCRA compliance review
+
+# Documentation and maintenance
+npm run pr:update-changelog    # Update CHANGELOG.md
+npm run pr:add-docs            # Generate documentation
+npm run pr:find-similar        # Find similar issues
+
+# Dirty PR testing (for framework validation)
+npm run pr:dirty               # Create dirty PR for testing
+npm run pr:dirty:lint          # Create lint-focused dirty PR
+npm run pr:dirty:e2e           # Create E2E-focused dirty PR
+npm run pr:cleanup             # Clean up dirty PRs
+```
 
 ## Configuration File
 
