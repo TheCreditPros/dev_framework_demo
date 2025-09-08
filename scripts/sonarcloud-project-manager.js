@@ -76,7 +76,7 @@ class SonarCloudProjectManager {
       const options = {
         method,
         headers: {
-          Authorization: `Bearer ${this.token}`,
+          "Authorization": `Bearer ${this.token}`,
           "Content-Type": "application/json",
           "User-Agent": "AI-SDLC-Framework/1.0",
         },

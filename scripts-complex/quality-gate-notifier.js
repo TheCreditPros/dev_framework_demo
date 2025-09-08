@@ -76,9 +76,9 @@ class QualityGateNotifier {
     const notification = {
       "@type": "MessageCard",
       "@context": "http://schema.org/extensions",
-      themeColor: this.themeColors[priorityInfo.color],
-      summary: `${priorityInfo.emoji} Quality Gate Failure - ${gateType.toUpperCase()}`,
-      sections: [
+      "themeColor": this.themeColors[priorityInfo.color],
+      "summary": `${priorityInfo.emoji} Quality Gate Failure - ${gateType.toUpperCase()}`,
+      "sections": [
         {
           activityTitle: `${priorityInfo.emoji} Quality Gate Failure - Action Required`,
           activitySubtitle: `${priorityInfo.urgency} Priority | Developer: ${teamsMention}${additionalMentions ? ` | Team: ${additionalMentions}` : ""}`,
@@ -124,11 +124,11 @@ class QualityGateNotifier {
           markdown: true,
         },
       ],
-      potentialAction: [
+      "potentialAction": [
         {
           "@type": "OpenUri",
-          name: "🔍 View Workflow Run",
-          targets: [
+          "name": "🔍 View Workflow Run",
+          "targets": [
             {
               os: "default",
               uri: `https://github.com/${repository}/actions/runs/${workflowRun}`,
@@ -139,8 +139,8 @@ class QualityGateNotifier {
           ? [
               {
                 "@type": "OpenUri",
-                name: "📋 View Pull Request",
-                targets: [
+                "name": "📋 View Pull Request",
+                "targets": [
                   {
                     os: "default",
                     uri: `https://github.com/${repository}/pull/${pullRequest}`,
@@ -151,8 +151,8 @@ class QualityGateNotifier {
           : []),
         {
           "@type": "OpenUri",
-          name: "📖 Framework Documentation",
-          targets: [
+          "name": "📖 Framework Documentation",
+          "targets": [
             { os: "default", uri: "https://nydamon.github.io/ai-sdlc-docs/" },
           ],
         },
@@ -394,9 +394,9 @@ class QualityGateNotifier {
     const notification = {
       "@type": "MessageCard",
       "@context": "http://schema.org/extensions",
-      themeColor: this.themeColors[theme],
-      summary: `${emoji} Multiple Quality Gate Failures`,
-      sections: [
+      "themeColor": this.themeColors[theme],
+      "summary": `${emoji} Multiple Quality Gate Failures`,
+      "sections": [
         {
           activityTitle: `${emoji} Quality Gate Summary - Multiple Failures Detected`,
           activitySubtitle: `Total Failures: ${failures.length} | Critical: ${criticalCount} | Errors: ${errorCount} | Warnings: ${warningCount}`,
@@ -418,11 +418,11 @@ class QualityGateNotifier {
           markdown: true,
         },
       ],
-      potentialAction: [
+      "potentialAction": [
         {
           "@type": "OpenUri",
-          name: "🔍 View All Workflows",
-          targets: [
+          "name": "🔍 View All Workflows",
+          "targets": [
             {
               os: "default",
               uri: `https://github.com/${failures[0].repository}/actions`,

@@ -103,7 +103,7 @@ Generate only the test code, no explanations:`;
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${this.openaiApiKey}`,
+          "Authorization": `Bearer ${this.openaiApiKey}`,
           "Content-Length": data.length,
         },
       };
