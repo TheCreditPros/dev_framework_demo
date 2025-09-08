@@ -25,6 +25,8 @@ create_backup() {
     [ -f "commitlint.config.cjs" ] && cp commitlint.config.cjs "$backup_dir/" 2>/dev/null || true
     [ -f ".lintstagedrc.js" ] && cp .lintstagedrc.js "$backup_dir/" 2>/dev/null || true
     [ -f "commitlint.config.js" ] && cp commitlint.config.js "$backup_dir/" 2>/dev/null || true
+    [ -f "sonar-project.properties" ] && cp sonar-project.properties "$backup_dir/" 2>/dev/null || true
+    [ -d ".github/workflows" ] && cp -r .github/workflows "$backup_dir/" 2>/dev/null || true
     [ -f "validate-setup.js" ] && cp validate-setup.js "$backup_dir/" 2>/dev/null || true
     [ -f "scripts/local-quality-gates.sh" ] && cp scripts/local-quality-gates.sh "$backup_dir/" 2>/dev/null || true
 
@@ -416,6 +418,192 @@ sonar.reliability.hotspots.includeAll=true
 SONAR_EOF
 
 echo "✅ SonarCloud configuration created"
+
+# Create SonarCloud workflow files
+echo "⚙️  Creating SonarCloud workflow files..."
+
+# Create .github/workflows directory if it doesn't exist
+mkdir -p .github/workflows
+
+# Create SonarCloud PR Analysis workflow
+cat > .github/workflows/sonarcloud-pr-analysis.yml << 'SONAR_PR_EOF'
+# SonarCloud Analysis - Pull Request
+# Runs comprehensive code analysis on pull requests to provide feedback before merge
+
+name: 🔍 SonarCloud PR Analysis
+
+on:
+  pull_request:
+    branches: [main, master]
+    types: [opened, synchronize, reopened]
+  workflow_dispatch: # Allow manual trigger
+
+env:
+  NODE_VERSION: '20'
+
+permissions:
+  contents: read
+  security-events: write
+  pull-requests: write
+
+jobs:
+  sonarcloud-pr:
+    name: 🔍 SonarCloud PR Analysis
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0 # Shallow clones should be disabled for better analysis
+
+      - name: 🔧 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: 📦 Install Dependencies
+        run: npm ci --no-audit
+
+      - name: 🧪 Run Tests with Coverage
+        run: npm run test:coverage:sonar
+
+      - name: 📊 Verify Coverage Report
+        run: |
+          echo "Checking coverage report..."
+          ls -la coverage/ || echo "Coverage directory not found"
+          if [ -f "coverage/lcov.info" ]; then
+            echo "✅ Coverage report found"
+            wc -l coverage/lcov.info
+            echo "First few lines of coverage report:"
+            head -5 coverage/lcov.info
+          else
+            echo "❌ Coverage report not found, checking for alternative locations..."
+            find . -name "lcov.info" -type f 2>/dev/null || echo "No lcov.info found anywhere"
+            echo "Creating empty coverage report as fallback..."
+            mkdir -p coverage
+            echo "TN:" > coverage/lcov.info
+            echo "end_of_record" >> coverage/lcov.info
+          fi
+
+      - name: 🔍 Run SonarCloud Analysis
+        uses: SonarSource/sonarcloud-github-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          args: >
+            -Dsonar.projectKey=${GITHUB_REPOSITORY//\//_}
+            -Dsonar.organization=${GITHUB_REPOSITORY_OWNER}
+            -Dsonar.pullrequest.key=${{ github.event.pull_request.number }}
+            -Dsonar.pullrequest.branch=${{ github.event.pull_request.head.ref }}
+            -Dsonar.pullrequest.base=${{ github.event.pull_request.base.ref }}
+            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
+            -Dsonar.typescript.lcov.reportPaths=coverage/lcov.info
+            -Dsonar.coverageReportPaths=coverage/lcov.info
+            -Dsonar.coverage.exclusions=**/*.test.js,**/*.test.ts,**/*.spec.js,**/*.spec.ts,**/node_modules/**,**/dist/**,**/build/**
+            -Dsonar.qualitygate.wait=true
+            -Dsonar.qualitygate.timeout=300
+            -Dsonar.verbose=true
+
+      - name: 📊 Upload Coverage Reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sonarcloud-pr-coverage
+          path: coverage/
+          retention-days: 7
+SONAR_PR_EOF
+
+# Create SonarCloud Main Analysis workflow
+cat > .github/workflows/sonarcloud-analysis.yml << 'SONAR_MAIN_EOF'
+# SonarCloud Analysis - Main Branch
+# Runs comprehensive code analysis on main branch for overall project health
+
+name: 🔍 SonarCloud Main Analysis
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch: # Allow manual trigger
+
+env:
+  NODE_VERSION: '20'
+
+permissions:
+  contents: read
+  security-events: write
+  pull-requests: write
+
+jobs:
+  sonarcloud:
+    name: 🔍 SonarCloud Analysis
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0 # Shallow clones should be disabled for better analysis
+
+      - name: 🔧 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: 📦 Install Dependencies
+        run: npm ci --no-audit
+
+      - name: 🧪 Run Tests with Coverage
+        run: npm run test:coverage:sonar
+
+      - name: 📊 Verify Coverage Report
+        run: |
+          echo "Checking coverage report..."
+          ls -la coverage/ || echo "Coverage directory not found"
+          if [ -f "coverage/lcov.info" ]; then
+            echo "✅ Coverage report found"
+            wc -l coverage/lcov.info
+            echo "First few lines of coverage report:"
+            head -5 coverage/lcov.info
+          else
+            echo "❌ Coverage report not found, checking for alternative locations..."
+            find . -name "lcov.info" -type f 2>/dev/null || echo "No lcov.info found anywhere"
+            echo "Creating empty coverage report as fallback..."
+            mkdir -p coverage
+            echo "TN:" > coverage/lcov.info
+            echo "end_of_record" >> coverage/lcov.info
+          fi
+
+      - name: 🔍 Run SonarCloud Analysis
+        uses: SonarSource/sonarcloud-github-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          args: >
+            -Dsonar.projectKey=${GITHUB_REPOSITORY//\//_}
+            -Dsonar.organization=${GITHUB_REPOSITORY_OWNER}
+            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
+            -Dsonar.typescript.lcov.reportPaths=coverage/lcov.info
+            -Dsonar.coverageReportPaths=coverage/lcov.info
+            -Dsonar.coverage.exclusions=**/*.test.js,**/*.test.ts,**/*.spec.js,**/*.spec.ts,**/node_modules/**,**/dist/**,**/build/**
+            -Dsonar.qualitygate.wait=true
+            -Dsonar.qualitygate.timeout=300
+            -Dsonar.verbose=true
+
+      - name: 📊 Upload Coverage Reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sonarcloud-coverage
+          path: coverage/
+          retention-days: 7
+SONAR_MAIN_EOF
+
+echo "✅ SonarCloud workflow files created"
 
 # If no Playwright config exists, create a sensible default
 if [ -z "$PLAYWRIGHT_CONFIG" ]; then
@@ -1026,10 +1214,11 @@ echo "2. Run 'npm run lint:fix' to fix any linting issues"
 echo "3. Test with 'npm run quality-gates'"
 echo "4. Validate with 'node validate-setup.js'"
 echo "5. For SonarCloud analysis:"
-echo "   - Set SONAR_TOKEN in GitHub repository secrets"
+echo "   - SonarCloud workflows are already configured for PR and main branch analysis"
+echo "   - Set SONAR_TOKEN in GitHub repository secrets to enable analysis"
 echo "   - Get token from https://sonarcloud.io/account/security/"
-echo "   - Update sonar-project.properties with your project details"
-echo "   - Run 'npm run test:coverage:sonar' to generate coverage"
+echo "   - SonarCloud will automatically analyze PRs and provide feedback"
+echo "   - Run 'npm run test:coverage:sonar' to generate coverage locally"
 if [ "$GIT_HOOKS_CONFIGURED" = true ]; then
     echo "6. Commit your changes to test the Git hooks"
 else
