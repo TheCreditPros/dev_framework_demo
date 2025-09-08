@@ -1,4 +1,4 @@
-import "@testing-library/vitest-dom/vitest";
+import "@testing-library/jest-dom/vitest";
 
 // Mock environment variables for testing
 process.env.NODE_ENV = "test";

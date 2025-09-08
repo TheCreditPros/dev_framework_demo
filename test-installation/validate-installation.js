@@ -7,7 +7,6 @@
 
 const fs = require("fs");
 const path = require("path");
-const { execSync } = require("child_process");
 
 console.log("🧪 AI-SDLC Framework Installation Validator");
 console.log("==========================================\n");
