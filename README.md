@@ -129,6 +129,63 @@ The framework now intelligently detects and adapts to different repository types
 # - Local repositories: Development-ready configuration
 ```
 
+## 🔗 **Git Hooks Configuration (NEW in v3.3.1)**
+
+The framework now includes an **interactive Git hooks configuration** that ensures users make informed decisions:
+
+### **Interactive Prompt**
+
+During installation, you'll see a prompt like this:
+
+```bash
+🔗 Git Hooks Configuration
+=========================
+The AI-SDLC framework includes Git hooks for:
+  • Pre-commit: Run linting and formatting checks
+  • Commit-msg: Enforce conventional commit messages
+  • Pre-push: Run comprehensive quality gates
+
+Repository Type: production
+🚀 PRODUCTION REPOSITORY DETECTED
+   Git hooks are HIGHLY RECOMMENDED for production repositories
+   to ensure code quality and prevent bad commits from being pushed.
+
+Do you want to configure Git hooks for this repository? (y/N)
+   This will set 'git config core.hooksPath .husky'
+   You can disable them later with: git config --unset core.hooksPath
+
+Configure Git hooks? [Y]:
+```
+
+### **Context-Aware Defaults**
+
+| Repository Type | Default | Recommendation                      |
+| --------------- | ------- | ----------------------------------- |
+| **Production**  | `Y`     | Highly recommended for code quality |
+| **Test**        | `N`     | Optional for validation             |
+| **Local**       | `Y`     | Recommended for development         |
+
+### **Managing Git Hooks**
+
+```bash
+# Enable Git hooks
+git config core.hooksPath .husky
+
+# Disable Git hooks
+git config --unset core.hooksPath
+
+# Check current configuration
+git config core.hooksPath
+```
+
+### **Benefits of Interactive Configuration**
+
+- **No Assumptions**: Users explicitly choose their Git hooks setup
+- **Clear Information**: Understand exactly what Git hooks do
+- **Easy Management**: Simple commands to enable/disable later
+- **Context-Aware**: Smart defaults based on repository type
+- **Transparent Process**: Users know exactly what's being configured
+
 ## 🧪 **Testing Strategy**
 
 ### **Unit Tests (Vitest)**
@@ -326,6 +383,14 @@ The framework now intelligently detects and adapts to different repository types
 - **Smart Git Hooks**: Properly configured for all environment types
 - **Comprehensive Testing**: All quality gates and tests passing
 - **Clear Documentation**: Detailed feedback and actionable guidance
+
+### **🔗 Interactive Git Hooks Configuration**
+
+- **Mandatory User Prompt**: No more assumptions - users explicitly choose Git hooks configuration
+- **Context-Aware Defaults**: Smart defaults based on repository type (Production: Y, Test: N, Local: Y)
+- **Clear Information**: Explains what Git hooks do and their benefits
+- **Easy Management**: Simple commands to enable/disable hooks later
+- **Transparent Process**: Users understand exactly what's being configured
 
 ## 📦 **Available Scripts**
 
