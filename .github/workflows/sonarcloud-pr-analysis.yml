@@ -1,11 +1,12 @@
-# SonarCloud Analysis - Main Branch
-# Runs comprehensive code analysis on main branch for overall project health
+# SonarCloud Analysis - Pull Request
+# Runs comprehensive code analysis on pull requests to provide feedback before merge
 
-name: 🔍 SonarCloud Main Analysis
+name: 🔍 SonarCloud PR Analysis
 
 on:
-  push:
+  pull_request:
     branches: [main, master]
+    types: [opened, synchronize, reopened]
   workflow_dispatch: # Allow manual trigger
 
 env:
@@ -17,10 +18,10 @@ permissions:
   pull-requests: write
 
 jobs:
-  sonarcloud:
-    name: 🔍 SonarCloud Analysis
+  sonarcloud-pr:
+    name: 🔍 SonarCloud PR Analysis
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+    if: github.event_name == 'pull_request'
 
     steps:
       - name: 📥 Checkout Repository
@@ -68,6 +69,9 @@ jobs:
           args: >
             -Dsonar.projectKey=TheCreditPros_dev_framework_demo
             -Dsonar.organization=thecreditpros
+            -Dsonar.pullrequest.key=${{ github.event.pull_request.number }}
+            -Dsonar.pullrequest.branch=${{ github.event.pull_request.head.ref }}
+            -Dsonar.pullrequest.base=${{ github.event.pull_request.base.ref }}
             -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
             -Dsonar.typescript.lcov.reportPaths=coverage/lcov.info
             -Dsonar.coverageReportPaths=coverage/lcov.info
@@ -91,6 +95,6 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: sonarcloud-coverage
+          name: sonarcloud-pr-coverage
           path: coverage/
           retention-days: 7
