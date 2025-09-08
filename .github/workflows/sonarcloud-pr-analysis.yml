@@ -1,7 +1,7 @@
 # SonarCloud Analysis - Pull Request
 # Runs comprehensive code analysis on pull requests to provide feedback before merge
 
-name: 🔍 SonarCloud PR Analysis
+name: SonarCloud PR Analysis
 
 on:
   pull_request:
@@ -19,29 +19,29 @@ permissions:
 
 jobs:
   sonarcloud-pr:
-    name: 🔍 SonarCloud PR Analysis
+    name: SonarCloud PR Analysis
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
 
     steps:
-      - name: 📥 Checkout Repository
+      - name: Checkout Repository
         uses: actions/checkout@v5
         with:
           fetch-depth: 0 # Shallow clones should be disabled for better analysis
 
-      - name: 🔧 Setup Node.js
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
 
-      - name: 📦 Install Dependencies
+      - name: Install Dependencies
         run: npm ci --no-audit
 
-      - name: 🧪 Run Tests with Coverage
+      - name: Run Tests with Coverage
         run: npm run test:coverage:sonar
 
-      - name: 📊 Verify Coverage Report
+      - name: Verify Coverage Report
         run: |
           echo "Checking coverage report..."
           ls -la coverage/ || echo "Coverage directory not found"
@@ -59,7 +59,7 @@ jobs:
             echo "end_of_record" >> coverage/lcov.info
           fi
 
-      - name: 🔍 Run SonarCloud Analysis
+      - name: Run SonarCloud Analysis
         if: ${{ secrets.SONAR_TOKEN }}
         uses: SonarSource/sonarcloud-github-action@v2
         env:
@@ -80,7 +80,7 @@ jobs:
             -Dsonar.qualitygate.timeout=300
             -Dsonar.verbose=true
 
-      - name: ⚠️  SonarCloud Analysis Skipped
+      - name: SonarCloud Analysis Skipped
         if: ${{ !secrets.SONAR_TOKEN }}
         run: |
           echo "⚠️  SonarCloud Analysis Skipped"
@@ -91,7 +91,7 @@ jobs:
           echo "   3. Get your token from https://sonarcloud.io/account/security/"
           echo "   4. Re-run this workflow"
 
-      - name: 📊 Upload Coverage Reports
+      - name: Upload Coverage Reports
         if: always()
         uses: actions/upload-artifact@v4
         with:
