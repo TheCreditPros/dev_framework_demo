@@ -373,6 +373,50 @@ cat > .prettierrc << 'PRETTIER_EOF'
 }
 PRETTIER_EOF
 
+# Create SonarCloud configuration
+echo "⚙️  Creating SonarCloud configuration..."
+cat > sonar-project.properties << 'SONAR_EOF'
+# SonarCloud Configuration - Best Practices
+# Optimized for TypeScript/JavaScript projects with minimum friction
+
+# Project identification
+sonar.projectKey=${GITHUB_REPOSITORY//\//_}
+sonar.organization=${GITHUB_REPOSITORY_OWNER}
+sonar.projectName=${GITHUB_REPOSITORY_NAME}
+sonar.projectVersion=1.0.0
+
+# Source code configuration
+sonar.sources=src,scripts,scripts-complex
+sonar.tests=tests,__tests__
+sonar.test.inclusions=**/*.test.js,**/*.test.ts,**/*.spec.js,**/*.spec.ts
+
+# Language-specific settings
+sonar.javascript.lcov.reportPaths=coverage/lcov.info
+sonar.typescript.lcov.reportPaths=coverage/lcov.info
+sonar.coverageReportPaths=coverage/lcov.info
+
+# Exclusions - Focus on source code, exclude generated/test files
+sonar.exclusions=**/node_modules/**,**/dist/**,**/build/**,**/coverage/**,**/test-results/**,**/playwright-report/**,**/*.min.js,**/*.bundle.js
+sonar.coverage.exclusions=**/*.test.js,**/*.test.ts,**/*.spec.js,**/*.spec.ts,**/node_modules/**,**/dist/**,**/build/**,**/coverage/**,**/test-results/**,**/playwright-report/**,**/legacy/**
+
+# Duplication settings
+sonar.cpd.exclusions=**/*.test.js,**/*.test.ts,**/*.spec.js,**/*.spec.ts,**/node_modules/**,**/dist/**,**/build/**
+
+# Quality gate settings
+sonar.qualitygate.wait=true
+sonar.qualitygate.timeout=300
+
+# Performance optimizations
+sonar.analysis.mode=publish
+sonar.verbose=false
+
+# Security and reliability focus
+sonar.security.hotspots.includeAll=true
+sonar.reliability.hotspots.includeAll=true
+SONAR_EOF
+
+echo "✅ SonarCloud configuration created"
+
 # If no Playwright config exists, create a sensible default
 if [ -z "$PLAYWRIGHT_CONFIG" ]; then
   echo "⚙️  Creating default Playwright configuration..."
@@ -418,6 +462,7 @@ echo "⚙️  Adding scripts to package.json..."
 npm pkg set scripts.test="vitest"
 npm pkg set scripts."test:watch"="vitest --watch"
 npm pkg set scripts."test:coverage"="vitest run --coverage"
+npm pkg set scripts."test:coverage:sonar"="vitest run --coverage --reporter=verbose"
 npm pkg set scripts."test:ci"="vitest --run --coverage"
 npm pkg set scripts."test:e2e"="playwright test$( [ -n \"$PLAYWRIGHT_CONFIG\" ] && printf ' --config=%s' \"$PLAYWRIGHT_CONFIG\" )"
 npm pkg set scripts.lint="eslint ."
@@ -926,6 +971,7 @@ echo "=========================================="
 echo ""
 echo "✅ ESLint configured for DOUBLE QUOTES"
 echo "✅ Prettier configured for DOUBLE QUOTES"
+echo "✅ SonarCloud configuration created"
 if [ "$GIT_HOOKS_CONFIGURED" = true ]; then
     echo "✅ Git hooks configured and active"
 else
@@ -979,11 +1025,15 @@ echo "1. Run 'npm run format:fix' to format existing code"
 echo "2. Run 'npm run lint:fix' to fix any linting issues"
 echo "3. Test with 'npm run quality-gates'"
 echo "4. Validate with 'node validate-setup.js'"
+echo "5. For SonarCloud analysis:"
+echo "   - Set SONAR_TOKEN in GitHub repository secrets"
+echo "   - Update sonar-project.properties with your project details"
+echo "   - Run 'npm run test:coverage:sonar' to generate coverage"
 if [ "$GIT_HOOKS_CONFIGURED" = true ]; then
-    echo "5. Commit your changes to test the Git hooks"
+    echo "6. Commit your changes to test the Git hooks"
 else
-    echo "5. To enable Git hooks later: git config core.hooksPath .husky"
-    echo "6. Commit your changes to test the framework"
+    echo "6. To enable Git hooks later: git config core.hooksPath .husky"
+    echo "7. Commit your changes to test the framework"
 fi
 echo ""
 echo "If you had existing ESLint configs, they were backed up with .backup extension"
