@@ -11,6 +11,7 @@ on:
 
 env:
   NODE_VERSION: '20'
+  SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
 permissions:
   contents: read
@@ -35,8 +36,14 @@ jobs:
           echo "🔧 Reading SonarCloud configuration..."
 
           # Extract project configuration from properties file
-          PROJECT_KEY=$(grep "^sonar.projectKey=" sonar-project.properties | cut -d'=' -f2 || echo "${GITHUB_REPOSITORY_OWNER}_${GITHUB_REPOSITORY##*/}")
-          ORGANIZATION=$(grep "^sonar.organization=" sonar-project.properties | cut -d'=' -f2 || echo "${GITHUB_REPOSITORY_OWNER}")
+          if [ -f "sonar-project.properties" ]; then
+            PROJECT_KEY=$(grep "^sonar.projectKey=" sonar-project.properties | cut -d'=' -f2)
+            ORGANIZATION=$(grep "^sonar.organization=" sonar-project.properties | cut -d'=' -f2)
+          else
+            # Fallback values
+            PROJECT_KEY="${GITHUB_REPOSITORY_OWNER}_${GITHUB_REPOSITORY##*/}"
+            ORGANIZATION="${GITHUB_REPOSITORY_OWNER}"
+          fi
 
           echo "project-key=${PROJECT_KEY}" >> $GITHUB_OUTPUT
           echo "organization=${ORGANIZATION}" >> $GITHUB_OUTPUT
@@ -74,16 +81,15 @@ jobs:
 
       - name: 🔍 Run SonarCloud Analysis
         id: sonar-analysis
-        if: env.SONAR_TOKEN != ''
+        if: env.SONAR_TOKEN != '' && github.actor != 'dependabot[bot]'
         continue-on-error: true
-        uses: SonarSource/sonarcloud-github-action@v2
+        uses: SonarSource/sonarqube-scan-action@v5.3.1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
           args: >
-            -Dsonar.projectKey=${{ steps.setup-project.outputs.project-key }}
             -Dsonar.organization=${{ steps.setup-project.outputs.organization }}
+            -Dsonar.projectKey=${{ steps.setup-project.outputs.project-key }}
             -Dsonar.pullrequest.key=${{ github.event.pull_request.number }}
             -Dsonar.pullrequest.branch=${{ github.event.pull_request.head.ref }}
             -Dsonar.pullrequest.base=${{ github.event.pull_request.base.ref }}
@@ -93,7 +99,6 @@ jobs:
             -Dsonar.coverage.exclusions=**/*.test.js,**/*.test.ts,**/*.spec.js,**/*.spec.ts,**/node_modules/**,**/dist/**,**/build/**
             -Dsonar.qualitygate.wait=false
             -Dsonar.qualitygate.timeout=300
-            -Dsonar.buildbreaker.skip=${{ github.actor == 'dependabot[bot]' }}
             -Dsonar.security.hotspots.enabled=true
             -Dsonar.security.review.enabled=true
             -Dsonar.verbose=false
@@ -107,14 +112,10 @@ jobs:
             echo "🔍 For full analysis, configure SONAR_TOKEN in repository secrets"
             echo "✅ Allowing PR to proceed without SonarCloud analysis"
           elif [[ "${{ github.actor }}" == "dependabot[bot]" ]]; then
-            echo "🤖 Dependabot PR detected"
-            if [[ "${{ steps.sonar-analysis.outcome }}" == "failure" ]]; then
-              echo "⚠️ SonarCloud analysis failed but allowing Dependabot PR to proceed"
-              echo "🔍 Dependabot PRs focus on dependency updates, not code quality changes"
-              echo "✅ Auto-merge can proceed for security updates"
-            else
-              echo "✅ SonarCloud analysis completed for Dependabot PR"
-            fi
+            echo "🤖 Dependabot PR detected - SonarCloud analysis skipped"
+            echo "📋 Dependabot PRs focus on dependency updates, not code quality changes"
+            echo "🔍 Skipping analysis to avoid unnecessary processing for automated dependency updates"
+            echo "✅ Auto-merge can proceed for security updates"
           else
             echo "👤 Regular PR - SonarCloud analysis informational-only"
             if [[ "${{ steps.sonar-analysis.outcome }}" == "failure" ]]; then

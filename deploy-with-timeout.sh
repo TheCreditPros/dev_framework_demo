@@ -88,12 +88,100 @@ cleanup_on_exit() {
 # Set up signal handlers
 trap cleanup_on_exit EXIT INT TERM
 
+# Function to run pre-deployment workflow validation
+run_pre_deployment_validation() {
+    debug_log "Running pre-deployment workflow validation"
+
+    # Check if Node.js is available for advanced validation
+    if command -v node >/dev/null 2>&1; then
+        debug_log "Node.js detected - running advanced workflow validation"
+
+        # Check if pre-deployment validator exists
+        if [ -f "scripts/pre-deployment-validator.js" ]; then
+            debug_log "Running pre-deployment validator..."
+            if ! run_with_timeout 120 "node scripts/pre-deployment-validator.js"; then
+                error_log "Pre-deployment workflow validation failed"
+                warn_log "This means your local workflows have issues that will cause deployment failures"
+                warn_log "Fix the workflow issues before retrying deployment"
+                return 1
+            fi
+            success_log "✅ Pre-deployment validation passed"
+        else
+            warn_log "Pre-deployment validator script not found - skipping advanced validation"
+        fi
+    else
+        warn_log "Node.js not available - performing basic workflow validation"
+
+        # Basic validation: check if workflows directory exists
+        if [ ! -d ".github/workflows" ]; then
+            error_log "Workflows directory .github/workflows not found"
+            return 1
+        fi
+
+        # Check if there are any workflow files
+        workflow_count=$(find .github/workflows -name "*.yml" -o -name "*.yaml" | wc -l)
+        if [ "$workflow_count" -eq 0 ]; then
+            error_log "No workflow files found in .github/workflows/"
+            return 1
+        fi
+
+        debug_log "Found $workflow_count workflow files"
+
+        # Basic YAML syntax check
+        for workflow_file in .github/workflows/*.yml .github/workflows/*.yaml; do
+            if [ -f "$workflow_file" ]; then
+                if ! run_with_timeout 30 "python3 -c \"import yaml; yaml.safe_load(open('$workflow_file'))\" 2>/dev/null"; then
+                    if ! run_with_timeout 30 "python3 -c \"import sys; import yaml; yaml.safe_load(sys.stdin)\" < \"$workflow_file\" 2>/dev/null"; then
+                        error_log "Invalid YAML syntax in $workflow_file"
+                        return 1
+                    fi
+                fi
+            fi
+        done
+
+        success_log "✅ Basic workflow validation passed"
+    fi
+
+    return 0
+}
+
+# Function to record deployment in memory system
+record_deployment_in_memory() {
+    debug_log "Recording deployment in memory system"
+
+    # Get deployment information
+    local commit_hash=$(git rev-parse HEAD 2>/dev/null || echo "unknown")
+    local branch_name=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "unknown")
+    local environment="production"  # Default to production, can be parameterized
+
+    # Check if Node.js and deployment memory script are available
+    if command -v node >/dev/null 2>&1 && [ -f "scripts/deployment-memory.js" ]; then
+        debug_log "Recording deployment: commit=$commit_hash, branch=$branch_name, environment=$environment"
+
+        # Record the deployment
+        if node scripts/deployment-memory.js record "$environment" 2>&1 | tee -a "$LOG_FILE"; then
+            success_log "✅ Deployment recorded in memory system"
+        else
+            warn_log "⚠️ Failed to record deployment in memory system"
+        fi
+    else
+        warn_log "Node.js or deployment memory script not available - skipping deployment recording"
+    fi
+}
+
 # Main deployment function
 main() {
-    echo "🚀 Starting Deployment with Timeout Protection"
-    echo "=============================================="
+    echo "🚀 Starting Deployment with Pre-Validation and Timeout Protection"
+    echo "================================================================"
     debug_log "Deployment started in directory: $(pwd)"
     debug_log "Log file: $LOG_FILE"
+
+    # Step 0: Pre-deployment workflow validation
+    debug_log "Step 0: Pre-deployment workflow validation"
+    if ! run_pre_deployment_validation; then
+        error_log "Pre-deployment validation failed - deployment blocked"
+        return 1
+    fi
 
     # Step 1: Check git status
     debug_log "Step 1: Checking git status"
@@ -141,6 +229,9 @@ main() {
         return 1
     fi
 
+    # Record deployment in memory system
+    record_deployment_in_memory
+
     success_log "Deployment completed successfully!"
 
     # Step 5: Monitor GitHub Actions
@@ -148,9 +239,32 @@ main() {
     monitor_github_actions
 }
 
-# Function to monitor GitHub Actions
+# Function to monitor GitHub Actions using comprehensive monitoring system
 monitor_github_actions() {
-    debug_log "Starting GitHub Actions monitoring"
+    debug_log "🚀 Starting Advanced GitHub Actions Post-Deployment Monitoring"
+
+    # Check if Node.js is available for advanced monitoring
+    if command -v node >/dev/null 2>&1; then
+        debug_log "Node.js detected - using advanced monitoring system"
+
+        # Wait for GitHub to register the push
+        debug_log "Waiting 15 seconds for GitHub to process the push..."
+        sleep 15
+
+        # Start the virtuous cycle validation loop
+        debug_log "Starting deployment validation loop..."
+        if node scripts/deployment-validation-loop.js quick; then
+            success_log "✅ Advanced monitoring completed successfully"
+            return 0
+        else
+            warn_log "⚠️ Advanced monitoring detected issues - falling back to basic monitoring"
+        fi
+    else
+        warn_log "Node.js not available - using basic GitHub CLI monitoring"
+    fi
+
+    # Fallback to basic monitoring
+    debug_log "Using basic GitHub CLI monitoring"
 
     # Wait a moment for GitHub to register the push
     debug_log "Waiting 10 seconds for GitHub to process the push..."

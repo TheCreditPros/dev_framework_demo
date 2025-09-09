@@ -68,19 +68,20 @@ jobs:
 
           # Extract outputs for other jobs
           if [ -f "sonar-project.properties" ]; then
-            PROJECT_KEY=$(grep "^sonar.projectKey=" sonar-project.properties | cut -d'=' -f2)
-            ORGANIZATION=$(grep "^sonar.organization=" sonar-project.properties | cut -d'=' -f2)
-            PROJECT_NAME=$(grep "^sonar.projectName=" sonar-project.properties | cut -d'=' -f2)
+            # Extract configuration values
+            SONAR_PROJECT_KEY=$(grep "^sonar.projectKey=" sonar-project.properties | cut -d'=' -f2)
+            SONAR_ORGANIZATION=$(grep "^sonar.organization=" sonar-project.properties | cut -d'=' -f2)
+            SONAR_PROJECT_NAME=$(grep "^sonar.projectName=" sonar-project.properties | cut -d'=' -f2)
 
-            echo "project-key=${PROJECT_KEY}" >> $GITHUB_OUTPUT
-            echo "organization=${ORGANIZATION}" >> $GITHUB_OUTPUT
-            echo "project-name=${PROJECT_NAME}" >> $GITHUB_OUTPUT
+            echo "project-key=${SONAR_PROJECT_KEY}" >> $GITHUB_OUTPUT
+            echo "organization=${SONAR_ORGANIZATION}" >> $GITHUB_OUTPUT
+            echo "project-name=${SONAR_PROJECT_NAME}" >> $GITHUB_OUTPUT
             echo "project-created=true" >> $GITHUB_OUTPUT
 
             echo "✅ SonarCloud project configuration completed"
-            echo "📊 Project Key: ${PROJECT_KEY}"
-            echo "🏢 Organization: ${ORGANIZATION}"
-            echo "📝 Project Name: ${PROJECT_NAME}"
+            echo "📊 Project Key: ${SONAR_PROJECT_KEY}"
+            echo "🏢 Organization: ${SONAR_ORGANIZATION}"
+            echo "📝 Project Name: ${SONAR_PROJECT_NAME}"
           else
             echo "❌ Failed to generate sonar-project.properties"
             exit 1
@@ -92,15 +93,16 @@ jobs:
         run: |
           echo "🔍 Verifying SonarCloud project configuration..."
 
-          PROJECT_KEY="${{ steps.setup.outputs.project-key }}"
+          # Get project key from previous step
+          SONAR_PROJECT_KEY="${{ steps.setup.outputs.project-key }}"
 
           # Test API access to the project
           curl -s -u "$SONAR_TOKEN:" \
-            "https://sonarcloud.io/api/projects/search?projects=${PROJECT_KEY}" \
+            "https://sonarcloud.io/api/projects/search?projects=${SONAR_PROJECT_KEY}" \
             | jq -r '.components[0].key // "NOT_FOUND"' > project_check.txt
 
-          if grep -q "${PROJECT_KEY}" project_check.txt; then
-            echo "✅ SonarCloud project verified: ${PROJECT_KEY}"
+          if grep -q "${SONAR_PROJECT_KEY}" project_check.txt; then
+            echo "✅ SonarCloud project verified: ${SONAR_PROJECT_KEY}"
           else
             echo "❌ SonarCloud project verification failed"
             cat project_check.txt
@@ -154,14 +156,13 @@ jobs:
           fi
 
       - name: 🔍 Test SonarCloud Analysis
-        uses: SonarSource/sonarcloud-github-action@v2
+        uses: SonarSource/sonarqube-scan-action@v5.3.1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
           args: >
-            -Dsonar.projectKey=${{ needs.setup-sonarcloud.outputs.project-key }}
             -Dsonar.organization=${{ needs.setup-sonarcloud.outputs.organization }}
+            -Dsonar.projectKey=${{ needs.setup-sonarcloud.outputs.project-key }}
             -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
             -Dsonar.typescript.lcov.reportPaths=coverage/lcov.info
             -Dsonar.coverageReportPaths=coverage/lcov.info
@@ -172,4 +173,5 @@ jobs:
       - name: 🎉 Analysis Complete
         run: |
           echo "🎉 SonarCloud analysis completed successfully!"
-          echo "🔗 View results at: https://sonarcloud.io/project/overview?id=${{ needs.setup-sonarcloud.outputs.project-key }}"
+          SONAR_PROJECT_KEY="${{ needs.setup-sonarcloud.outputs.project-key }}"
+          echo "🔗 View results at: https://sonarcloud.io/project/overview?id=$SONAR_PROJECT_KEY"
