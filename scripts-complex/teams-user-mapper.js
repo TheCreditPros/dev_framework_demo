@@ -195,7 +195,7 @@ class TeamsUserMapper {
       description: "GitHub to MS Teams user mapping for AI-SDLC notifications",
       lastUpdated: new Date().toISOString(),
       users: {
-        nydamon: {
+        "nydamon": {
           email: "damon@thecreditpros.com",
           displayName: "Damon DeCrescenzo",
           teamsId: null,

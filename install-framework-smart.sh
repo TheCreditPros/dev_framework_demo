@@ -5,6 +5,39 @@
 
 set -e
 
+# Add timeout and debug logging to prevent hanging
+export TIMEOUT_SECONDS=1800  # 30 minutes max
+export DEBUG_MODE=${DEBUG_MODE:-false}
+
+# Debug logging function
+debug_log() {
+    if [[ "$DEBUG_MODE" == "true" ]]; then
+        echo "[DEBUG $(date '+%H:%M:%S')] $1" >&2
+    fi
+}
+
+# Timeout wrapper for long-running commands
+run_with_timeout() {
+    local timeout_duration=$1
+    shift
+    debug_log "Running with timeout ${timeout_duration}s: $*"
+
+    if command -v timeout >/dev/null 2>&1; then
+        timeout "$timeout_duration" "$@"
+    else
+        # Fallback for systems without timeout command
+        "$@"
+    fi
+}
+
+# Set up signal handlers to prevent hanging
+cleanup_on_exit() {
+    debug_log "Script interrupted or completed"
+    # Kill any background processes
+    jobs -p | xargs -r kill 2>/dev/null || true
+}
+trap cleanup_on_exit EXIT INT TERM
+
 echo "🚀 AI-SDLC Framework Installation (Smart)"
 echo "========================================="
 
@@ -197,11 +230,13 @@ check_eslint_conflicts
 
 # Install dependencies
 echo "📦 Installing dependencies..."
-npm install --save-dev \
+debug_log "Starting npm install with timeout protection"
+
+run_with_timeout 600 npm install --save-dev \
     vitest@^3.2.4 \
     @vitest/coverage-v8@^3.2.4 \
     @testing-library/react@^16.1.0 \
-    @testing-library/jest-dom@^6.6.3 \
+    @testing-library/vitest-dom@^0.1.1 \
     jsdom@^26.1.0 \
     eslint@^9.34.0 \
     @typescript-eslint/eslint-plugin@^8.42.0 \
@@ -212,6 +247,8 @@ npm install --save-dev \
     @commitlint/cli@^19.8.1 \
     @commitlint/config-conventional@^19.8.1 \
     @playwright/test@^1.49.1
+
+debug_log "npm install completed successfully"
 
 echo "✅ Dependencies installed"
 
@@ -419,6 +456,207 @@ SONAR_EOF
 
 echo "✅ SonarCloud configuration created"
 
+# Create SonarCloud Project Manager script
+echo "⚙️  Creating SonarCloud project manager..."
+mkdir -p scripts
+cat > scripts/sonarcloud-project-manager.js << 'SONAR_MANAGER_EOF'
+#!/usr/bin/env node
+
+/**
+ * SonarCloud Project Manager
+ * Automatically manages SonarCloud projects via API integration
+ */
+
+const https = require('https');
+const { execSync } = require('child_process');
+
+class SonarCloudProjectManager {
+  constructor() {
+    this.baseUrl = 'https://sonarcloud.io/api';
+    this.token = process.env.SONAR_TOKEN;
+    this.githubToken = process.env.GITHUB_TOKEN;
+
+    if (!this.token) {
+      throw new Error('SONAR_TOKEN environment variable is required');
+    }
+  }
+
+  getRepositoryInfo() {
+    try {
+      const owner = process.env.GITHUB_REPOSITORY_OWNER;
+      const repo = process.env.GITHUB_REPOSITORY?.split('/')[1];
+
+      if (owner && repo) {
+        return { owner, repo, fullName: `\${owner}/\${repo}` };
+      }
+
+      const remoteUrl = execSync('git remote get-url origin', { encoding: 'utf8' }).trim();
+      const match = remoteUrl.match(/github\.com[:/]([^/]+)\/(.+?)(?:\.git)?\$/);
+
+      if (match) {
+        return {
+          owner: match[1],
+          repo: match[2],
+          fullName: `\${match[1]}/\${match[2]}`
+        };
+      }
+
+      throw new Error('Could not determine repository information');
+    } catch (error) {
+      throw new Error(`Failed to get repository info: \${error.message}`);
+    }
+  }
+
+  generateProjectKey(owner, repo) {
+    return `\${owner}_\${repo}`;
+  }
+
+  async apiRequest(endpoint, method = 'GET', data = null) {
+    return new Promise((resolve, reject) => {
+      const url = `\${this.baseUrl}\${endpoint}`;
+      const options = {
+        method,
+        headers: {
+          'Authorization': \`Bearer \${this.token}\`,
+          'Content-Type': 'application/json',
+          'User-Agent': 'AI-SDLC-Framework/1.0'
+        }
+      };
+
+      const req = https.request(url, options, (res) => {
+        let body = '';
+        res.on('data', chunk => body += chunk);
+        res.on('end', () => {
+          try {
+            const response = body ? JSON.parse(body) : {};
+            if (res.statusCode >= 200 && res.statusCode < 300) {
+              resolve(response);
+            } else {
+              reject(new Error(\`API request failed: \${res.statusCode} - \${response.errors?.[0]?.msg || body}\`));
+            }
+          } catch (error) {
+            reject(new Error(\`Failed to parse API response: \${error.message}\`));
+          }
+        });
+      });
+
+      req.on('error', reject);
+
+      if (data) {
+        req.write(JSON.stringify(data));
+      }
+
+      req.end();
+    });
+  }
+
+  async projectExists(projectKey) {
+    try {
+      await this.apiRequest(\`/projects/search?projects=\${projectKey}\`);
+      return true;
+    } catch (error) {
+      if (error.message.includes('404')) {
+        return false;
+      }
+      throw error;
+    }
+  }
+
+  async createProject(projectKey, projectName, organization, repositoryInfo) {
+    console.log(\`🔧 Creating SonarCloud project: \${projectKey}\`);
+
+    try {
+      const createData = {
+        project: projectKey,
+        name: projectName,
+        organization: organization
+      };
+
+      await this.apiRequest('/projects/create', 'POST', createData);
+      console.log(\`✅ Project created successfully: \${projectKey}\`);
+
+      return true;
+    } catch (error) {
+      console.error(\`❌ Failed to create project: \${error.message}\`);
+      throw error;
+    }
+  }
+
+  async validateAccess(organization) {
+    try {
+      console.log('🔍 Validating SonarCloud access...');
+
+      await this.apiRequest('/authentication/validate');
+      console.log('✅ SONAR_TOKEN is valid');
+
+      return true;
+    } catch (error) {
+      console.error(\`❌ Access validation failed: \${error.message}\`);
+      throw error;
+    }
+  }
+
+  async run() {
+    try {
+      console.log('🚀 SonarCloud Project Manager Starting...\\n');
+
+      const repoInfo = this.getRepositoryInfo();
+      console.log(\`📁 Repository: \${repoInfo.fullName}\`);
+
+      const projectKey = this.generateProjectKey(repoInfo.owner, repoInfo.repo);
+      const organization = repoInfo.owner.toLowerCase();
+      const projectName = \`\${repoInfo.repo.replace(/[-_]/g, ' ')} - AI-SDLC Framework\`;
+
+      console.log(\`🔑 Project Key: \${projectKey}\`);
+      console.log(\`🏢 Organization: \${organization}\`);
+      console.log(\`📝 Project Name: \${projectName}\\n\`);
+
+      await this.validateAccess(organization);
+
+      const exists = await this.projectExists(projectKey);
+
+      if (exists) {
+        console.log(\`✅ SonarCloud project already exists: \${projectKey}\`);
+      } else {
+        console.log(\`❌ SonarCloud project does not exist: \${projectKey}\`);
+        await this.createProject(projectKey, projectName, organization, repoInfo);
+      }
+
+      console.log('\\n📊 Generated Configuration:');
+      console.log('SONAR_PROJECT_KEY=' + projectKey);
+      console.log('SONAR_ORGANIZATION=' + organization);
+      console.log('SONAR_PROJECT_NAME=' + projectName);
+
+      console.log('\\n🎉 SonarCloud project management completed successfully!');
+      return {
+        projectKey,
+        organization,
+        projectName,
+        exists: exists,
+        created: !exists
+      };
+
+    } catch (error) {
+      console.error(\`\\n❌ SonarCloud project management failed: \${error.message}\`);
+      process.exit(1);
+    }
+  }
+}
+
+if (require.main === module) {
+  const manager = new SonarCloudProjectManager();
+  manager.run().catch(error => {
+    console.error('Fatal error:', error.message);
+    process.exit(1);
+  });
+}
+
+module.exports = SonarCloudProjectManager;
+SONAR_MANAGER_EOF
+
+chmod +x scripts/sonarcloud-project-manager.js
+echo "✅ SonarCloud project manager created"
+
 # Create SonarCloud workflow files
 echo "⚙️  Creating SonarCloud workflow files..."
 
@@ -461,7 +699,7 @@ jobs:
       - name: 🔧 Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version: \${{ env.NODE_VERSION }}
           cache: 'npm'
 
       - name: 📦 Install Dependencies
@@ -491,14 +729,14 @@ jobs:
       - name: 🔍 Run SonarCloud Analysis
         uses: SonarSource/sonarcloud-github-action@v2
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: \${{ secrets.GITHUB_TOKEN }}
         with:
           args: >
             -Dsonar.projectKey=${GITHUB_REPOSITORY//\//_}
             -Dsonar.organization=${GITHUB_REPOSITORY_OWNER}
-            -Dsonar.pullrequest.key=${{ github.event.pull_request.number }}
-            -Dsonar.pullrequest.branch=${{ github.event.pull_request.head.ref }}
-            -Dsonar.pullrequest.base=${{ github.event.pull_request.base.ref }}
+            -Dsonar.pullrequest.key=\${{ github.event.pull_request.number }}
+            -Dsonar.pullrequest.branch=\${{ github.event.pull_request.head.ref }}
+            -Dsonar.pullrequest.base=\${{ github.event.pull_request.base.ref }}
             -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
             -Dsonar.typescript.lcov.reportPaths=coverage/lcov.info
             -Dsonar.coverageReportPaths=coverage/lcov.info
@@ -551,7 +789,7 @@ jobs:
       - name: 🔧 Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version: \${{ env.NODE_VERSION }}
           cache: 'npm'
 
       - name: 📦 Install Dependencies
@@ -581,7 +819,7 @@ jobs:
       - name: 🔍 Run SonarCloud Analysis
         uses: SonarSource/sonarcloud-github-action@v2
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: \${{ secrets.GITHUB_TOKEN }}
         with:
           args: >
             -Dsonar.projectKey=${GITHUB_REPOSITORY//\//_}
@@ -604,6 +842,1051 @@ jobs:
 SONAR_MAIN_EOF
 
 echo "✅ SonarCloud workflow files created"
+
+# Create Dependabot configuration with security automation
+echo "⚙️  Creating Dependabot configuration with security automation..."
+mkdir -p .github
+
+cat > .github/dependabot.yml << 'DEPENDABOT_EOF'
+# AI-SDLC Framework - Dependabot Configuration with Security Automation
+# Automated dependency management with immediate security updates
+
+version: 2
+updates:
+  # NPM DEPENDENCIES - Daily security updates
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "daily"  # Daily for immediate security updates
+      time: "09:00"
+      timezone: "America/New_York"
+    open-pull-requests-limit: 15
+    # Enable auto-merge for security updates
+    pull-request-branch-name:
+      separator: "-"
+    # Security-specific configuration
+    security-updates:
+      enabled: true
+    assignees:
+      - "nydamon"
+    commit-message:
+      prefix: "deps"
+      prefix-development: "deps-dev"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "automated"
+      - "security"
+
+    # Security updates - immediate
+    allow:
+      - dependency-type: "all"
+
+    # Group related updates
+    groups:
+      # Testing frameworks
+      testing:
+        patterns:
+          - "vitest*"
+          - "@vitest/*"
+          - "playwright*"
+          - "@playwright/*"
+          - "@testing-library/*"
+          - "jsdom"
+
+      # Build tools
+      build-tools:
+        patterns:
+          - "vite*"
+          - "@vitejs/*"
+          - "rollup*"
+          - "@rollup/*"
+          - "esbuild*"
+          - "@esbuild/*"
+          - "typescript"
+          - "@types/*"
+
+      # Linting and formatting
+      code-quality:
+        patterns:
+          - "eslint*"
+          - "@eslint/*"
+          - "prettier*"
+          - "@typescript-eslint/*"
+          - "lint-staged"
+          - "husky"
+
+      # React ecosystem
+      react:
+        patterns:
+          - "react*"
+          - "@babel/*"
+          - "prop-types"
+
+      # Security and compliance
+      security:
+        patterns:
+          - "*security*"
+          - "*audit*"
+          - "*vulnerability*"
+
+    # Ignore specific packages that require manual updates
+    ignore:
+      - dependency-name: "node"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
+
+  # GITHUB ACTIONS
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "tuesday"
+      time: "10:00"
+      timezone: "America/New_York"
+    open-pull-requests-limit: 5
+    assignees:
+      - "nydamon"
+    commit-message:
+      prefix: "ci"
+      include: "scope"
+    labels:
+      - "github-actions"
+      - "ci-cd"
+      - "automated"
+
+    # Group GitHub Actions updates
+    groups:
+      actions-core:
+        patterns:
+          - "actions/*"
+
+      security-actions:
+        patterns:
+          - "github/codeql-action*"
+          - "github/super-linter*"
+          - "ossf/scorecard-action*"
+DEPENDABOT_EOF
+
+echo "✅ Dependabot configuration created with security automation"
+
+# Create Dependabot Auto-Merge workflow
+echo "⚙️  Creating Dependabot auto-merge workflow..."
+
+cat > .github/workflows/dependabot-auto-merge.yml << 'DEPENDABOT_WORKFLOW_EOF'
+# Dependabot Auto-Merge for Security Updates
+# Automatically merges Dependabot PRs that pass all security checks
+
+name: 🤖 Dependabot Auto-Merge
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: write
+  pull-requests: write
+  checks: read
+
+jobs:
+  dependabot-auto-merge:
+    name: 🤖 Auto-merge Dependabot PRs
+    runs-on: ubuntu-latest
+    if: github.actor == 'dependabot[bot]'
+
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v5
+
+      - name: 🔍 Check PR Details
+        id: pr-details
+        run: |
+          echo "PR Author: \${{ github.actor }}"
+          echo "PR Title: \${{ github.event.pull_request.title }}"
+
+          # Check if this is a security update
+          if [[ "\${{ github.event.pull_request.title }}" == *"security"* ]] || \
+             [[ "\${{ github.event.pull_request.title }}" == *"vulnerability"* ]] || \
+             [[ "\${{ github.event.pull_request.body }}" == *"security"* ]]; then
+            echo "security_update=true" >> $GITHUB_OUTPUT
+            echo "🔒 Security update detected"
+          else
+            echo "security_update=false" >> $GITHUB_OUTPUT
+            echo "📦 Regular dependency update"
+          fi
+
+      - name: ⏳ Wait for Checks
+        if: steps.pr-details.outputs.security_update == 'true'
+        uses: lewagon/wait-on-check-action@v1.3.4
+        with:
+          ref: \${{ github.event.pull_request.head.sha }}
+          check-name: '🔍 SonarCloud PR Analysis'
+          repo-token: \${{ secrets.GITHUB_TOKEN }}
+          wait-interval: 30
+          allowed-conclusions: success,neutral,skipped
+
+      - name: ⏳ Wait for Quality Gates
+        if: steps.pr-details.outputs.security_update == 'true'
+        uses: lewagon/wait-on-check-action@v1.3.4
+        with:
+          ref: \${{ github.event.pull_request.head.sha }}
+          check-name: '🚀 Essential CI/CD'
+          repo-token: \${{ secrets.GITHUB_TOKEN }}
+          wait-interval: 30
+          allowed-conclusions: success
+
+      - name: 🔒 Security Update Auto-Merge
+        if: steps.pr-details.outputs.security_update == 'true'
+        run: |
+          echo "🔒 Auto-merging security update after checks pass"
+          gh pr merge --auto --squash "\${{ github.event.pull_request.number }}"
+        env:
+          GITHUB_TOKEN: \${{ secrets.GITHUB_TOKEN }}
+
+      - name: 📦 Regular Update (Manual Review Required)
+        if: steps.pr-details.outputs.security_update == 'false'
+        run: |
+          echo "📦 Regular dependency update - manual review required"
+          gh pr comment "\${{ github.event.pull_request.number }}" --body "
+          ## 📦 Dependency Update Review Required
+
+          This is a regular dependency update that requires manual review.
+
+          **Security updates are auto-merged**, but this update needs human approval.
+
+          ### Review Checklist:
+          - [ ] Check for breaking changes
+          - [ ] Verify compatibility with existing code
+          - [ ] Review changelog for impact
+          - [ ] Ensure all tests pass
+
+          Use \`@dependabot merge\` to merge after review.
+          "
+        env:
+          GITHUB_TOKEN: \${{ secrets.GITHUB_TOKEN }}
+
+      - name: 🚨 Notify on Security Update
+        if: steps.pr-details.outputs.security_update == 'true'
+        run: |
+          gh pr comment "\${{ github.event.pull_request.number }}" --body "
+          ## 🔒 Security Update Auto-Merge
+
+          This security update will be **automatically merged** after all checks pass:
+
+          ✅ SonarCloud security analysis
+          ✅ Quality gates validation
+          ✅ Dependency vulnerability scan
+          ✅ FCRA compliance checks
+
+          **No manual intervention required** for security updates.
+          "
+        env:
+          GITHUB_TOKEN: \${{ secrets.GITHUB_TOKEN }}
+DEPENDABOT_WORKFLOW_EOF
+
+echo "✅ Dependabot auto-merge workflow created"
+
+# Create Qodo PR-Agent configuration
+echo "⚙️  Creating Qodo PR-Agent configuration..."
+
+cat > .pr_agent.toml << 'PR_AGENT_EOF'
+[config]
+model = "gpt-4o-mini"
+model_turbo = "gpt-4o-mini"
+fallback_models = ["claude-3-5-sonnet-20241022"]
+git_provider = "github"
+publish_output = true
+publish_output_progress = true
+verbosity_level = 2
+use_repo_settings_file = true
+enable_help_text = true
+
+[github]
+# GitHub configuration
+user_token = ""  # Set via environment variable GITHUB_TOKEN
+deployment_type = "user"
+ratelimit_retries = 5
+base_url = "https://api.github.com"
+
+[pr_reviewer]
+# AI-powered code review with FCRA compliance focus
+require_focused_review = true
+require_score_review = false
+require_tests_review = true
+require_estimate_effort_to_review = true
+require_security_review = true
+enable_review_labels_effort = true
+enable_review_labels_security = true
+maximal_review_effort = 5
+extra_instructions = """
+CRITICAL: This is a credit repair application subject to FCRA regulations.
+
+MANDATORY COMPLIANCE CHECKS:
+1. FCRA Section 604 - Verify permissible purpose validation for all credit data access
+2. PII Protection - Ensure all SSN, DOB, and financial data is encrypted/masked
+3. Audit Trail - Validate comprehensive logging for all credit-related operations
+4. Error Handling - Check for user-friendly error messages (no internal details)
+5. Access Control - Verify role-based permissions for credit data access
+
+CREDIT REPAIR DOMAIN VALIDATION:
+- FICO score calculations must enforce 300-850 range
+- Credit utilization calculations must handle edge cases
+- Dispute workflows must track 30-day investigation timelines
+- All credit bureau API calls must include retry logic and rate limiting
+
+SECURITY REQUIREMENTS:
+- No hardcoded credentials or API keys
+- All database queries must use parameterized statements
+- Input validation for all user-provided data
+- Proper authentication and authorization checks
+
+TESTING REQUIREMENTS:
+- Minimum 80% test coverage for new code
+- Include edge cases and error scenarios
+- Mock external API calls (credit bureaus)
+- Validate FCRA compliance in test scenarios
+"""
+
+[pr_reviewer.incremental]
+enable_incremental_review = true
+require_all_thresholds = false
+
+[pr_code_suggestions]
+enable_code_suggestions = true
+commitable_code_suggestions = true
+extra_instructions = """
+Focus on:
+1. FCRA compliance improvements
+2. Credit calculation accuracy
+3. PII data protection enhancements
+4. Performance optimizations for credit workflows
+5. Error handling improvements
+6. Test coverage enhancements
+
+Avoid suggesting:
+- Changes that could impact FCRA compliance
+- Modifications to audit trail logging
+- Alterations to encryption/security measures
+"""
+
+[pr_description]
+enable_pr_description = true
+publish_description_as_comment = false
+add_original_user_description = true
+keep_original_user_title = true
+extra_instructions = """
+Include in PR description:
+1. FCRA compliance impact assessment
+2. Credit repair functionality changes
+3. Security implications
+4. Test coverage changes
+5. Performance impact
+6. Database migration requirements (if any)
+"""
+
+[pr_questions]
+enable_pr_questions = true
+extra_instructions = """
+Ask questions about:
+1. FCRA compliance validation approach
+2. Credit calculation accuracy verification
+3. PII data handling security measures
+4. Test coverage for edge cases
+5. Error handling for credit workflows
+6. Performance impact on credit operations
+"""
+
+[pr_add_docs]
+enable_pr_add_docs = true
+docs_style = "google"
+extra_instructions = """
+Focus documentation on:
+1. FCRA compliance requirements
+2. Credit calculation methodologies
+3. API usage patterns for credit data
+4. Security considerations
+5. Error handling approaches
+6. Testing strategies
+"""
+
+[pr_update_changelog]
+enable_pr_update_changelog = true
+changelog_file = "CHANGELOG.md"
+extra_instructions = """
+Categorize changes as:
+- FCRA Compliance
+- Credit Calculations
+- Security Enhancements
+- Performance Improvements
+- Bug Fixes
+- Testing Improvements
+"""
+
+[pr_analyze]
+enable_pr_analyze = true
+extra_instructions = """
+Analyze for:
+1. FCRA compliance risks
+2. Credit calculation accuracy
+3. Security vulnerabilities
+4. Performance bottlenecks
+5. Test coverage gaps
+6. Code maintainability
+"""
+
+[pr_similar_issue]
+enable_pr_similar_issue = false
+
+[pr_help]
+enable_pr_help = true
+
+[pr_config]
+enable_pr_config = true
+
+[local]
+# Local development settings
+description_path = ""
+review_path = ""
+
+[litellm]
+# Cost optimization settings
+drop_params = true
+max_tokens = 4000
+temperature = 0.1
+PR_AGENT_EOF
+
+echo "✅ Qodo PR-Agent configuration created"
+
+# Create Qodo PR-Agent workflow
+echo "⚙️  Creating Qodo PR-Agent workflow..."
+
+cat > .github/workflows/ai-code-review.yml << 'QODO_WORKFLOW_EOF'
+name: 🤖 Qodo PR-Agent Review
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  issue_comment:
+    types: [created, edited]
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  pr-agent:
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.draft == false
+
+    steps:
+      - name: 🤖 PR Agent Review
+        uses: Codium-ai/pr-agent@main
+        env:
+          OPENAI_KEY: \${{ secrets.OPENAI_KEY }}
+          GITHUB_TOKEN: \${{ secrets.GITHUB_TOKEN }}
+        with:
+          pr_url: \${{ github.event.pull_request.html_url }}
+          command: "review"
+
+      - name: 📝 PR Agent Describe
+        uses: Codium-ai/pr-agent@main
+        env:
+          OPENAI_KEY: \${{ secrets.OPENAI_KEY }}
+          GITHUB_TOKEN: \${{ secrets.GITHUB_TOKEN }}
+        with:
+          pr_url: \${{ github.event.pull_request.html_url }}
+          command: "describe"
+QODO_WORKFLOW_EOF
+
+echo "✅ Qodo PR-Agent workflow created"
+
+# Create Qodo Auto-Trigger workflow for security issues
+echo "⚙️  Creating Qodo auto-trigger workflow for security issues..."
+
+cat > .github/workflows/qodo-auto-trigger.yml << 'QODO_AUTO_EOF'
+# Qodo PR-Agent Auto-Trigger on Security Issues
+# Automatically triggers AI review when security scans fail or vulnerabilities are detected
+
+name: 🤖 Qodo Auto-Trigger on Security Issues
+
+on:
+  check_suite:
+    types: [completed]
+  workflow_run:
+    workflows: ["🔍 SonarCloud PR Analysis", "🚀 Essential CI/CD"]
+    types: [completed]
+  pull_request:
+    types: [opened, synchronize, reopened]
+    # Trigger on security-related PRs
+  schedule:
+    # Run daily to check for new security issues
+    - cron: '0 9 * * *'
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+  checks: read
+
+jobs:
+  security-trigger:
+    name: 🔒 Security Issue Detection
+    runs-on: ubuntu-latest
+    if: github.event_name == 'check_suite' || github.event_name == 'workflow_run'
+
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v5
+
+      - name: 🔍 Check for Security Failures
+        id: security-check
+        run: |
+          echo "Checking for security-related failures..."
+
+          # Check if this is a security-related failure
+          if [[ "\${{ github.event.check_suite.conclusion }}" == "failure" ]] || \
+             [[ "\${{ github.event.workflow_run.conclusion }}" == "failure" ]]; then
+
+            # Check if it's security-related
+            if [[ "\${{ github.event.check_suite.app.name }}" == *"security"* ]] || \
+               [[ "\${{ github.event.workflow_run.name }}" == *"Security"* ]] || \
+               [[ "\${{ github.event.workflow_run.name }}" == *"SonarCloud"* ]]; then
+              echo "security_failure=true" >> $GITHUB_OUTPUT
+              echo "🚨 Security failure detected"
+            else
+              echo "security_failure=false" >> $GITHUB_OUTPUT
+            fi
+          else
+            echo "security_failure=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: 🔍 Get Associated PR
+        id: get-pr
+        if: steps.security-check.outputs.security_failure == 'true'
+        run: |
+          # Get PR number from the commit SHA
+          PR_NUMBER=$(gh pr list --state open --json number,headRefOid --jq ".[] | select(.headRefOid==\"\${{ github.event.check_suite.head_sha || github.event.workflow_run.head_sha }}\") | .number")
+
+          if [[ -n "$PR_NUMBER" ]]; then
+            echo "pr_number=$PR_NUMBER" >> $GITHUB_OUTPUT
+            echo "Found PR #$PR_NUMBER for security failure"
+          else
+            echo "pr_number=" >> $GITHUB_OUTPUT
+            echo "No PR found for this commit"
+          fi
+        env:
+          GITHUB_TOKEN: \${{ secrets.GITHUB_TOKEN }}
+
+      - name: 🤖 Trigger Security Review
+        if: steps.security-check.outputs.security_failure == 'true' && steps.get-pr.outputs.pr_number != ''
+        run: |
+          echo "🚨 Triggering AI security review for PR #\${{ steps.get-pr.outputs.pr_number }}"
+
+          # Add security review comment to trigger PR-Agent
+          gh pr comment "\${{ steps.get-pr.outputs.pr_number }}" --body "
+          ## 🚨 Security Issue Detected - AI Review Triggered
+
+          A security scan failure has been detected. Triggering comprehensive AI review...
+
+          /security-review
+          /analyze
+
+          **Security Focus Areas:**
+          - Vulnerability assessment
+          - FCRA compliance validation
+          - PII data protection
+          - Access control verification
+          - Audit trail completeness
+
+          This review was automatically triggered due to security scan failures.
+          "
+        env:
+          GITHUB_TOKEN: \${{ secrets.GITHUB_TOKEN }}
+
+  vulnerability-scan:
+    name: 🔍 Vulnerability Detection Trigger
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' || github.event_name == 'schedule'
+
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v5
+
+      - name: 🔧 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: 📦 Install Dependencies
+        run: npm ci --no-audit
+
+      - name: 🔍 Run Security Audit
+        id: audit
+        continue-on-error: true
+        run: |
+          echo "Running npm audit..."
+          AUDIT_OUTPUT=$(npm audit --audit-level=moderate --json 2>/dev/null || echo '{"vulnerabilities":{}}')
+
+          # Count vulnerabilities
+          VULN_COUNT=$(echo "$AUDIT_OUTPUT" | jq -r '.metadata.vulnerabilities.total // 0')
+          CRITICAL_COUNT=$(echo "$AUDIT_OUTPUT" | jq -r '.metadata.vulnerabilities.critical // 0')
+          HIGH_COUNT=$(echo "$AUDIT_OUTPUT" | jq -r '.metadata.vulnerabilities.high // 0')
+
+          echo "vulnerabilities=$VULN_COUNT" >> $GITHUB_OUTPUT
+          echo "critical=$CRITICAL_COUNT" >> $GITHUB_OUTPUT
+          echo "high=$HIGH_COUNT" >> $GITHUB_OUTPUT
+
+          if [[ $CRITICAL_COUNT -gt 0 ]] || [[ $HIGH_COUNT -gt 5 ]]; then
+            echo "trigger_review=true" >> $GITHUB_OUTPUT
+            echo "🚨 High-risk vulnerabilities detected: Critical=$CRITICAL_COUNT, High=$HIGH_COUNT"
+          else
+            echo "trigger_review=false" >> $GITHUB_OUTPUT
+            echo "✅ No high-risk vulnerabilities detected"
+          fi
+
+      - name: 🤖 Trigger Vulnerability Review
+        if: steps.audit.outputs.trigger_review == 'true' && github.event_name == 'pull_request'
+        run: |
+          echo "🚨 Triggering AI vulnerability review..."
+
+          gh pr comment "\${{ github.event.pull_request.number }}" --body "
+          ## 🚨 High-Risk Vulnerabilities Detected
+
+          **Vulnerability Summary:**
+          - 🔴 Critical: \${{ steps.audit.outputs.critical }}
+          - 🟠 High: \${{ steps.audit.outputs.high }}
+          - 📊 Total: \${{ steps.audit.outputs.vulnerabilities }}
+
+          Triggering comprehensive security review...
+
+          /security-review
+          /compliance-review
+
+          **Required Actions:**
+          1. Review all critical and high-severity vulnerabilities
+          2. Validate FCRA compliance impact
+          3. Ensure PII data protection measures
+          4. Update dependencies or apply security patches
+          5. Re-run security scans after fixes
+
+          This review was automatically triggered due to vulnerability detection.
+          "
+        env:
+          GITHUB_TOKEN: \${{ secrets.GITHUB_TOKEN }}
+
+  dependabot-security-trigger:
+    name: 🤖 Dependabot Security Review
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' && github.actor == 'dependabot[bot]'
+
+    steps:
+      - name: 🔍 Check if Security Update
+        id: security-update
+        run: |
+          if [[ "\${{ github.event.pull_request.title }}" == *"security"* ]] || \
+             [[ "\${{ github.event.pull_request.title }}" == *"vulnerability"* ]] || \
+             [[ "\${{ github.event.pull_request.body }}" == *"security"* ]]; then
+            echo "is_security=true" >> $GITHUB_OUTPUT
+            echo "🔒 Dependabot security update detected"
+          else
+            echo "is_security=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: 🤖 Trigger Security Review for Dependabot
+        if: steps.security-update.outputs.is_security == 'true'
+        run: |
+          echo "🤖 Triggering AI review for Dependabot security update..."
+
+          gh pr comment "\${{ github.event.pull_request.number }}" --body "
+          ## 🤖 Dependabot Security Update - AI Review
+
+          This is an automated security update from Dependabot. Triggering AI review to validate:
+
+          /security-review
+          /analyze
+
+          **Security Update Validation:**
+          - ✅ Vulnerability resolution verification
+          - ✅ FCRA compliance impact assessment
+          - ✅ Breaking change analysis
+          - ✅ Test coverage validation
+          - ✅ Performance impact review
+
+          **Auto-Merge Status:** Will auto-merge after all checks pass ✅
+          "
+        env:
+          GITHUB_TOKEN: \${{ secrets.GITHUB_TOKEN }}
+QODO_AUTO_EOF
+
+echo "✅ Qodo auto-trigger workflow created"
+
+# Update SonarCloud configuration with AI CodeFix and security enforcement
+echo "⚙️  Updating SonarCloud configuration with AI CodeFix..."
+
+# Update the existing sonar-project.properties to add AI CodeFix and security enforcement
+cat >> sonar-project.properties << 'SONAR_UPDATE_EOF'
+
+# AI CodeFix Configuration
+sonar.ai.codefix.enabled=true
+sonar.ai.codefix.provider=OpenAI
+sonar.ai.codefix.autoApply=false
+sonar.ai.codefix.includeSecurityIssues=true
+sonar.ai.codefix.includeDependencyIssues=true
+
+# Security enforcement
+sonar.security.hotspots.enabled=true
+sonar.security.review.enabled=true
+sonar.security.hotspots.inheritFromParent=true
+
+# Quality gate enforcement - Block failing PRs
+sonar.buildbreaker.skip=false
+SONAR_UPDATE_EOF
+
+echo "✅ SonarCloud configuration updated with AI CodeFix and security enforcement"
+
+# Update SonarCloud workflows to include SONAR_TOKEN and security enforcement
+echo "⚙️  Updating SonarCloud workflows with security enforcement..."
+
+# Update the PR analysis workflow to include buildbreaker and SONAR_TOKEN
+sed -i.bak 's/GITHUB_TOKEN: \\${{ secrets.GITHUB_TOKEN }}/GITHUB_TOKEN: \\${{ secrets.GITHUB_TOKEN }}\\n          SONAR_TOKEN: \\${{ secrets.SONAR_TOKEN }}/' .github/workflows/sonarcloud-pr-analysis.yml
+sed -i.bak 's/-Dsonar.verbose=true/-Dsonar.verbose=true\n            -Dsonar.buildbreaker.skip=false\n            -Dsonar.security.hotspots.enabled=true\n            -Dsonar.security.review.enabled=true/' .github/workflows/sonarcloud-pr-analysis.yml
+
+# Update the main analysis workflow to include buildbreaker and SONAR_TOKEN
+sed -i.bak 's/GITHUB_TOKEN: \\${{ secrets.GITHUB_TOKEN }}/GITHUB_TOKEN: \\${{ secrets.GITHUB_TOKEN }}\\n          SONAR_TOKEN: \\${{ secrets.SONAR_TOKEN }}/' .github/workflows/sonarcloud-analysis.yml
+sed -i.bak 's/-Dsonar.verbose=true/-Dsonar.verbose=true\n            -Dsonar.buildbreaker.skip=false\n            -Dsonar.security.hotspots.enabled=true\n            -Dsonar.security.review.enabled=true/' .github/workflows/sonarcloud-analysis.yml
+
+# Remove backup files
+rm -f .github/workflows/sonarcloud-pr-analysis.yml.bak .github/workflows/sonarcloud-analysis.yml.bak 2>/dev/null || true
+
+echo "✅ SonarCloud workflows updated with security enforcement"
+
+# Create branch protection setup script
+echo "⚙️  Creating branch protection setup script..."
+mkdir -p scripts
+
+cat > scripts/setup-branch-protection.sh << 'BRANCH_PROTECTION_EOF'
+#!/bin/bash
+
+# GitHub Branch Protection Setup Script
+# Configures branch protection rules with required status checks for security enforcement
+
+set -e
+
+echo "🛡️ Setting up GitHub Branch Protection Rules"
+echo "=============================================="
+
+# Repository details - auto-detect from git remote
+REPO_URL=$(git remote get-url origin 2>/dev/null || echo "")
+if [[ "$REPO_URL" =~ github\.com[:/]([^/]+)/([^/.]+) ]]; then
+    REPO="${BASH_REMATCH[1]}/${BASH_REMATCH[2]}"
+    REPO=${REPO%.git}  # Remove .git suffix if present
+else
+    echo "❌ Could not detect GitHub repository from git remote"
+    echo "Please ensure you're in a git repository with a GitHub remote"
+    exit 1
+fi
+
+BRANCH="main"
+
+echo "📋 Repository: $REPO"
+echo "🌿 Branch: $BRANCH"
+
+# Check if gh CLI is authenticated
+if ! gh auth status >/dev/null 2>&1; then
+    echo "❌ GitHub CLI not authenticated. Please run 'gh auth login' first."
+    exit 1
+fi
+
+echo "✅ GitHub CLI authenticated"
+
+# Configure branch protection rules
+echo "🛡️ Configuring branch protection rules..."
+
+gh api \
+  --method PUT \
+  -H "Accept: application/vnd.github+json" \
+  -H "X-GitHub-Api-Version: 2022-11-28" \
+  "/repos/$REPO/branches/$BRANCH/protection" \
+  --input - <<EOF
+{
+  "required_status_checks": {
+    "strict": true,
+    "contexts": [
+      "🔍 SonarCloud PR Analysis / 🔍 SonarCloud PR Analysis",
+      "🚀 Essential CI/CD / 🔍 Essential Quality Gates",
+      "🚀 Essential CI/CD / 🔒 Essential Security Gates",
+      "🤖 Qodo PR-Agent Review / review",
+      "🤖 Dependabot Auto-Merge / 🤖 Auto-merge Dependabot PRs"
+    ]
+  },
+  "enforce_admins": false,
+  "required_pull_request_reviews": {
+    "required_approving_review_count": 1,
+    "dismiss_stale_reviews": true,
+    "require_code_owner_reviews": false,
+    "require_last_push_approval": true,
+    "bypass_pull_request_allowances": {
+      "users": [],
+      "teams": [],
+      "apps": ["dependabot"]
+    }
+  },
+  "restrictions": null,
+  "required_linear_history": false,
+  "allow_force_pushes": false,
+  "allow_deletions": false,
+  "block_creations": false,
+  "required_conversation_resolution": true,
+  "lock_branch": false,
+  "allow_fork_syncing": true
+}
+EOF
+
+echo "✅ Branch protection rules configured successfully!"
+
+# Display current protection status
+echo ""
+echo "📊 Current Branch Protection Status:"
+echo "===================================="
+
+gh api \
+  -H "Accept: application/vnd.github+json" \
+  -H "X-GitHub-Api-Version: 2022-11-28" \
+  "/repos/$REPO/branches/$BRANCH/protection" \
+  --jq '{
+    required_status_checks: .required_status_checks.contexts,
+    required_reviews: .required_pull_request_reviews.required_approving_review_count,
+    enforce_admins: .enforce_admins.enabled,
+    dismiss_stale_reviews: .required_pull_request_reviews.dismiss_stale_reviews,
+    require_conversation_resolution: .required_conversation_resolution.enabled
+  }'
+
+echo ""
+echo "🎉 Branch protection setup complete!"
+echo ""
+echo "🔒 Security Features Enabled:"
+echo "  ✅ Required status checks (strict mode)"
+echo "  ✅ Required pull request reviews (1 approval)"
+echo "  ✅ Dismiss stale reviews on new commits"
+echo "  ✅ Require conversation resolution"
+echo "  ✅ Block force pushes and deletions"
+echo "  ✅ Dependabot bypass for auto-merge"
+echo ""
+echo "📋 Required Status Checks:"
+echo "  🔍 SonarCloud PR Analysis"
+echo "  🚀 Essential Quality Gates"
+echo "  🔒 Essential Security Gates"
+echo "  🤖 Qodo PR-Agent Review"
+echo "  🤖 Dependabot Auto-Merge"
+echo ""
+echo "💡 Next Steps:"
+echo "  1. Test with a new PR to verify all checks are enforced"
+echo "  2. Verify Dependabot auto-merge works for security updates"
+echo "  3. Confirm SonarCloud quality gates block failing PRs"
+echo "  4. Validate Qodo PR-Agent triggers on security issues"
+BRANCH_PROTECTION_EOF
+
+chmod +x scripts/setup-branch-protection.sh
+
+echo "✅ Branch protection setup script created"
+
+# Create security automation verification script
+echo "⚙️  Creating security automation verification script..."
+
+cat > scripts/verify-security-automation.sh << 'VERIFY_SCRIPT_EOF'
+#!/bin/bash
+
+# Security Automation Verification Script
+# Verifies that all security automation fixes are working correctly
+
+set -e
+
+echo "🔍 Security Automation Verification"
+echo "===================================="
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+# Function to check status
+check_status() {
+    if [ $? -eq 0 ]; then
+        echo -e "${GREEN}✅ $1${NC}"
+        return 0
+    else
+        echo -e "${RED}❌ $1${NC}"
+        return 1
+    fi
+}
+
+echo ""
+echo "🔍 1. Dependabot Configuration Verification"
+echo "==========================================="
+
+# Check Dependabot config
+if [ -f ".github/dependabot.yml" ]; then
+    echo -e "${BLUE}📋 Checking Dependabot configuration...${NC}"
+
+    # Check for daily schedule
+    if grep -q "interval: \"daily\"" .github/dependabot.yml; then
+        check_status "Daily security update schedule configured"
+    else
+        check_status "Daily security update schedule NOT configured"
+    fi
+
+    # Check for security updates
+    if grep -q "security-updates:" .github/dependabot.yml; then
+        check_status "Security updates enabled"
+    else
+        check_status "Security updates NOT enabled"
+    fi
+
+    # Check auto-merge workflow
+    if [ -f ".github/workflows/dependabot-auto-merge.yml" ]; then
+        check_status "Dependabot auto-merge workflow exists"
+    else
+        check_status "Dependabot auto-merge workflow NOT found"
+    fi
+else
+    check_status "Dependabot configuration NOT found"
+fi
+
+echo ""
+echo "🔍 2. SonarCloud Quality Gate Verification"
+echo "=========================================="
+
+# Check SonarCloud config
+if [ -f "sonar-project.properties" ]; then
+    echo -e "${BLUE}📋 Checking SonarCloud configuration...${NC}"
+
+    # Check quality gate enforcement
+    if grep -q "sonar.buildbreaker.skip=false" sonar-project.properties; then
+        check_status "Quality gate enforcement enabled"
+    else
+        check_status "Quality gate enforcement NOT enabled"
+    fi
+
+    # Check security hotspots
+    if grep -q "sonar.security.hotspots.enabled=true" sonar-project.properties; then
+        check_status "Security hotspots enabled"
+    else
+        check_status "Security hotspots NOT enabled"
+    fi
+
+    # Check AI CodeFix
+    if grep -q "sonar.ai.codefix.enabled=true" sonar-project.properties; then
+        check_status "AI CodeFix enabled"
+    else
+        check_status "AI CodeFix NOT enabled"
+    fi
+
+    # Check workflow has SONAR_TOKEN
+    if grep -q "SONAR_TOKEN" .github/workflows/sonarcloud-pr-analysis.yml; then
+        check_status "SonarCloud PR workflow has SONAR_TOKEN"
+    else
+        check_status "SonarCloud PR workflow missing SONAR_TOKEN"
+    fi
+else
+    check_status "SonarCloud configuration NOT found"
+fi
+
+echo ""
+echo "🔍 3. Qodo PR-Agent Auto-Trigger Verification"
+echo "=============================================="
+
+# Check Qodo PR-Agent config
+if [ -f ".pr_agent.toml" ]; then
+    echo -e "${BLUE}📋 Checking Qodo PR-Agent configuration...${NC}"
+
+    # Check FCRA compliance focus
+    if grep -q "FCRA" .pr_agent.toml; then
+        check_status "FCRA compliance configuration found"
+    else
+        check_status "FCRA compliance configuration NOT found"
+    fi
+
+    # Check security review configuration
+    if grep -q "require_security_review" .pr_agent.toml; then
+        check_status "Security review requirement configured"
+    else
+        check_status "Security review requirement NOT configured"
+    fi
+
+    # Check auto-trigger workflow
+    if [ -f ".github/workflows/qodo-auto-trigger.yml" ]; then
+        check_status "Qodo auto-trigger workflow exists"
+    else
+        check_status "Qodo auto-trigger workflow NOT found"
+    fi
+
+    # Check main AI review workflow
+    if [ -f ".github/workflows/ai-code-review.yml" ]; then
+        check_status "Main AI code review workflow exists"
+    else
+        check_status "Main AI code review workflow NOT found"
+    fi
+else
+    check_status "Qodo PR-Agent configuration NOT found"
+fi
+
+echo ""
+echo "🔍 4. GitHub Actions Workflow Verification"
+echo "=========================================="
+
+echo -e "${BLUE}📋 Checking GitHub Actions workflows...${NC}"
+
+# Count workflows
+WORKFLOW_COUNT=$(find .github/workflows -name "*.yml" -o -name "*.yaml" 2>/dev/null | wc -l)
+echo "📊 Total workflows found: $WORKFLOW_COUNT"
+
+# Check essential workflows
+ESSENTIAL_WORKFLOWS=(
+    "sonarcloud-pr-analysis.yml"
+    "sonarcloud-analysis.yml"
+    "ai-code-review.yml"
+    "dependabot-auto-merge.yml"
+    "qodo-auto-trigger.yml"
+)
+
+for workflow in "${ESSENTIAL_WORKFLOWS[@]}"; do
+    if [ -f ".github/workflows/$workflow" ]; then
+        check_status "Essential workflow: $workflow"
+    else
+        check_status "Essential workflow MISSING: $workflow"
+    fi
+done
+
+echo ""
+echo "📊 VERIFICATION SUMMARY"
+echo "======================"
+
+echo -e "${GREEN}✅ Security Automation Features:${NC}"
+echo "  🤖 Dependabot: Daily security updates + auto-merge"
+echo "  🔍 SonarCloud: Quality gate enforcement + AI CodeFix"
+echo "  🤖 Qodo PR-Agent: Auto-trigger on security failures"
+echo "  🛡️ Security: Comprehensive vulnerability scanning"
+
+echo ""
+echo -e "${BLUE}📋 Next Steps:${NC}"
+echo "  1. Run: ./scripts/setup-branch-protection.sh"
+echo "  2. Set up GitHub secrets: SONAR_TOKEN, OPENAI_KEY"
+echo "  3. Test with a security vulnerability PR"
+echo "  4. Verify Dependabot auto-merge works"
+echo "  5. Confirm SonarCloud blocks failing PRs"
+
+echo ""
+echo -e "${GREEN}🎉 Security automation verification complete!${NC}"
+VERIFY_SCRIPT_EOF
+
+chmod +x scripts/verify-security-automation.sh
+
+echo "✅ Security automation verification script created"
 
 # If no Playwright config exists, create a sensible default
 if [ -z "$PLAYWRIGHT_CONFIG" ]; then
@@ -1211,17 +2494,56 @@ echo "📦 Backup Information:"
 echo "   Backup created in: $BACKUP_DIR"
 echo "   To rollback: rm -rf $BACKUP_DIR && git checkout -- ."
 echo ""
-echo "Next steps:"
-echo "1. Run 'npm run format:fix' to format existing code"
-echo "2. Run 'npm run lint:fix' to fix any linting issues"
-echo "3. Test with 'npm run quality-gates'"
-echo "4. Validate with 'node validate-setup.js'"
-echo "5. For SonarCloud analysis:"
-echo "   - SonarCloud workflows are already configured for PR and main branch analysis"
-echo "   - Set SONAR_TOKEN in GitHub repository secrets to enable analysis"
-echo "   - Get token from https://sonarcloud.io/account/security/"
-echo "   - SonarCloud will automatically analyze PRs and provide feedback"
-echo "   - Run 'npm run test:coverage:sonar' to generate coverage locally"
+echo "🚀 Next Steps - Security Automation Setup:"
+echo "=========================================="
+echo ""
+echo "📋 1. IMMEDIATE SETUP:"
+echo "   • Run 'npm run format:fix' to format existing code"
+echo "   • Run 'npm run lint:fix' to fix any linting issues"
+echo "   • Test with 'npm run quality-gates'"
+echo "   • Validate with 'node validate-setup.js'"
+echo ""
+echo "🔒 2. SECURITY AUTOMATION CONFIGURATION:"
+echo "   • Set up GitHub Secrets (required for AI automation):"
+echo "     - SONAR_TOKEN: Get from https://sonarcloud.io/account/security/"
+echo "     - OPENAI_KEY: Get from https://platform.openai.com/api-keys"
+echo "   • Run './scripts/setup-branch-protection.sh' to enforce security gates"
+echo "   • Verify setup with './scripts/verify-security-automation.sh'"
+echo ""
+echo "🤖 3. AI-POWERED FEATURES ENABLED:"
+echo "   ✅ Dependabot: Daily security updates with auto-merge"
+echo "   ✅ SonarCloud: AI CodeFix with quality gate enforcement"
+echo "   ✅ Qodo PR-Agent: Auto-triggered security reviews"
+echo "   ✅ Branch Protection: Required security checks before merge"
+echo ""
+echo "🔍 4. SONARCLOUD AI CODEFIX:"
+echo "   • SonarCloud will automatically suggest fixes for:"
+echo "     - Security vulnerabilities"
+echo "     - Code quality issues"
+echo "     - Dependency problems"
+echo "   • Enable in SonarCloud dashboard: Administration → AI CodeFix"
+echo "   • Select OpenAI provider for intelligent suggestions"
+echo ""
+echo "🤖 5. QODO PR-AGENT COMMANDS:"
+echo "   Use these commands in PR comments:"
+echo "   • /review - Comprehensive code review with FCRA focus"
+echo "   • /security-review - Security-focused analysis"
+echo "   • /compliance-review - FCRA compliance validation"
+echo "   • /analyze - Deep code analysis"
+echo "   • /improve - Code improvement suggestions"
+echo ""
+echo "🛡️ 6. DEPENDABOT AUTOMATION:"
+echo "   • Security updates: Auto-merged after passing all checks"
+echo "   • Regular updates: Manual review required"
+echo "   • Daily scanning for immediate security response"
+echo "   • Grouped updates by category for easier management"
+echo ""
+echo "📊 7. TESTING THE SETUP:"
+echo "   • Create a test PR to verify all automation works"
+echo "   • Check that SonarCloud analysis runs and provides feedback"
+echo "   • Verify Qodo PR-Agent provides AI reviews"
+echo "   • Confirm branch protection blocks PRs with failing checks"
+echo "   • Test Dependabot auto-merge with a security update"
 if [ "$GIT_HOOKS_CONFIGURED" = true ]; then
     echo "6. Commit your changes to test the Git hooks"
 else

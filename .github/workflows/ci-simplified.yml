@@ -12,8 +12,16 @@ on:
     types: [opened, synchronize, reopened, ready_for_review]
   workflow_dispatch:
 
+# Concurrency control - cancel in-progress runs for same PR/branch
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 env:
   NODE_VERSION: '20'
+  # Cache optimization
+  FORCE_COLOR: '1'
+  CI: 'true'
 
 permissions:
   contents: read
@@ -29,6 +37,7 @@ jobs:
   quality-gates:
     name: 🔍 Essential Quality Gates
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: 📥 Checkout Repository
         uses: actions/checkout@v5
@@ -49,13 +58,13 @@ jobs:
         run: npm run lint:ci
 
       - name: 🎨 Formatting Check
-        run: npm run format
+        run: npm run format:check
 
       - name: 📝 TypeScript Check
         run: npm run type-check
 
       - name: 🧪 Unit Tests
-        run: npm run test:ci
+        run: npm run test:coverage
 
       - name: 🏗️ Build Check
         run: npm run build
@@ -76,6 +85,7 @@ jobs:
   security:
     name: 🔒 Essential Security
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - name: 📥 Checkout Repository
         uses: actions/checkout@v5
@@ -106,6 +116,7 @@ jobs:
   deploy:
     name: 🚀 Deploy
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     needs: [quality-gates, security]
     if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
     environment: production

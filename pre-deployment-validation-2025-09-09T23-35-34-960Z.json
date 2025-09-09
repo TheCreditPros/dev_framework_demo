@@ -1,0 +1,1178 @@
+{
+  "timestamp": "2025-09-09T23:35:34.960Z",
+  "summary": {
+    "passed": 62,
+    "failed": 4,
+    "warnings": 6,
+    "critical": 4,
+    "tests": [
+      {
+        "type": "WORKFLOW_LOAD",
+        "status": "PASS",
+        "message": "Loaded ai-apply.yml",
+        "details": "Valid YAML structure",
+        "timestamp": "2025-09-09T23:35:34.948Z"
+      },
+      {
+        "type": "WORKFLOW_LOAD",
+        "status": "PASS",
+        "message": "Loaded ai-code-review.yml",
+        "details": "Valid YAML structure",
+        "timestamp": "2025-09-09T23:35:34.950Z"
+      },
+      {
+        "type": "WORKFLOW_LOAD",
+        "status": "PASS",
+        "message": "Loaded ai-generate-learnings.yml",
+        "details": "Valid YAML structure",
+        "timestamp": "2025-09-09T23:35:34.952Z"
+      },
+      {
+        "type": "WORKFLOW_LOAD",
+        "status": "PASS",
+        "message": "Loaded ci-simplified.yml",
+        "details": "Valid YAML structure",
+        "timestamp": "2025-09-09T23:35:34.953Z"
+      },
+      {
+        "type": "WORKFLOW_LOAD",
+        "status": "PASS",
+        "message": "Loaded dependabot-auto-merge.yml",
+        "details": "Valid YAML structure",
+        "timestamp": "2025-09-09T23:35:34.954Z"
+      },
+      {
+        "type": "WORKFLOW_LOAD",
+        "status": "PASS",
+        "message": "Loaded qodo-auto-trigger.yml",
+        "details": "Valid YAML structure",
+        "timestamp": "2025-09-09T23:35:34.955Z"
+      },
+      {
+        "type": "WORKFLOW_LOAD",
+        "status": "PASS",
+        "message": "Loaded sonarcloud-analysis.yml",
+        "details": "Valid YAML structure",
+        "timestamp": "2025-09-09T23:35:34.955Z"
+      },
+      {
+        "type": "WORKFLOW_LOAD",
+        "status": "PASS",
+        "message": "Loaded sonarcloud-pr-analysis.yml",
+        "details": "Valid YAML structure",
+        "timestamp": "2025-09-09T23:35:34.956Z"
+      },
+      {
+        "type": "WORKFLOW_LOAD",
+        "status": "PASS",
+        "message": "Loaded sonarcloud-setup.yml",
+        "details": "Valid YAML structure",
+        "timestamp": "2025-09-09T23:35:34.957Z"
+      },
+      {
+        "type": "WORKFLOW_COUNT",
+        "status": "INFO",
+        "message": "Found 9 workflow files",
+        "details": "",
+        "timestamp": "2025-09-09T23:35:34.957Z"
+      },
+      {
+        "type": "STRUCTURE",
+        "status": "PASS",
+        "message": "ai-apply.yml has valid structure",
+        "details": "",
+        "timestamp": "2025-09-09T23:35:34.957Z"
+      },
+      {
+        "type": "STRUCTURE",
+        "status": "PASS",
+        "message": "ai-code-review.yml has valid structure",
+        "details": "",
+        "timestamp": "2025-09-09T23:35:34.957Z"
+      },
+      {
+        "type": "STRUCTURE",
+        "status": "PASS",
+        "message": "ai-generate-learnings.yml has valid structure",
+        "details": "",
+        "timestamp": "2025-09-09T23:35:34.957Z"
+      },
+      {
+        "type": "STRUCTURE",
+        "status": "PASS",
+        "message": "ci-simplified.yml has valid structure",
+        "details": "",
+        "timestamp": "2025-09-09T23:35:34.957Z"
+      },
+      {
+        "type": "STRUCTURE",
+        "status": "PASS",
+        "message": "dependabot-auto-merge.yml has valid structure",
+        "details": "",
+        "timestamp": "2025-09-09T23:35:34.957Z"
+      },
+      {
+        "type": "STRUCTURE",
+        "status": "PASS",
+        "message": "qodo-auto-trigger.yml has valid structure",
+        "details": "",
+        "timestamp": "2025-09-09T23:35:34.957Z"
+      },
+      {
+        "type": "STRUCTURE",
+        "status": "PASS",
+        "message": "sonarcloud-analysis.yml has valid structure",
+        "details": "",
+        "timestamp": "2025-09-09T23:35:34.957Z"
+      },
+      {
+        "type": "STRUCTURE",
+        "status": "PASS",
+        "message": "sonarcloud-pr-analysis.yml has valid structure",
+        "details": "",
+        "timestamp": "2025-09-09T23:35:34.957Z"
+      },
+      {
+        "type": "STRUCTURE",
+        "status": "PASS",
+        "message": "sonarcloud-setup.yml has valid structure",
+        "details": "",
+        "timestamp": "2025-09-09T23:35:34.957Z"
+      },
+      {
+        "type": "TRIGGERS",
+        "status": "PASS",
+        "message": "ai-apply.yml has valid triggers",
+        "details": "",
+        "timestamp": "2025-09-09T23:35:34.958Z"
+      },
+      {
+        "type": "TRIGGER_TYPE",
+        "status": "WARNING",
+        "message": "ai-code-review.yml uses uncommon trigger: issue_comment",
+        "details": "",
+        "timestamp": "2025-09-09T23:35:34.958Z"
+      },
+      {
+        "type": "TRIGGER_TYPE",
+        "status": "WARNING",
+        "message": "ai-code-review.yml uses uncommon trigger: check_suite",
+        "details": "",
+        "timestamp": "2025-09-09T23:35:34.958Z"
+      },
+      {
+        "type": "TRIGGER_TYPE",
+        "status": "WARNING",
+        "message": "ai-code-review.yml uses uncommon trigger: workflow_run",
+        "details": "",
+        "timestamp": "2025-09-09T23:35:34.958Z"
+      },
+      {
+        "type": "TRIGGERS",
+        "status": "PASS",
+        "message": "ai-code-review.yml has valid triggers",
+        "details": "",
+        "timestamp": "2025-09-09T23:35:34.958Z"
+      },
+      {
+        "type": "TRIGGERS",
+        "status": "PASS",
+        "message": "ai-generate-learnings.yml has valid triggers",
+        "details": "",
+        "timestamp": "2025-09-09T23:35:34.958Z"
+      },
+      {
+        "type": "TRIGGERS",
+        "status": "PASS",
+        "message": "ci-simplified.yml has valid triggers",
+        "details": "",
+        "timestamp": "2025-09-09T23:35:34.958Z"
+      },
+      {
+        "type": "TRIGGERS",
+        "status": "PASS",
+        "message": "dependabot-auto-merge.yml has valid triggers",
+        "details": "",
+        "timestamp": "2025-09-09T23:35:34.958Z"
+      },
+      {
+        "type": "TRIGGERS",
+        "status": "PASS",
+        "message": "qodo-auto-trigger.yml has valid triggers",
+        "details": "",
+        "timestamp": "2025-09-09T23:35:34.958Z"
+      },
+      {
+        "type": "TRIGGERS",
+        "status": "PASS",
+        "message": "sonarcloud-analysis.yml has valid triggers",
+        "details": "",
+        "timestamp": "2025-09-09T23:35:34.958Z"
+      },
+      {
+        "type": "TRIGGERS",
+        "status": "PASS",
+        "message": "sonarcloud-pr-analysis.yml has valid triggers",
+        "details": "",
+        "timestamp": "2025-09-09T23:35:34.958Z"
+      },
+      {
+        "type": "TRIGGERS",
+        "status": "PASS",
+        "message": "sonarcloud-setup.yml has valid triggers",
+        "details": "",
+        "timestamp": "2025-09-09T23:35:34.958Z"
+      },
+      {
+        "type": "PERMISSIONS",
+        "status": "PASS",
+        "message": "ai-apply.yml has appropriate contents permissions",
+        "details": "",
+        "timestamp": "2025-09-09T23:35:34.958Z"
+      },
+      {
+        "type": "PERMISSIONS",
+        "status": "PASS",
+        "message": "ai-apply.yml can write to PRs",
+        "details": "",
+        "timestamp": "2025-09-09T23:35:34.958Z"
+      },
+      {
+        "type": "PERMISSIONS",
+        "status": "PASS",
+        "message": "ai-code-review.yml has appropriate contents permissions",
+        "details": "",
+        "timestamp": "2025-09-09T23:35:34.958Z"
+      },
+      {
+        "type": "PERMISSIONS",
+        "status": "PASS",
+        "message": "ai-code-review.yml can write to PRs",
+        "details": "",
+        "timestamp": "2025-09-09T23:35:34.958Z"
+      },
+      {
+        "type": "PERMISSIONS",
+        "status": "PASS",
+        "message": "ai-generate-learnings.yml has appropriate contents permissions",
+        "details": "",
+        "timestamp": "2025-09-09T23:35:34.958Z"
+      },
+      {
+        "type": "PERMISSIONS",
+        "status": "PASS",
+        "message": "ci-simplified.yml has appropriate contents permissions",
+        "details": "",
+        "timestamp": "2025-09-09T23:35:34.958Z"
+      },
+      {
+        "type": "PERMISSIONS",
+        "status": "PASS",
+        "message": "ci-simplified.yml can write to PRs",
+        "details": "",
+        "timestamp": "2025-09-09T23:35:34.958Z"
+      },
+      {
+        "type": "PERMISSIONS",
+        "status": "PASS",
+        "message": "dependabot-auto-merge.yml has appropriate contents permissions",
+        "details": "",
+        "timestamp": "2025-09-09T23:35:34.958Z"
+      },
+      {
+        "type": "PERMISSIONS",
+        "status": "PASS",
+        "message": "dependabot-auto-merge.yml can write to PRs",
+        "details": "",
+        "timestamp": "2025-09-09T23:35:34.958Z"
+      },
+      {
+        "type": "PERMISSIONS",
+        "status": "PASS",
+        "message": "qodo-auto-trigger.yml has appropriate contents permissions",
+        "details": "",
+        "timestamp": "2025-09-09T23:35:34.958Z"
+      },
+      {
+        "type": "PERMISSIONS",
+        "status": "PASS",
+        "message": "qodo-auto-trigger.yml can write to PRs",
+        "details": "",
+        "timestamp": "2025-09-09T23:35:34.958Z"
+      },
+      {
+        "type": "PERMISSIONS",
+        "status": "PASS",
+        "message": "sonarcloud-analysis.yml has appropriate contents permissions",
+        "details": "",
+        "timestamp": "2025-09-09T23:35:34.958Z"
+      },
+      {
+        "type": "PERMISSIONS",
+        "status": "PASS",
+        "message": "sonarcloud-analysis.yml can write to PRs",
+        "details": "",
+        "timestamp": "2025-09-09T23:35:34.958Z"
+      },
+      {
+        "type": "PERMISSIONS",
+        "status": "PASS",
+        "message": "sonarcloud-pr-analysis.yml has appropriate contents permissions",
+        "details": "",
+        "timestamp": "2025-09-09T23:35:34.958Z"
+      },
+      {
+        "type": "PERMISSIONS",
+        "status": "PASS",
+        "message": "sonarcloud-pr-analysis.yml can write to PRs",
+        "details": "",
+        "timestamp": "2025-09-09T23:35:34.958Z"
+      },
+      {
+        "type": "PERMISSIONS",
+        "status": "PASS",
+        "message": "sonarcloud-setup.yml has appropriate contents permissions",
+        "details": "",
+        "timestamp": "2025-09-09T23:35:34.958Z"
+      },
+      {
+        "type": "SECRET_USAGE",
+        "status": "PASS",
+        "message": "ai-apply.yml uses GITHUB_TOKEN",
+        "details": "",
+        "timestamp": "2025-09-09T23:35:34.958Z"
+      },
+      {
+        "type": "GITHUB_TOKEN",
+        "status": "PASS",
+        "message": "ai-apply.yml uses GITHUB_TOKEN properly",
+        "details": "",
+        "timestamp": "2025-09-09T23:35:34.958Z"
+      },
+      {
+        "type": "SECRET_USAGE",
+        "status": "PASS",
+        "message": "ai-code-review.yml uses GITHUB_TOKEN",
+        "details": "",
+        "timestamp": "2025-09-09T23:35:34.958Z"
+      },
+      {
+        "type": "GITHUB_TOKEN",
+        "status": "PASS",
+        "message": "ai-code-review.yml uses GITHUB_TOKEN properly",
+        "details": "",
+        "timestamp": "2025-09-09T23:35:34.958Z"
+      },
+      {
+        "type": "GITHUB_TOKEN",
+        "status": "WARNING",
+        "message": "ai-generate-learnings.yml may not be using GITHUB_TOKEN",
+        "details": "",
+        "timestamp": "2025-09-09T23:35:34.958Z"
+      },
+      {
+        "type": "GITHUB_TOKEN",
+        "status": "WARNING",
+        "message": "ci-simplified.yml may not be using GITHUB_TOKEN",
+        "details": "",
+        "timestamp": "2025-09-09T23:35:34.958Z"
+      },
+      {
+        "type": "SECRET_USAGE",
+        "status": "PASS",
+        "message": "dependabot-auto-merge.yml uses GITHUB_TOKEN",
+        "details": "",
+        "timestamp": "2025-09-09T23:35:34.958Z"
+      },
+      {
+        "type": "GITHUB_TOKEN",
+        "status": "PASS",
+        "message": "dependabot-auto-merge.yml uses GITHUB_TOKEN properly",
+        "details": "",
+        "timestamp": "2025-09-09T23:35:34.958Z"
+      },
+      {
+        "type": "SECRET_USAGE",
+        "status": "PASS",
+        "message": "qodo-auto-trigger.yml uses GITHUB_TOKEN",
+        "details": "",
+        "timestamp": "2025-09-09T23:35:34.959Z"
+      },
+      {
+        "type": "GITHUB_TOKEN",
+        "status": "PASS",
+        "message": "qodo-auto-trigger.yml uses GITHUB_TOKEN properly",
+        "details": "",
+        "timestamp": "2025-09-09T23:35:34.959Z"
+      },
+      {
+        "type": "HARD_CODED_SECRETS",
+        "status": "CRITICAL",
+        "message": "sonarcloud-analysis.yml contains potential hardcoded secrets",
+        "details": "Key=\" sonar-project.properties | cut -d'",
+        "timestamp": "2025-09-09T23:35:34.959Z"
+      },
+      {
+        "type": "SECRET_USAGE",
+        "status": "PASS",
+        "message": "sonarcloud-analysis.yml uses GITHUB_TOKEN",
+        "details": "",
+        "timestamp": "2025-09-09T23:35:34.959Z"
+      },
+      {
+        "type": "GITHUB_TOKEN",
+        "status": "PASS",
+        "message": "sonarcloud-analysis.yml uses GITHUB_TOKEN properly",
+        "details": "",
+        "timestamp": "2025-09-09T23:35:34.959Z"
+      },
+      {
+        "type": "HARD_CODED_SECRETS",
+        "status": "CRITICAL",
+        "message": "sonarcloud-pr-analysis.yml contains potential hardcoded secrets",
+        "details": "Key=\" sonar-project.properties | cut -d'",
+        "timestamp": "2025-09-09T23:35:34.959Z"
+      },
+      {
+        "type": "SECRET_USAGE",
+        "status": "PASS",
+        "message": "sonarcloud-pr-analysis.yml uses GITHUB_TOKEN",
+        "details": "",
+        "timestamp": "2025-09-09T23:35:34.959Z"
+      },
+      {
+        "type": "GITHUB_TOKEN",
+        "status": "PASS",
+        "message": "sonarcloud-pr-analysis.yml uses GITHUB_TOKEN properly",
+        "details": "",
+        "timestamp": "2025-09-09T23:35:34.959Z"
+      },
+      {
+        "type": "HARD_CODED_SECRETS",
+        "status": "CRITICAL",
+        "message": "sonarcloud-setup.yml contains potential hardcoded secrets",
+        "details": "TOKEN:\" \\\n            \"",
+        "timestamp": "2025-09-09T23:35:34.959Z"
+      },
+      {
+        "type": "HARD_CODED_SECRETS",
+        "status": "CRITICAL",
+        "message": "sonarcloud-setup.yml contains potential hardcoded secrets",
+        "details": "Key=\" sonar-project.properties | cut -d', KEY=\"${{ steps.setup.outputs.project-key }}\"",
+        "timestamp": "2025-09-09T23:35:34.959Z"
+      },
+      {
+        "type": "SECRET_USAGE",
+        "status": "PASS",
+        "message": "sonarcloud-setup.yml uses GITHUB_TOKEN",
+        "details": "",
+        "timestamp": "2025-09-09T23:35:34.959Z"
+      },
+      {
+        "type": "GITHUB_TOKEN",
+        "status": "PASS",
+        "message": "sonarcloud-setup.yml uses GITHUB_TOKEN properly",
+        "details": "",
+        "timestamp": "2025-09-09T23:35:34.959Z"
+      },
+      {
+        "type": "JOB_DEPENDENCY",
+        "status": "PASS",
+        "message": "ci-simplified.yml:deploy has valid dependencies",
+        "details": "",
+        "timestamp": "2025-09-09T23:35:34.959Z"
+      },
+      {
+        "type": "JOB_DEPENDENCY",
+        "status": "PASS",
+        "message": "sonarcloud-setup.yml:test-analysis has valid dependencies",
+        "details": "",
+        "timestamp": "2025-09-09T23:35:34.959Z"
+      },
+      {
+        "type": "TIMEOUT_CONFIG",
+        "status": "INFO",
+        "message": "ai-apply.yml using default timeouts",
+        "details": "",
+        "timestamp": "2025-09-09T23:35:34.959Z"
+      },
+      {
+        "type": "TIMEOUT_CONFIG",
+        "status": "INFO",
+        "message": "ai-code-review.yml using default timeouts",
+        "details": "",
+        "timestamp": "2025-09-09T23:35:34.959Z"
+      },
+      {
+        "type": "TIMEOUT_CONFIG",
+        "status": "INFO",
+        "message": "ai-generate-learnings.yml using default timeouts",
+        "details": "",
+        "timestamp": "2025-09-09T23:35:34.959Z"
+      },
+      {
+        "type": "TIMEOUT_CONFIG",
+        "status": "PASS",
+        "message": "ci-simplified.yml has reasonable timeout: 15 minutes",
+        "details": "",
+        "timestamp": "2025-09-09T23:35:34.959Z"
+      },
+      {
+        "type": "TIMEOUT_CONFIG",
+        "status": "PASS",
+        "message": "ci-simplified.yml has reasonable timeout: 10 minutes",
+        "details": "",
+        "timestamp": "2025-09-09T23:35:34.959Z"
+      },
+      {
+        "type": "TIMEOUT_CONFIG",
+        "status": "PASS",
+        "message": "ci-simplified.yml has reasonable timeout: 10 minutes",
+        "details": "",
+        "timestamp": "2025-09-09T23:35:34.959Z"
+      },
+      {
+        "type": "TIMEOUT_CONFIG",
+        "status": "INFO",
+        "message": "dependabot-auto-merge.yml using default timeouts",
+        "details": "",
+        "timestamp": "2025-09-09T23:35:34.959Z"
+      },
+      {
+        "type": "TIMEOUT_CONFIG",
+        "status": "INFO",
+        "message": "qodo-auto-trigger.yml using default timeouts",
+        "details": "",
+        "timestamp": "2025-09-09T23:35:34.960Z"
+      },
+      {
+        "type": "TIMEOUT_CONFIG",
+        "status": "INFO",
+        "message": "sonarcloud-analysis.yml using default timeouts",
+        "details": "",
+        "timestamp": "2025-09-09T23:35:34.960Z"
+      },
+      {
+        "type": "TIMEOUT_CONFIG",
+        "status": "INFO",
+        "message": "sonarcloud-pr-analysis.yml using default timeouts",
+        "details": "",
+        "timestamp": "2025-09-09T23:35:34.960Z"
+      },
+      {
+        "type": "TIMEOUT_CONFIG",
+        "status": "INFO",
+        "message": "sonarcloud-setup.yml using default timeouts",
+        "details": "",
+        "timestamp": "2025-09-09T23:35:34.960Z"
+      },
+      {
+        "type": "DEPLOYMENT_WORKFLOWS",
+        "status": "WARNING",
+        "message": "No deployment-triggered workflows found",
+        "details": "",
+        "timestamp": "2025-09-09T23:35:34.960Z"
+      }
+    ]
+  },
+  "details": [
+    {
+      "type": "WORKFLOW_LOAD",
+      "status": "PASS",
+      "message": "Loaded ai-apply.yml",
+      "details": "Valid YAML structure",
+      "timestamp": "2025-09-09T23:35:34.948Z"
+    },
+    {
+      "type": "WORKFLOW_LOAD",
+      "status": "PASS",
+      "message": "Loaded ai-code-review.yml",
+      "details": "Valid YAML structure",
+      "timestamp": "2025-09-09T23:35:34.950Z"
+    },
+    {
+      "type": "WORKFLOW_LOAD",
+      "status": "PASS",
+      "message": "Loaded ai-generate-learnings.yml",
+      "details": "Valid YAML structure",
+      "timestamp": "2025-09-09T23:35:34.952Z"
+    },
+    {
+      "type": "WORKFLOW_LOAD",
+      "status": "PASS",
+      "message": "Loaded ci-simplified.yml",
+      "details": "Valid YAML structure",
+      "timestamp": "2025-09-09T23:35:34.953Z"
+    },
+    {
+      "type": "WORKFLOW_LOAD",
+      "status": "PASS",
+      "message": "Loaded dependabot-auto-merge.yml",
+      "details": "Valid YAML structure",
+      "timestamp": "2025-09-09T23:35:34.954Z"
+    },
+    {
+      "type": "WORKFLOW_LOAD",
+      "status": "PASS",
+      "message": "Loaded qodo-auto-trigger.yml",
+      "details": "Valid YAML structure",
+      "timestamp": "2025-09-09T23:35:34.955Z"
+    },
+    {
+      "type": "WORKFLOW_LOAD",
+      "status": "PASS",
+      "message": "Loaded sonarcloud-analysis.yml",
+      "details": "Valid YAML structure",
+      "timestamp": "2025-09-09T23:35:34.955Z"
+    },
+    {
+      "type": "WORKFLOW_LOAD",
+      "status": "PASS",
+      "message": "Loaded sonarcloud-pr-analysis.yml",
+      "details": "Valid YAML structure",
+      "timestamp": "2025-09-09T23:35:34.956Z"
+    },
+    {
+      "type": "WORKFLOW_LOAD",
+      "status": "PASS",
+      "message": "Loaded sonarcloud-setup.yml",
+      "details": "Valid YAML structure",
+      "timestamp": "2025-09-09T23:35:34.957Z"
+    },
+    {
+      "type": "WORKFLOW_COUNT",
+      "status": "INFO",
+      "message": "Found 9 workflow files",
+      "details": "",
+      "timestamp": "2025-09-09T23:35:34.957Z"
+    },
+    {
+      "type": "STRUCTURE",
+      "status": "PASS",
+      "message": "ai-apply.yml has valid structure",
+      "details": "",
+      "timestamp": "2025-09-09T23:35:34.957Z"
+    },
+    {
+      "type": "STRUCTURE",
+      "status": "PASS",
+      "message": "ai-code-review.yml has valid structure",
+      "details": "",
+      "timestamp": "2025-09-09T23:35:34.957Z"
+    },
+    {
+      "type": "STRUCTURE",
+      "status": "PASS",
+      "message": "ai-generate-learnings.yml has valid structure",
+      "details": "",
+      "timestamp": "2025-09-09T23:35:34.957Z"
+    },
+    {
+      "type": "STRUCTURE",
+      "status": "PASS",
+      "message": "ci-simplified.yml has valid structure",
+      "details": "",
+      "timestamp": "2025-09-09T23:35:34.957Z"
+    },
+    {
+      "type": "STRUCTURE",
+      "status": "PASS",
+      "message": "dependabot-auto-merge.yml has valid structure",
+      "details": "",
+      "timestamp": "2025-09-09T23:35:34.957Z"
+    },
+    {
+      "type": "STRUCTURE",
+      "status": "PASS",
+      "message": "qodo-auto-trigger.yml has valid structure",
+      "details": "",
+      "timestamp": "2025-09-09T23:35:34.957Z"
+    },
+    {
+      "type": "STRUCTURE",
+      "status": "PASS",
+      "message": "sonarcloud-analysis.yml has valid structure",
+      "details": "",
+      "timestamp": "2025-09-09T23:35:34.957Z"
+    },
+    {
+      "type": "STRUCTURE",
+      "status": "PASS",
+      "message": "sonarcloud-pr-analysis.yml has valid structure",
+      "details": "",
+      "timestamp": "2025-09-09T23:35:34.957Z"
+    },
+    {
+      "type": "STRUCTURE",
+      "status": "PASS",
+      "message": "sonarcloud-setup.yml has valid structure",
+      "details": "",
+      "timestamp": "2025-09-09T23:35:34.957Z"
+    },
+    {
+      "type": "TRIGGERS",
+      "status": "PASS",
+      "message": "ai-apply.yml has valid triggers",
+      "details": "",
+      "timestamp": "2025-09-09T23:35:34.958Z"
+    },
+    {
+      "type": "TRIGGER_TYPE",
+      "status": "WARNING",
+      "message": "ai-code-review.yml uses uncommon trigger: issue_comment",
+      "details": "",
+      "timestamp": "2025-09-09T23:35:34.958Z"
+    },
+    {
+      "type": "TRIGGER_TYPE",
+      "status": "WARNING",
+      "message": "ai-code-review.yml uses uncommon trigger: check_suite",
+      "details": "",
+      "timestamp": "2025-09-09T23:35:34.958Z"
+    },
+    {
+      "type": "TRIGGER_TYPE",
+      "status": "WARNING",
+      "message": "ai-code-review.yml uses uncommon trigger: workflow_run",
+      "details": "",
+      "timestamp": "2025-09-09T23:35:34.958Z"
+    },
+    {
+      "type": "TRIGGERS",
+      "status": "PASS",
+      "message": "ai-code-review.yml has valid triggers",
+      "details": "",
+      "timestamp": "2025-09-09T23:35:34.958Z"
+    },
+    {
+      "type": "TRIGGERS",
+      "status": "PASS",
+      "message": "ai-generate-learnings.yml has valid triggers",
+      "details": "",
+      "timestamp": "2025-09-09T23:35:34.958Z"
+    },
+    {
+      "type": "TRIGGERS",
+      "status": "PASS",
+      "message": "ci-simplified.yml has valid triggers",
+      "details": "",
+      "timestamp": "2025-09-09T23:35:34.958Z"
+    },
+    {
+      "type": "TRIGGERS",
+      "status": "PASS",
+      "message": "dependabot-auto-merge.yml has valid triggers",
+      "details": "",
+      "timestamp": "2025-09-09T23:35:34.958Z"
+    },
+    {
+      "type": "TRIGGERS",
+      "status": "PASS",
+      "message": "qodo-auto-trigger.yml has valid triggers",
+      "details": "",
+      "timestamp": "2025-09-09T23:35:34.958Z"
+    },
+    {
+      "type": "TRIGGERS",
+      "status": "PASS",
+      "message": "sonarcloud-analysis.yml has valid triggers",
+      "details": "",
+      "timestamp": "2025-09-09T23:35:34.958Z"
+    },
+    {
+      "type": "TRIGGERS",
+      "status": "PASS",
+      "message": "sonarcloud-pr-analysis.yml has valid triggers",
+      "details": "",
+      "timestamp": "2025-09-09T23:35:34.958Z"
+    },
+    {
+      "type": "TRIGGERS",
+      "status": "PASS",
+      "message": "sonarcloud-setup.yml has valid triggers",
+      "details": "",
+      "timestamp": "2025-09-09T23:35:34.958Z"
+    },
+    {
+      "type": "PERMISSIONS",
+      "status": "PASS",
+      "message": "ai-apply.yml has appropriate contents permissions",
+      "details": "",
+      "timestamp": "2025-09-09T23:35:34.958Z"
+    },
+    {
+      "type": "PERMISSIONS",
+      "status": "PASS",
+      "message": "ai-apply.yml can write to PRs",
+      "details": "",
+      "timestamp": "2025-09-09T23:35:34.958Z"
+    },
+    {
+      "type": "PERMISSIONS",
+      "status": "PASS",
+      "message": "ai-code-review.yml has appropriate contents permissions",
+      "details": "",
+      "timestamp": "2025-09-09T23:35:34.958Z"
+    },
+    {
+      "type": "PERMISSIONS",
+      "status": "PASS",
+      "message": "ai-code-review.yml can write to PRs",
+      "details": "",
+      "timestamp": "2025-09-09T23:35:34.958Z"
+    },
+    {
+      "type": "PERMISSIONS",
+      "status": "PASS",
+      "message": "ai-generate-learnings.yml has appropriate contents permissions",
+      "details": "",
+      "timestamp": "2025-09-09T23:35:34.958Z"
+    },
+    {
+      "type": "PERMISSIONS",
+      "status": "PASS",
+      "message": "ci-simplified.yml has appropriate contents permissions",
+      "details": "",
+      "timestamp": "2025-09-09T23:35:34.958Z"
+    },
+    {
+      "type": "PERMISSIONS",
+      "status": "PASS",
+      "message": "ci-simplified.yml can write to PRs",
+      "details": "",
+      "timestamp": "2025-09-09T23:35:34.958Z"
+    },
+    {
+      "type": "PERMISSIONS",
+      "status": "PASS",
+      "message": "dependabot-auto-merge.yml has appropriate contents permissions",
+      "details": "",
+      "timestamp": "2025-09-09T23:35:34.958Z"
+    },
+    {
+      "type": "PERMISSIONS",
+      "status": "PASS",
+      "message": "dependabot-auto-merge.yml can write to PRs",
+      "details": "",
+      "timestamp": "2025-09-09T23:35:34.958Z"
+    },
+    {
+      "type": "PERMISSIONS",
+      "status": "PASS",
+      "message": "qodo-auto-trigger.yml has appropriate contents permissions",
+      "details": "",
+      "timestamp": "2025-09-09T23:35:34.958Z"
+    },
+    {
+      "type": "PERMISSIONS",
+      "status": "PASS",
+      "message": "qodo-auto-trigger.yml can write to PRs",
+      "details": "",
+      "timestamp": "2025-09-09T23:35:34.958Z"
+    },
+    {
+      "type": "PERMISSIONS",
+      "status": "PASS",
+      "message": "sonarcloud-analysis.yml has appropriate contents permissions",
+      "details": "",
+      "timestamp": "2025-09-09T23:35:34.958Z"
+    },
+    {
+      "type": "PERMISSIONS",
+      "status": "PASS",
+      "message": "sonarcloud-analysis.yml can write to PRs",
+      "details": "",
+      "timestamp": "2025-09-09T23:35:34.958Z"
+    },
+    {
+      "type": "PERMISSIONS",
+      "status": "PASS",
+      "message": "sonarcloud-pr-analysis.yml has appropriate contents permissions",
+      "details": "",
+      "timestamp": "2025-09-09T23:35:34.958Z"
+    },
+    {
+      "type": "PERMISSIONS",
+      "status": "PASS",
+      "message": "sonarcloud-pr-analysis.yml can write to PRs",
+      "details": "",
+      "timestamp": "2025-09-09T23:35:34.958Z"
+    },
+    {
+      "type": "PERMISSIONS",
+      "status": "PASS",
+      "message": "sonarcloud-setup.yml has appropriate contents permissions",
+      "details": "",
+      "timestamp": "2025-09-09T23:35:34.958Z"
+    },
+    {
+      "type": "SECRET_USAGE",
+      "status": "PASS",
+      "message": "ai-apply.yml uses GITHUB_TOKEN",
+      "details": "",
+      "timestamp": "2025-09-09T23:35:34.958Z"
+    },
+    {
+      "type": "GITHUB_TOKEN",
+      "status": "PASS",
+      "message": "ai-apply.yml uses GITHUB_TOKEN properly",
+      "details": "",
+      "timestamp": "2025-09-09T23:35:34.958Z"
+    },
+    {
+      "type": "SECRET_USAGE",
+      "status": "PASS",
+      "message": "ai-code-review.yml uses GITHUB_TOKEN",
+      "details": "",
+      "timestamp": "2025-09-09T23:35:34.958Z"
+    },
+    {
+      "type": "GITHUB_TOKEN",
+      "status": "PASS",
+      "message": "ai-code-review.yml uses GITHUB_TOKEN properly",
+      "details": "",
+      "timestamp": "2025-09-09T23:35:34.958Z"
+    },
+    {
+      "type": "GITHUB_TOKEN",
+      "status": "WARNING",
+      "message": "ai-generate-learnings.yml may not be using GITHUB_TOKEN",
+      "details": "",
+      "timestamp": "2025-09-09T23:35:34.958Z"
+    },
+    {
+      "type": "GITHUB_TOKEN",
+      "status": "WARNING",
+      "message": "ci-simplified.yml may not be using GITHUB_TOKEN",
+      "details": "",
+      "timestamp": "2025-09-09T23:35:34.958Z"
+    },
+    {
+      "type": "SECRET_USAGE",
+      "status": "PASS",
+      "message": "dependabot-auto-merge.yml uses GITHUB_TOKEN",
+      "details": "",
+      "timestamp": "2025-09-09T23:35:34.958Z"
+    },
+    {
+      "type": "GITHUB_TOKEN",
+      "status": "PASS",
+      "message": "dependabot-auto-merge.yml uses GITHUB_TOKEN properly",
+      "details": "",
+      "timestamp": "2025-09-09T23:35:34.958Z"
+    },
+    {
+      "type": "SECRET_USAGE",
+      "status": "PASS",
+      "message": "qodo-auto-trigger.yml uses GITHUB_TOKEN",
+      "details": "",
+      "timestamp": "2025-09-09T23:35:34.959Z"
+    },
+    {
+      "type": "GITHUB_TOKEN",
+      "status": "PASS",
+      "message": "qodo-auto-trigger.yml uses GITHUB_TOKEN properly",
+      "details": "",
+      "timestamp": "2025-09-09T23:35:34.959Z"
+    },
+    {
+      "type": "HARD_CODED_SECRETS",
+      "status": "CRITICAL",
+      "message": "sonarcloud-analysis.yml contains potential hardcoded secrets",
+      "details": "Key=\" sonar-project.properties | cut -d'",
+      "timestamp": "2025-09-09T23:35:34.959Z"
+    },
+    {
+      "type": "SECRET_USAGE",
+      "status": "PASS",
+      "message": "sonarcloud-analysis.yml uses GITHUB_TOKEN",
+      "details": "",
+      "timestamp": "2025-09-09T23:35:34.959Z"
+    },
+    {
+      "type": "GITHUB_TOKEN",
+      "status": "PASS",
+      "message": "sonarcloud-analysis.yml uses GITHUB_TOKEN properly",
+      "details": "",
+      "timestamp": "2025-09-09T23:35:34.959Z"
+    },
+    {
+      "type": "HARD_CODED_SECRETS",
+      "status": "CRITICAL",
+      "message": "sonarcloud-pr-analysis.yml contains potential hardcoded secrets",
+      "details": "Key=\" sonar-project.properties | cut -d'",
+      "timestamp": "2025-09-09T23:35:34.959Z"
+    },
+    {
+      "type": "SECRET_USAGE",
+      "status": "PASS",
+      "message": "sonarcloud-pr-analysis.yml uses GITHUB_TOKEN",
+      "details": "",
+      "timestamp": "2025-09-09T23:35:34.959Z"
+    },
+    {
+      "type": "GITHUB_TOKEN",
+      "status": "PASS",
+      "message": "sonarcloud-pr-analysis.yml uses GITHUB_TOKEN properly",
+      "details": "",
+      "timestamp": "2025-09-09T23:35:34.959Z"
+    },
+    {
+      "type": "HARD_CODED_SECRETS",
+      "status": "CRITICAL",
+      "message": "sonarcloud-setup.yml contains potential hardcoded secrets",
+      "details": "TOKEN:\" \\\n            \"",
+      "timestamp": "2025-09-09T23:35:34.959Z"
+    },
+    {
+      "type": "HARD_CODED_SECRETS",
+      "status": "CRITICAL",
+      "message": "sonarcloud-setup.yml contains potential hardcoded secrets",
+      "details": "Key=\" sonar-project.properties | cut -d', KEY=\"${{ steps.setup.outputs.project-key }}\"",
+      "timestamp": "2025-09-09T23:35:34.959Z"
+    },
+    {
+      "type": "SECRET_USAGE",
+      "status": "PASS",
+      "message": "sonarcloud-setup.yml uses GITHUB_TOKEN",
+      "details": "",
+      "timestamp": "2025-09-09T23:35:34.959Z"
+    },
+    {
+      "type": "GITHUB_TOKEN",
+      "status": "PASS",
+      "message": "sonarcloud-setup.yml uses GITHUB_TOKEN properly",
+      "details": "",
+      "timestamp": "2025-09-09T23:35:34.959Z"
+    },
+    {
+      "type": "JOB_DEPENDENCY",
+      "status": "PASS",
+      "message": "ci-simplified.yml:deploy has valid dependencies",
+      "details": "",
+      "timestamp": "2025-09-09T23:35:34.959Z"
+    },
+    {
+      "type": "JOB_DEPENDENCY",
+      "status": "PASS",
+      "message": "sonarcloud-setup.yml:test-analysis has valid dependencies",
+      "details": "",
+      "timestamp": "2025-09-09T23:35:34.959Z"
+    },
+    {
+      "type": "TIMEOUT_CONFIG",
+      "status": "INFO",
+      "message": "ai-apply.yml using default timeouts",
+      "details": "",
+      "timestamp": "2025-09-09T23:35:34.959Z"
+    },
+    {
+      "type": "TIMEOUT_CONFIG",
+      "status": "INFO",
+      "message": "ai-code-review.yml using default timeouts",
+      "details": "",
+      "timestamp": "2025-09-09T23:35:34.959Z"
+    },
+    {
+      "type": "TIMEOUT_CONFIG",
+      "status": "INFO",
+      "message": "ai-generate-learnings.yml using default timeouts",
+      "details": "",
+      "timestamp": "2025-09-09T23:35:34.959Z"
+    },
+    {
+      "type": "TIMEOUT_CONFIG",
+      "status": "PASS",
+      "message": "ci-simplified.yml has reasonable timeout: 15 minutes",
+      "details": "",
+      "timestamp": "2025-09-09T23:35:34.959Z"
+    },
+    {
+      "type": "TIMEOUT_CONFIG",
+      "status": "PASS",
+      "message": "ci-simplified.yml has reasonable timeout: 10 minutes",
+      "details": "",
+      "timestamp": "2025-09-09T23:35:34.959Z"
+    },
+    {
+      "type": "TIMEOUT_CONFIG",
+      "status": "PASS",
+      "message": "ci-simplified.yml has reasonable timeout: 10 minutes",
+      "details": "",
+      "timestamp": "2025-09-09T23:35:34.959Z"
+    },
+    {
+      "type": "TIMEOUT_CONFIG",
+      "status": "INFO",
+      "message": "dependabot-auto-merge.yml using default timeouts",
+      "details": "",
+      "timestamp": "2025-09-09T23:35:34.959Z"
+    },
+    {
+      "type": "TIMEOUT_CONFIG",
+      "status": "INFO",
+      "message": "qodo-auto-trigger.yml using default timeouts",
+      "details": "",
+      "timestamp": "2025-09-09T23:35:34.960Z"
+    },
+    {
+      "type": "TIMEOUT_CONFIG",
+      "status": "INFO",
+      "message": "sonarcloud-analysis.yml using default timeouts",
+      "details": "",
+      "timestamp": "2025-09-09T23:35:34.960Z"
+    },
+    {
+      "type": "TIMEOUT_CONFIG",
+      "status": "INFO",
+      "message": "sonarcloud-pr-analysis.yml using default timeouts",
+      "details": "",
+      "timestamp": "2025-09-09T23:35:34.960Z"
+    },
+    {
+      "type": "TIMEOUT_CONFIG",
+      "status": "INFO",
+      "message": "sonarcloud-setup.yml using default timeouts",
+      "details": "",
+      "timestamp": "2025-09-09T23:35:34.960Z"
+    },
+    {
+      "type": "DEPLOYMENT_WORKFLOWS",
+      "status": "WARNING",
+      "message": "No deployment-triggered workflows found",
+      "details": "",
+      "timestamp": "2025-09-09T23:35:34.960Z"
+    }
+  ],
+  "workflows": [
+    "ai-apply.yml",
+    "ai-code-review.yml",
+    "ai-generate-learnings.yml",
+    "ci-simplified.yml",
+    "dependabot-auto-merge.yml",
+    "qodo-auto-trigger.yml",
+    "sonarcloud-analysis.yml",
+    "sonarcloud-pr-analysis.yml",
+    "sonarcloud-setup.yml"
+  ],
+  "recommendations": [
+    {
+      "priority": "CRITICAL",
+      "type": "IMMEDIATE_FIX",
+      "message": "4 critical workflow issues found",
+      "action": "Fix all critical issues before deployment"
+    },
+    {
+      "priority": "MEDIUM",
+      "type": "REVIEW_WARNINGS",
+      "message": "6 workflow warnings detected",
+      "action": "Review and address warnings for optimal deployment"
+    },
+    {
+      "priority": "CRITICAL",
+      "type": "SECURITY_FIX",
+      "message": "Hardcoded secrets detected in workflows",
+      "action": "Replace hardcoded secrets with GitHub Secrets"
+    }
+  ]
+}

@@ -18,7 +18,7 @@ This repository has been successfully integrated with the **AI-SDLC Framework v3
 - **AI Quality Analysis**: Automated code review and improvement suggestions
 - **Multi-Stack Detection**: Intelligent project architecture analysis
 - **Test Generation**: AI-powered test improvement and generation
-- **Auto-Healing**: Playwright E2E test auto-healing capabilities
+- **Self-Healing Tests**: Playwright E2E tests with automatic selector adaptation
 
 ### 3. **Quality Gates** 🛡️
 
@@ -32,7 +32,7 @@ This repository has been successfully integrated with the **AI-SDLC Framework v3
 
 - **Cost Optimization**: 97% reduction in AI model costs
 - **Smart Routing**: Intelligent model selection for different tasks
-- **Auto-Healing Tests**: Self-repairing E2E tests
+- **Self-Healing Tests**: E2E tests adapt automatically to UI changes
 - **Code Generation**: AI-assisted test and component generation
 
 ## 🛠️ Available Commands

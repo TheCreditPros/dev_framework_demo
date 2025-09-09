@@ -74,7 +74,7 @@ export default [
       "no-unused-vars": "off",
       "prefer-const": ["error", { "destructuring": "any", "ignoreReadBeforeAssign": false }],
       "no-var": "error",
-      "quotes": ["error", "double"],
+      "quotes": ["error", "double", { "avoidEscape": true }],
     },
   },
   {
@@ -131,7 +131,7 @@ export default [
       "prefer-const": ["error", { "destructuring": "any", "ignoreReadBeforeAssign": false }],
       "no-var": "error",
       "no-useless-escape": "warn",
-      "quotes": ["error", "double"],
+      "quotes": ["error", "double", { "avoidEscape": true }],
     },
   },
 ];

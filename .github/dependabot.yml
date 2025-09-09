@@ -7,208 +7,213 @@ updates:
   # ============================================================================
   # NPM DEPENDENCIES
   # ============================================================================
-  - package-ecosystem: 'npm'
-    directory: '/'
+  - package-ecosystem: "npm"
+    directory: "/"
     schedule:
-      interval: 'weekly'
-      day: 'monday'
-      time: '09:00'
-      timezone: 'America/New_York'
-    open-pull-requests-limit: 10
+      interval: "daily" # More frequent for security updates
+      time: "09:00"
+      timezone: "America/New_York"
+    open-pull-requests-limit: 15
+    # Enable auto-merge for security updates
+    pull-request-branch-name:
+      separator: "-"
+    # Security-specific configuration
+    security-updates:
+      enabled: true
     assignees:
-      - 'nydamon'
+      - "nydamon"
     commit-message:
-      prefix: 'deps'
-      prefix-development: 'deps-dev'
-      include: 'scope'
+      prefix: "deps"
+      prefix-development: "deps-dev"
+      include: "scope"
     labels:
-      - 'dependencies'
-      - 'automated'
-      - 'security'
+      - "dependencies"
+      - "automated"
+      - "security"
 
     # Security updates - immediate
     allow:
-      - dependency-type: 'all'
+      - dependency-type: "all"
 
     # Group related updates
     groups:
       # Testing frameworks
       testing:
         patterns:
-          - 'vitest*'
-          - '@vitest/*'
-          - 'playwright*'
-          - '@playwright/*'
-          - '@testing-library/*'
-          - 'jsdom'
+          - "vitest*"
+          - "@vitest/*"
+          - "playwright*"
+          - "@playwright/*"
+          - "@testing-library/*"
+          - "jsdom"
 
       # Build tools
       build-tools:
         patterns:
-          - 'vite*'
-          - '@vitejs/*'
-          - 'rollup*'
-          - '@rollup/*'
-          - 'esbuild*'
-          - '@esbuild/*'
-          - 'typescript'
-          - '@types/*'
+          - "vite*"
+          - "@vitejs/*"
+          - "rollup*"
+          - "@rollup/*"
+          - "esbuild*"
+          - "@esbuild/*"
+          - "typescript"
+          - "@types/*"
 
       # Linting and formatting
       code-quality:
         patterns:
-          - 'eslint*'
-          - '@eslint/*'
-          - 'prettier*'
-          - '@typescript-eslint/*'
-          - 'lint-staged'
-          - 'husky'
+          - "eslint*"
+          - "@eslint/*"
+          - "prettier*"
+          - "@typescript-eslint/*"
+          - "lint-staged"
+          - "husky"
 
       # React ecosystem
       react:
         patterns:
-          - 'react*'
-          - '@babel/*'
-          - 'prop-types'
+          - "react*"
+          - "@babel/*"
+          - "prop-types"
 
       # Security and compliance
       security:
         patterns:
-          - '*security*'
-          - '*audit*'
-          - '*vulnerability*'
+          - "*security*"
+          - "*audit*"
+          - "*vulnerability*"
 
       # AI/ML and MCP
       ai-mcp:
         patterns:
-          - '@modelcontextprotocol/*'
-          - '*mcp*'
-          - '*ai*'
-          - '*openai*'
+          - "@modelcontextprotocol/*"
+          - "*mcp*"
+          - "*ai*"
+          - "*openai*"
 
     # Ignore specific packages that require manual updates
     ignore:
-      - dependency-name: 'node'
-        update-types: ['version-update:semver-major']
-      - dependency-name: '@types/node'
-        update-types: ['version-update:semver-major']
+      - dependency-name: "node"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
 
   # ============================================================================
   # GITHUB ACTIONS
   # ============================================================================
-  - package-ecosystem: 'github-actions'
-    directory: '/'
+  - package-ecosystem: "github-actions"
+    directory: "/"
     schedule:
-      interval: 'weekly'
-      day: 'tuesday'
-      time: '10:00'
-      timezone: 'America/New_York'
+      interval: "weekly"
+      day: "tuesday"
+      time: "10:00"
+      timezone: "America/New_York"
     open-pull-requests-limit: 5
     assignees:
-      - 'nydamon'
+      - "nydamon"
     commit-message:
-      prefix: 'ci'
-      include: 'scope'
+      prefix: "ci"
+      include: "scope"
     labels:
-      - 'github-actions'
-      - 'ci-cd'
-      - 'automated'
+      - "github-actions"
+      - "ci-cd"
+      - "automated"
 
     # Group GitHub Actions updates
     groups:
       actions-core:
         patterns:
-          - 'actions/*'
+          - "actions/*"
 
       security-actions:
         patterns:
-          - 'github/codeql-action*'
-          - 'github/super-linter*'
-          - 'ossf/scorecard-action*'
+          - "github/codeql-action*"
+          - "github/super-linter*"
+          - "ossf/scorecard-action*"
 
       deployment-actions:
         patterns:
-          - '*deploy*'
-          - '*release*'
-          - '*publish*'
+          - "*deploy*"
+          - "*release*"
+          - "*publish*"
 
   # ============================================================================
   # DOCKER (if applicable)
   # ============================================================================
-  - package-ecosystem: 'docker'
-    directory: '/'
+  - package-ecosystem: "docker"
+    directory: "/"
     schedule:
-      interval: 'weekly'
-      day: 'wednesday'
-      time: '11:00'
-      timezone: 'America/New_York'
+      interval: "weekly"
+      day: "wednesday"
+      time: "11:00"
+      timezone: "America/New_York"
     open-pull-requests-limit: 3
     assignees:
-      - 'nydamon'
+      - "nydamon"
     commit-message:
-      prefix: 'docker'
-      include: 'scope'
+      prefix: "docker"
+      include: "scope"
     labels:
-      - 'docker'
-      - 'infrastructure'
-      - 'automated'
+      - "docker"
+      - "infrastructure"
+      - "automated"
 
   # ============================================================================
   # COMPOSER (PHP dependencies if applicable)
   # ============================================================================
-  - package-ecosystem: 'composer'
-    directory: '/examples/laravel'
+  - package-ecosystem: "composer"
+    directory: "/examples/laravel"
     schedule:
-      interval: 'weekly'
-      day: 'thursday'
-      time: '12:00'
-      timezone: 'America/New_York'
+      interval: "weekly"
+      day: "thursday"
+      time: "12:00"
+      timezone: "America/New_York"
     open-pull-requests-limit: 8
     assignees:
-      - 'nydamon'
+      - "nydamon"
     commit-message:
-      prefix: 'deps-php'
-      include: 'scope'
+      prefix: "deps-php"
+      include: "scope"
     labels:
-      - 'php-dependencies'
-      - 'laravel'
-      - 'automated'
+      - "php-dependencies"
+      - "laravel"
+      - "automated"
 
     # Group PHP dependencies
     groups:
       laravel:
         patterns:
-          - 'laravel/*'
-          - 'illuminate/*'
+          - "laravel/*"
+          - "illuminate/*"
 
       testing-php:
         patterns:
-          - 'phpunit/*'
-          - 'pest*'
-          - 'mockery/*'
+          - "phpunit/*"
+          - "pest*"
+          - "mockery/*"
 
       security-php:
         patterns:
-          - '*security*'
-          - '*auth*'
-          - '*encryption*'
+          - "*security*"
+          - "*auth*"
+          - "*encryption*"
 
   # ============================================================================
   # PIP (Python dependencies if applicable)
   # ============================================================================
-  - package-ecosystem: 'pip'
-    directory: '/'
+  - package-ecosystem: "pip"
+    directory: "/"
     schedule:
-      interval: 'weekly'
-      day: 'friday'
-      time: '13:00'
-      timezone: 'America/New_York'
+      interval: "weekly"
+      day: "friday"
+      time: "13:00"
+      timezone: "America/New_York"
     open-pull-requests-limit: 5
     assignees:
-      - 'nydamon'
+      - "nydamon"
     commit-message:
-      prefix: 'deps-py'
-      include: 'scope'
+      prefix: "deps-py"
+      include: "scope"
     labels:
-      - 'python-dependencies'
-      - 'automated'
+      - "python-dependencies"
+      - "automated"

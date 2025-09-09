@@ -22,7 +22,7 @@ This guide provides comprehensive instructions for deploying the AI-SDLC framewo
 ├── 📄 README.md              # Project overview and quick start
 ├── 📄 CLAUDE.md              # AI assistant documentation
 ├── 📄 DEPLOYMENT.md          # This deployment guide
-├── 📄 auto-setup.sh          # Framework installation script
+├── 📄 install-framework-smart.sh  # Framework installation script with security automation
 ├── 📄 validate-setup.js      # Setup validation utility
 ├── 📄 package.json           # Dependencies and scripts
 ├── 📄 package-lock.json      # Dependency lock file
@@ -236,7 +236,7 @@ chmod +x .husky/pre-commit
 ```bash
 # Reset ESLint configuration
 rm .eslintrc.js
-./auto-setup.sh
+./install-framework-smart.sh
 ```
 
 #### Package Installation Failures
@@ -252,7 +252,7 @@ npm install
 
 ```bash
 # Fix script permissions
-chmod +x auto-setup.sh
+chmod +x install-framework-smart.sh
 chmod +x validate-setup.js
 ```
 

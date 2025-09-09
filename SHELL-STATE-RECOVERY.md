@@ -7,13 +7,15 @@ Your repository was experiencing **shell state corruption** causing all commands
 ## ROOT CAUSE ANALYSIS
 
 ### Primary Causes
+
 1. **Unclosed file descriptors** from previous script executions
-2. **Background processes** not properly terminated 
+2. **Background processes** not properly terminated
 3. **Shell option conflicts** from complex setup scripts
 4. **Lock file corruption** in Git/npm
 5. **Infinite loops** or **blocking I/O** in shell scripts
 
 ### Specific Issues Found
+
 - `auto-setup-enhanced.sh` contains complex nested commands that can create hanging states
 - Multiple npm/node processes running simultaneously
 - Git operations potentially blocked by lock files
@@ -22,6 +24,7 @@ Your repository was experiencing **shell state corruption** causing all commands
 ## IMMEDIATE RECOVERY STEPS
 
 ### Step 1: Run the Recovery Script
+
 ```bash
 # Make the script executable and run it
 chmod +x fix-shell-state.sh
@@ -29,6 +32,7 @@ chmod +x fix-shell-state.sh
 ```
 
 ### Step 2: If Commands Still Hang
+
 ```bash
 # Use the emergency recovery
 chmod +x emergency-shell-recovery.sh
@@ -36,6 +40,7 @@ chmod +x emergency-shell-recovery.sh
 ```
 
 ### Step 3: Manual Recovery (If Needed)
+
 ```bash
 # Kill all hanging processes
 sudo pkill -9 npm
@@ -57,6 +62,7 @@ git clean -fd
 ## PREVENTION STRATEGIES
 
 ### 1. Safe Script Practices
+
 ```bash
 # Always use these at the top of scripts
 set -euo pipefail
@@ -70,6 +76,7 @@ trap cleanup EXIT
 ```
 
 ### 2. Monitoring Commands
+
 ```bash
 # Check for hanging processes
 ps aux | grep -E "(node|npm|git)"
@@ -82,6 +89,7 @@ jobs -l
 ```
 
 ### 3. Safe Execution Pattern
+
 ```bash
 # Instead of direct execution:
 npm install
@@ -98,6 +106,7 @@ fi
 ## SCRIPT ANALYSIS: auto-setup-enhanced.sh
 
 ### Problematic Patterns Found
+
 1. **Complex nested JSON parsing** without error handling
 2. **Multiple npm install commands** running sequentially
 3. **Background process spawning** without proper cleanup
@@ -105,6 +114,7 @@ fi
 5. **Signal trap conflicts** between script levels
 
 ### Recommended Fixes
+
 ```bash
 # Replace this pattern:
 npm install --save-dev $packages
@@ -119,6 +129,7 @@ fi
 ## MONITORING & DEBUGGING
 
 ### Real-time Process Monitoring
+
 ```bash
 # Watch for hanging processes
 watch 'ps aux | grep -E "(node|npm|git)" | grep -v grep'
@@ -131,6 +142,7 @@ watch 'lsof | wc -l'
 ```
 
 ### Debug Mode Execution
+
 ```bash
 # Run scripts in debug mode
 bash -x ./auto-setup-enhanced.sh
@@ -144,28 +156,31 @@ set +x
 ## CURSOR INTEGRATION FIXES
 
 ### Terminal Configuration
+
 1. **Reset Cursor terminal**: Close and reopen integrated terminal
 2. **Clear terminal history**: `Ctrl+K` or `Cmd+K`
 3. **Restart Cursor**: Close and reopen the application
 
 ### Shell Integration Settings
+
 ```json
 // In Cursor settings.json
 {
-    "terminal.integrated.inheritEnv": false,
-    "terminal.integrated.defaultProfile.osx": "bash",
-    "terminal.integrated.profiles.osx": {
-        "bash": {
-            "path": "/bin/bash",
-            "args": ["--login"]
-        }
+  "terminal.integrated.inheritEnv": false,
+  "terminal.integrated.defaultProfile.osx": "bash",
+  "terminal.integrated.profiles.osx": {
+    "bash": {
+      "path": "/bin/bash",
+      "args": ["--login"]
     }
+  }
 }
 ```
 
 ## EMERGENCY COMMANDS
 
 ### If Everything is Hanging
+
 ```bash
 # Nuclear option - kill everything
 sudo pkill -9 -f "npm\|node\|git"
@@ -178,6 +193,7 @@ env -i bash --norc --noprofile
 ```
 
 ### File System Recovery
+
 ```bash
 # Remove all lock files
 find . -name "*.lock" -delete
@@ -195,15 +211,17 @@ git remote prune origin
 ## TESTING RECOVERY
 
 ### Basic Command Test
+
 ```bash
 # Test these commands work without hanging:
 echo "test"              # Should return immediately
-ls -la                   # Should return immediately  
+ls -la                   # Should return immediately
 git status              # Should return within 2-3 seconds
 npm --version           # Should return immediately
 ```
 
 ### Script Execution Test
+
 ```bash
 # Test script execution works:
 echo '#!/bin/bash\necho "test script"' > test.sh
@@ -215,6 +233,7 @@ rm test.sh
 ## LONG-TERM SOLUTIONS
 
 ### 1. Implement Safe Wrapper Functions
+
 ```bash
 safe_npm() {
     timeout 120s npm "$@" || {
@@ -225,18 +244,19 @@ safe_npm() {
 
 safe_git() {
     timeout 30s git "$@" || {
-        echo "❌ git command timed out: git $*"  
+        echo "❌ git command timed out: git $*"
         return 1
     }
 }
 ```
 
 ### 2. Add Process Monitoring
+
 ```bash
 monitor_processes() {
     local max_time=300  # 5 minutes
     local start_time=$(date +%s)
-    
+
     while [ $(($(date +%s) - start_time)) -lt $max_time ]; do
         if pgrep -f "npm\|node" > /dev/null; then
             echo "⏳ npm/node processes still running..."
@@ -246,7 +266,7 @@ monitor_processes() {
             return 0
         fi
     done
-    
+
     echo "❌ Processes taking too long, terminating..."
     pkill -f "npm\|node"
     return 1
@@ -254,19 +274,20 @@ monitor_processes() {
 ```
 
 ### 3. Implement Health Checks
+
 ```bash
 health_check() {
     echo "🔍 Running environment health check..."
-    
+
     # Check command responsiveness
     timeout 5s echo "test" || return 1
-    
+
     # Check git state
     timeout 10s git status > /dev/null || return 1
-    
+
     # Check npm state
     timeout 10s npm --version > /dev/null || return 1
-    
+
     echo "✔️ Environment healthy"
     return 0
 }
@@ -275,8 +296,9 @@ health_check() {
 ## STATUS: RESOLVED ✅
 
 The shell state corruption has been fixed. You should now be able to:
+
 - ✅ Run terminal commands without hanging
-- ✅ Execute scripts normally  
+- ✅ Execute scripts normally
 - ✅ Use git commands
 - ✅ Run npm/node commands
 - ✅ Use Cursor's integrated terminal

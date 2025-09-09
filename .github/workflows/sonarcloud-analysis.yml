@@ -8,8 +8,13 @@ on:
     branches: [main, master]
   workflow_dispatch: # Allow manual trigger
 
+concurrency:
+  group: sonarcloud-main-${{ github.sha }}
+  cancel-in-progress: true
+
 env:
   NODE_VERSION: '20'
+  SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
 permissions:
   contents: read
@@ -27,6 +32,25 @@ jobs:
         uses: actions/checkout@v5
         with:
           fetch-depth: 0 # Shallow clones should be disabled for better analysis
+
+      - name: 🔧 Extract SonarCloud Configuration
+        id: setup-project
+        run: |
+          echo "🔧 Reading SonarCloud configuration..."
+
+          # Extract project configuration from properties file
+          if [ -f "sonar-project.properties" ]; then
+            PROJECT_KEY=$(grep "^sonar.projectKey=" sonar-project.properties | cut -d'=' -f2)
+            ORGANIZATION=$(grep "^sonar.organization=" sonar-project.properties | cut -d'=' -f2)
+          else
+            # Fallback values
+            PROJECT_KEY="${GITHUB_REPOSITORY_OWNER}_${GITHUB_REPOSITORY##*/}"
+            ORGANIZATION="${GITHUB_REPOSITORY_OWNER}"
+          fi
+
+          echo "project-key=${PROJECT_KEY}" >> $GITHUB_OUTPUT
+          echo "organization=${ORGANIZATION}" >> $GITHUB_OUTPUT
+          echo "✅ Configuration ready: ${PROJECT_KEY}"
 
       - name: 🔧 Setup Node.js
         uses: actions/setup-node@v5
@@ -59,14 +83,13 @@ jobs:
           fi
 
       - name: 🔍 Run SonarCloud Analysis
-        uses: SonarSource/sonarcloud-github-action@v2
+        uses: SonarSource/sonarqube-scan-action@v5.3.1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
           args: >
-            -Dsonar.projectKey=TheCreditPros_dev_framework_demo
-            -Dsonar.organization=thecreditpros
+            -Dsonar.organization=${{ steps.setup-project.outputs.organization }}
+            -Dsonar.projectKey=${{ steps.setup-project.outputs.project-key }}
             -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
             -Dsonar.typescript.lcov.reportPaths=coverage/lcov.info
             -Dsonar.coverageReportPaths=coverage/lcov.info

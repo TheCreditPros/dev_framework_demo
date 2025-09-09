@@ -1,0 +1,90 @@
+{
+  "timeout": {
+    "pattern": "(?i)(timeout|timed out|operation timed out)",
+    "category": "TIMEOUT",
+    "priority": "HIGH",
+    "description": "Workflow or job exceeded timeout limits",
+    "fixes": ["increase_timeout", "optimize_performance"],
+    "indicators": ["timeout-minutes", "timeout", "timed out"]
+  },
+  "dependency": {
+    "pattern": "(?i)(dependency|module not found|cannot find module|package not found)",
+    "category": "DEPENDENCY",
+    "priority": "HIGH",
+    "description": "Missing or incompatible dependencies",
+    "fixes": [
+      "update_dependencies",
+      "check_package_json",
+      "install_dependencies"
+    ],
+    "indicators": ["npm install", "yarn install", "package.json"]
+  },
+  "syntax": {
+    "pattern": "(?i)(syntax error|parse error|unexpected token|invalid syntax)",
+    "category": "SYNTAX",
+    "priority": "HIGH",
+    "description": "Code syntax or configuration errors",
+    "fixes": ["lint_fix", "check_syntax", "validate_config"],
+    "indicators": ["eslint", "syntax", "parsing"]
+  },
+  "permission": {
+    "pattern": "(?i)(permission denied|unauthorized|access denied|forbidden)",
+    "category": "PERMISSION",
+    "priority": "HIGH",
+    "description": "Permission or authentication issues",
+    "fixes": ["check_permissions", "verify_tokens", "update_secrets"],
+    "indicators": ["GITHUB_TOKEN", "secrets", "permissions"]
+  },
+  "network": {
+    "pattern": "(?i)(network|connection|ECONNREFUSED|ENOTFOUND|timeout.*connect)",
+    "category": "NETWORK",
+    "priority": "MEDIUM",
+    "description": "Network connectivity or service availability issues",
+    "fixes": ["retry_deployment", "check_connectivity", "update_endpoints"],
+    "indicators": ["http", "api", "connect", "network"]
+  },
+  "resource": {
+    "pattern": "(?i)(out of memory|disk space|insufficient resources|quota exceeded)",
+    "category": "RESOURCE",
+    "priority": "MEDIUM",
+    "description": "Resource limitations or exhaustion",
+    "fixes": ["optimize_resources", "increase_limits", "cleanup_workspace"],
+    "indicators": ["memory", "disk", "storage", "resources"]
+  },
+  "build": {
+    "pattern": "(?i)(build failed|compilation error|build error|webpack)",
+    "category": "BUILD",
+    "priority": "HIGH",
+    "description": "Build or compilation failures",
+    "fixes": ["fix_build_config", "update_build_tools", "clear_cache"],
+    "indicators": ["npm run build", "webpack", "tsc", "babel"]
+  },
+  "test": {
+    "pattern": "(?i)(test failed|spec failed|assertion failed|test.*error)",
+    "category": "TEST",
+    "priority": "MEDIUM",
+    "description": "Test execution failures",
+    "fixes": ["fix_tests", "update_test_config", "mock_dependencies"],
+    "indicators": ["vitest", "jest", "test", "spec"]
+  },
+  "deployment": {
+    "pattern": "(?i)(deployment failed|deploy error|publish failed|registry.*error)",
+    "category": "DEPLOYMENT",
+    "priority": "HIGH",
+    "description": "Deployment or publishing failures",
+    "fixes": ["fix_deployment_config", "verify_credentials", "check_registry"],
+    "indicators": ["deploy", "publish", "registry", "docker"]
+  },
+  "security": {
+    "pattern": "(?i)(security|vulnerability|audit|CVE|exploit)",
+    "category": "SECURITY",
+    "priority": "CRITICAL",
+    "description": "Security-related issues or vulnerabilities",
+    "fixes": [
+      "audit_security",
+      "update_dependencies",
+      "apply_security_patches"
+    ],
+    "indicators": ["npm audit", "security", "vulnerability"]
+  }
+}

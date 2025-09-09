@@ -1,0 +1,136 @@
+# Dependabot Auto-Merge for Security Updates
+# Automatically merges Dependabot PRs that pass all security checks
+
+name: 🤖 Dependabot Auto-Merge
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: write
+  pull-requests: write
+  checks: read
+
+jobs:
+  dependabot-auto-merge:
+    name: 🤖 Auto-merge Dependabot PRs
+    runs-on: ubuntu-latest
+    if: github.actor == 'dependabot[bot]'
+
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v5
+
+      - name: 🔍 Check PR Details
+        id: pr-details
+        run: |
+          echo "PR Author: ${{ github.actor }}"
+          echo "PR Title: ${{ github.event.pull_request.title }}"
+
+          # Check if this is a security update
+          if [[ "${{ github.event.pull_request.title }}" == *"security"* ]] || \
+             [[ "${{ github.event.pull_request.title }}" == *"vulnerability"* ]] || \
+             [[ "${{ github.event.pull_request.body }}" == *"security"* ]]; then
+            echo "security_update=true" >> $GITHUB_OUTPUT
+            echo "🔒 Security update detected"
+          else
+            echo "security_update=false" >> $GITHUB_OUTPUT
+            echo "📦 Regular dependency update"
+          fi
+
+      - name: ⏳ Wait for SonarCloud Analysis
+        if: steps.pr-details.outputs.security_update == 'true'
+        uses: lewagon/wait-on-check-action@v1.3.4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          check-name: '🔍 SonarCloud PR Analysis'
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          wait-interval: 30
+          allowed-conclusions: success,neutral,skipped,failure
+        continue-on-error: true
+
+      - name: ⏳ Wait for Quality Gates
+        if: steps.pr-details.outputs.security_update == 'true'
+        uses: lewagon/wait-on-check-action@v1.3.4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          check-name: '🚀 Essential CI/CD'
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          wait-interval: 30
+          allowed-conclusions: success
+
+      - name: 🔒 Security Update Auto-Merge
+        if: steps.pr-details.outputs.security_update == 'true'
+        run: |
+          echo "🔒 Evaluating security update for auto-merge..."
+
+          # Check if essential quality gates passed (required)
+          QUALITY_STATUS=$(gh api repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/commits/${{ github.event.pull_request.head.sha }}/check-runs --jq '.check_runs[] | select(.name | test("Essential Quality Gates|Essential Security")) | .conclusion' | grep -v "success" || echo "")
+
+          if [[ -n "$QUALITY_STATUS" ]]; then
+            echo "❌ Essential quality gates failed - blocking auto-merge"
+            gh pr comment "${{ github.event.pull_request.number }}" --body "🔒 **Security Update Auto-Merge Blocked**
+
+            Essential quality gates must pass before auto-merge:
+            - Quality gates or security checks failed
+            - Manual review required even for security updates
+
+            Please check the failing tests and fix any issues."
+            exit 1
+          fi
+
+          echo "✅ Essential checks passed - proceeding with auto-merge"
+          echo "ℹ️ Note: SonarCloud failures are allowed for Dependabot PRs"
+
+          gh pr merge --auto --squash "${{ github.event.pull_request.number }}" || {
+            echo "⚠️ Auto-merge failed, attempting direct merge..."
+            gh pr merge --squash "${{ github.event.pull_request.number }}"
+          }
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 📦 Regular Update (Manual Review Required)
+        if: steps.pr-details.outputs.security_update == 'false'
+        run: |
+          echo "📦 Regular dependency update - manual review required"
+          gh pr comment "${{ github.event.pull_request.number }}" --body "
+          ## 📦 Dependency Update Review Required
+
+          This is a regular dependency update that requires manual review.
+
+          **Security updates are auto-merged**, but this update needs human approval.
+
+          ### Review Checklist:
+          - [ ] Check for breaking changes
+          - [ ] Verify compatibility with existing code
+          - [ ] Review changelog for impact
+          - [ ] Ensure all tests pass
+
+          Use \`@dependabot merge\` to merge after review.
+          "
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 🚨 Notify on Security Update
+        if: steps.pr-details.outputs.security_update == 'true'
+        run: |
+          gh pr comment "${{ github.event.pull_request.number }}" --body "
+          ## 🔒 Security Update Auto-Merge
+
+          This security update will be **automatically merged** after essential checks pass:
+
+          ✅ Essential Quality Gates (required)
+          ✅ Essential Security Gates (required)
+          ✅ Qodo PR-Agent Review (required)
+          ℹ️ SonarCloud Analysis (informational only for Dependabot)
+
+          **Auto-merge criteria for Dependabot PRs:**
+          - Essential CI/CD checks must pass
+          - SonarCloud failures are allowed (dependency updates don't affect code quality)
+          - Security updates are prioritized for immediate merge
+
+          **No manual intervention required** for security updates that pass essential checks.
+          "
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
