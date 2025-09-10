@@ -29,7 +29,7 @@ jobs:
 
     steps:
       - name: 📥 Checkout Repository
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332
         with:
           fetch-depth: 0 # Shallow clones should be disabled for better analysis
 
@@ -53,7 +53,7 @@ jobs:
           echo "✅ Configuration ready: ${PROJECT_KEY}"
 
       - name: 🔧 Setup Node.js
-        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: "npm"
@@ -120,7 +120,7 @@ jobs:
 
       - name: 📊 Upload Coverage Reports
         if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        uses: actions/upload-artifact@4cec3d8aa04e39d1a68397de0c4cd6fb9dce8ec1
         with:
           name: sonarcloud-coverage
           path: coverage/

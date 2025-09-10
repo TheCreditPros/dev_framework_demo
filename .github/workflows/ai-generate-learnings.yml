@@ -4,13 +4,13 @@ on:
   workflow_dispatch:
     inputs:
       base_url:
-        description: 'Base URL for E2E'
+        description: "Base URL for E2E"
         required: false
-        default: 'http://localhost:3000'
+        default: "http://localhost:3000"
       web_server:
-        description: 'Command to start web server'
+        description: "Command to start web server"
         required: false
-        default: 'node scripts/simple-static-server.js'
+        default: "node scripts/simple-static-server.js"
 
 permissions:
   contents: read
@@ -24,16 +24,16 @@ jobs:
       PLAYWRIGHT_WEB_SERVER: ${{ inputs.web_server }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332
 
       - name: Setup Node.js
-        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af
         with:
-          node-version: '20'
+          node-version: "20"
           cache: npm
 
       - name: Cache Playwright browsers
-        uses: actions/cache@0400d5f644dc74513175e3cd8d07132dd4860809
+        uses: actions/cache@6849a6489940f00c2f30c0fb92c6274307ccb58a
         with:
           path: ~/.cache/ms-playwright
           key: playwright-browsers-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
@@ -52,7 +52,7 @@ jobs:
 
       - name: Upload test-results
         if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        uses: actions/upload-artifact@4cec3d8aa04e39d1a68397de0c4cd6fb9dce8ec1
         with:
           name: healing-learnings
           path: |
@@ -60,4 +60,3 @@ jobs:
             playwright-report/
           if-no-files-found: warn
           retention-days: 7
-

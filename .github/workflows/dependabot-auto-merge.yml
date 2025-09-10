@@ -20,7 +20,7 @@ jobs:
 
     steps:
       - name: 📥 Checkout Repository
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332
 
       - name: 🔍 Check PR Details
         id: pr-details
@@ -44,7 +44,7 @@ jobs:
         uses: lewagon/wait-on-check-action@ccfb013c15c8afb7bf2b7c028fb74dc5a068cccc
         with:
           ref: ${{ github.event.pull_request.head.sha }}
-          check-name: '🔍 SonarCloud PR Analysis'
+          check-name: "🔍 SonarCloud PR Analysis"
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           wait-interval: 30
           allowed-conclusions: success,neutral,skipped,failure
@@ -55,7 +55,7 @@ jobs:
         uses: lewagon/wait-on-check-action@ccfb013c15c8afb7bf2b7c028fb74dc5a068cccc
         with:
           ref: ${{ github.event.pull_request.head.sha }}
-          check-name: '🚀 Essential CI/CD'
+          check-name: "🚀 Essential CI/CD"
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           wait-interval: 30
           allowed-conclusions: success

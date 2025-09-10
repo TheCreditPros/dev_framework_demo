@@ -7,13 +7,13 @@ on:
   workflow_dispatch: # Manual trigger only (for cleanup/migration)
     inputs:
       force_recreate:
-        description: 'DEPRECATED - Use sonarcloud-analysis.yml instead'
+        description: "DEPRECATED - Use sonarcloud-analysis.yml instead"
         required: false
         default: false
         type: boolean
 
 env:
-  NODE_VERSION: '20'
+  NODE_VERSION: "20"
 
 permissions:
   contents: read
@@ -32,12 +32,12 @@ jobs:
 
     steps:
       - name: 📥 Checkout Repository
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332
         with:
           fetch-depth: 0
 
       - name: 🔧 Setup Node.js
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af
         with:
           node-version: ${{ env.NODE_VERSION }}
 
@@ -110,7 +110,7 @@ jobs:
           fi
 
       - name: 📤 Upload Configuration
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        uses: actions/upload-artifact@4cec3d8aa04e39d1a68397de0c4cd6fb9dce8ec1
         with:
           name: sonarcloud-config
           path: |
@@ -126,15 +126,15 @@ jobs:
 
     steps:
       - name: 📥 Checkout Repository
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332
         with:
           fetch-depth: 0
 
       - name: 🔧 Setup Node.js
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
+          cache: "npm"
 
       - name: 📦 Install Dependencies
         run: npm ci --no-audit
