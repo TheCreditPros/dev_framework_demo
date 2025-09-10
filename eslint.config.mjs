@@ -66,15 +66,18 @@ export default [
         {
           argsIgnorePattern: "^_",
           varsIgnorePattern: "^_",
-          caughtErrorsIgnorePattern: "^_"
+          caughtErrorsIgnorePattern: "^_",
         },
       ],
       "@typescript-eslint/no-explicit-any": "warn",
       "@typescript-eslint/no-non-null-assertion": "warn",
       "no-unused-vars": "off",
-      "prefer-const": ["error", { "destructuring": "any", "ignoreReadBeforeAssign": false }],
+      "prefer-const": [
+        "error",
+        { destructuring: "any", ignoreReadBeforeAssign: false },
+      ],
       "no-var": "error",
-      "quotes": ["error", "double", { "avoidEscape": true }],
+      "quotes": ["error", "double", { avoidEscape: true }],
     },
   },
   {
@@ -124,14 +127,17 @@ export default [
         {
           argsIgnorePattern: "^_",
           varsIgnorePattern: "^_",
-          caughtErrorsIgnorePattern: "^_"
-        }
+          caughtErrorsIgnorePattern: "^_",
+        },
       ],
       "no-console": "off",
-      "prefer-const": ["error", { "destructuring": "any", "ignoreReadBeforeAssign": false }],
+      "prefer-const": [
+        "error",
+        { destructuring: "any", ignoreReadBeforeAssign: false },
+      ],
       "no-var": "error",
       "no-useless-escape": "warn",
-      "quotes": ["error", "double", { "avoidEscape": true }],
+      "quotes": ["error", "double", { avoidEscape: true }],
     },
   },
 ];

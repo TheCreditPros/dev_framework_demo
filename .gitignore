@@ -84,3 +84,4 @@ test-setup-levels.sh
 /playwright/.cache/
 /videos/
 /screenshots/
+playwright-results.json

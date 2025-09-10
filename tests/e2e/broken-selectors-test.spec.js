@@ -3,7 +3,7 @@ import { test, expect } from "@playwright/test";
 test.describe("Credit Score Display - Broken Selectors Test", () => {
   test("should display credit score with old selectors", async ({ page }) => {
     try {
-      await page.goto("./credit-score");
+      await page.goto("/");
 
       // Intentionally broken selectors to test auto-healing
       await page.click("[data-testid=credit-score-button]");
@@ -23,7 +23,7 @@ test.describe("Credit Score Display - Broken Selectors Test", () => {
     page,
   }) => {
     try {
-      await page.goto("./credit-report");
+      await page.goto("/");
 
       // Short timeout that should be auto-extended
       await page.waitForSelector("[data-testid=credit-report]", {

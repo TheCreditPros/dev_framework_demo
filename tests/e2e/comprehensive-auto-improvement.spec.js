@@ -3,8 +3,8 @@ import { test, expect } from "@playwright/test";
 test.describe("Comprehensive Auto-Improvement Validation", () => {
   test("should auto-heal broken selectors and timeouts", async ({ page }) => {
     try {
-      // Navigate to non-existent page to test error handling
-      await page.goto("./credit-dashboard");
+      // Navigate to root page (simulating navigation to non-existent route in SPA)
+      await page.goto("/");
 
       // Use old, fragile selectors that should be auto-healed
       await page.click("button[data-testid=submit-credit-application]");
@@ -36,7 +36,7 @@ test.describe("Comprehensive Auto-Improvement Validation", () => {
     page,
   }) => {
     try {
-      await page.goto("./credit-report");
+      await page.goto("/");
 
       // Test credit report loading with insufficient timeout
       await page.waitForSelector("[data-credit=report-container]", {

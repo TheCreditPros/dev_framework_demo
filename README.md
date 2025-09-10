@@ -2,7 +2,7 @@
 
 > **Basic TypeScript development framework with essential tooling**
 
-[![GitHub Actions](https://img.shields.io/github/actions/workflow/status/TheCreditPros/dev_framework_demo/ci-simplified.yml?branch=main)](https://github.com/TheCreditPros/dev_framework_demo/actions)
+[![GitHub Actions](https://img.shields.io/github/actions/workflow/status/your-username/your-repo-name/ci-simplified.yml?branch=main)](https://github.com/your-username/your-repo-name/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Node.js Version](https://img.shields.io/badge/Node.js-20+-green.svg)](https://nodejs.org/)
 
@@ -11,8 +11,8 @@
 ### **Install**
 
 ```bash
-git clone https://github.com/TheCreditPros/dev_framework_demo.git
-cd dev_framework_demo
+git clone https://github.com/your-username/your-repo-name.git
+cd your-repo-name
 npm install
 ```
 
@@ -178,6 +178,7 @@ This framework includes **Qodo AI PR Agent** - a comprehensive open-source tool 
 ### **🎯 Repository Context & Breakage Prevention**
 
 **Repository-Wide Context Analysis:**
+
 - Analyzes the entire repository structure and codebase
 - Understands the functions and purpose of existing code
 - Reviews how new changes integrate with existing functionality
@@ -185,6 +186,7 @@ This framework includes **Qodo AI PR Agent** - a comprehensive open-source tool 
 - Considers the overall architecture and design principles
 
 **Breakage Prevention Standards:**
+
 - NEVER suggests changes that could break existing functionality
 - Ensures backward compatibility is maintained
 - Verifies API contracts and interfaces remain intact
