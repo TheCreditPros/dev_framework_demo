@@ -28,7 +28,7 @@ jobs:
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
 
       - name: 🤖 PR Agent Review
-        if: github.event.pull_request != null
+        if: github.event_name == 'pull_request'
         uses: Codium-ai/pr-agent@main
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -36,76 +36,10 @@ jobs:
         with:
           command: "review --pr_reviewer.add_original_user_description=true"
 
-  security-trigger:
-    name: 🔒 Security Issue Detection
-    runs-on: ubuntu-latest
-    if: github.event_name == 'check_suite' || github.event_name == 'workflow_run'
-
-    steps:
-      - name: 📥 Checkout Repository
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
-
-      - name: 🔍 Check for Security Failures
-        id: security-check
-        run: |
-          echo "Checking for security-related failures..."
-
-          # Check if this is a security-related failure
-          if [[ "${{ github.event.check_suite.conclusion }}" == "failure" ]] || \
-             [[ "${{ github.event.workflow_run.conclusion }}" == "failure" ]]; then
-
-            # Check if it's security-related
-            if [[ "${{ github.event.check_suite.app.name }}" == *"security"* ]] || \
-               [[ "${{ github.event.workflow_run.name }}" == *"Security"* ]] || \
-               [[ "${{ github.event.workflow_run.name }}" == *"SonarCloud"* ]]; then
-              echo "security_failure=true" >> $GITHUB_OUTPUT
-              echo "🚨 Security failure detected"
-            else
-              echo "security_failure=false" >> $GITHUB_OUTPUT
-            fi
-          else
-            echo "security_failure=false" >> $GITHUB_OUTPUT
-          fi
-
-      - name: 🔍 Get Associated PR
-        id: get-pr
-        if: steps.security-check.outputs.security_failure == 'true'
-        run: |
-          # Get PR number from the commit SHA
-          PR_NUMBER=$(gh pr list --state open --json number,headRefOid --jq ".[] | select(.headRefOid==\"${{ github.event.check_suite.head_sha || github.event.workflow_run.head_sha }}\") | .number")
-
-          if [[ -n "$PR_NUMBER" ]]; then
-            echo "pr_number=$PR_NUMBER" >> $GITHUB_OUTPUT
-            echo "Found PR #$PR_NUMBER for security failure"
-          else
-            echo "pr_number=" >> $GITHUB_OUTPUT
-            echo "No PR found for this commit"
-          fi
+      - name: 🤖 PR Agent Review (Security Trigger)
+        if: github.event_name == 'workflow_run' || github.event_name == 'check_suite'
+        uses: Codium-ai/pr-agent@main
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: 🤖 Trigger Security Review
-        if: steps.security-check.outputs.security_failure == 'true' && steps.get-pr.outputs.pr_number != ''
-        run: |
-          echo "🚨 Triggering AI security review for PR #${{ steps.get-pr.outputs.pr_number }}"
-
-          # Add security review comment to trigger PR-Agent
-          gh pr comment "${{ steps.get-pr.outputs.pr_number }}" --body "
-          ## 🚨 Security Issue Detected - AI Review Triggered
-
-          A security scan failure has been detected. Triggering comprehensive AI review...
-
-          /security-review
-          /analyze
-
-          **Security Focus Areas:**
-          - Vulnerability assessment
-          - FCRA compliance validation
-          - PII data protection
-          - Access control verification
-          - Audit trail completeness
-
-          This review was automatically triggered due to security scan failures.
-          "
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          command: "review --pr_reviewer.security_focus=true --pr_reviewer.add_original_user_description=true"
