@@ -5,7 +5,7 @@ name: 🚀 CI/CD
 
 on:
   push:
-    branches: [main, master]
+    branches: [main, master, framework/simplified]
   pull_request:
     branches: [main, master]
 
