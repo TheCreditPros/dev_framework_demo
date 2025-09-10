@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
     inputs:
       pr_number:
-        description: 'PR number to review'
+        description: "PR number to review"
         required: false
         type: string
 
@@ -41,7 +41,6 @@ jobs:
       - name: 🤖 Qodo AI PR Review
         uses: qodo-ai/pr-agent@main
         env:
-          OPENAI_KEY: ${{ secrets.QODO_API_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_REVIEWER.EXTRA_INSTRUCTIONS: |
             Focus on:
@@ -79,7 +78,6 @@ jobs:
       - name: 🤖 Security Review
         uses: qodo-ai/pr-agent@main
         env:
-          OPENAI_KEY: ${{ secrets.QODO_API_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           command: /security-review

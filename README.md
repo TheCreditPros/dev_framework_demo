@@ -73,6 +73,7 @@ This framework includes **Qodo AI PR Agent** for automated, intelligent code rev
 ### **🎯 What AI Reviews Cover**
 
 **Code Quality Analysis:**
+
 - TypeScript best practices and type safety
 - React component patterns and hooks usage
 - Performance optimizations and memory management
@@ -80,6 +81,7 @@ This framework includes **Qodo AI PR Agent** for automated, intelligent code rev
 - Documentation completeness
 
 **Security Analysis:**
+
 - Input validation and sanitization
 - Authentication and authorization patterns
 - Data exposure prevention
@@ -87,12 +89,14 @@ This framework includes **Qodo AI PR Agent** for automated, intelligent code rev
 - Secure coding practices
 
 **Testing & Coverage:**
+
 - Unit test adequacy and coverage (80%+ threshold)
 - Integration test completeness
 - Edge case handling and error scenarios
 - Test maintainability
 
 **Performance Review:**
+
 - Bundle size optimization
 - Runtime performance bottlenecks
 - Memory leak prevention
@@ -101,36 +105,28 @@ This framework includes **Qodo AI PR Agent** for automated, intelligent code rev
 
 ### **🚀 Setting Up AI Reviews**
 
-**1. Get Qodo API Token:**
-```bash
-# Visit: https://qodo.ai
-# Sign up for an account
-# Generate an API token
-```
+**Qodo PR is open source and does not require an API token!** 🎉
 
-**2. Add to Repository Secrets:**
-- Go to: **Settings** → **Secrets and variables** → **Actions**
-- Add: `QODO_API_TOKEN` = `your_api_token_here`
-- Add: `GITHUB_TOKEN` = `${{ secrets.GITHUB_TOKEN }}`
-
-**3. AI Reviews Will Automatically:**
-- ✅ Run on every PR (opened, synchronized, reopened)
-- ✅ Analyze entire codebase changes
-- ✅ Post detailed comments with specific line references
-- ✅ Provide actionable improvement suggestions
-- ✅ Include security analysis and performance recommendations
-- ✅ Generate code quality scores and improvement plans
+**Setup is automatic:**
+- ✅ No API token needed - just enable the workflow
+- ✅ Uses GitHub's built-in token for authentication
+- ✅ Runs automatically on every PR
+- ✅ Analyzes entire codebase changes
+- ✅ Posts detailed comments with specific line references
+- ✅ Provides actionable improvement suggestions
+- ✅ Includes security analysis and performance recommendations
+- ✅ Generates code quality scores and improvement plans
 
 ### **💬 AI Review Commands**
 
 You can also trigger specific AI reviews manually by commenting on PRs:
 
 ```markdown
-/review              # General code review
-/security-review     # Security-focused analysis
-/analyze             # Deep code analysis
-/improve             # Specific improvement suggestions
-/describe            # PR description enhancement
+/review # General code review
+/security-review # Security-focused analysis
+/analyze # Deep code analysis
+/improve # Specific improvement suggestions
+/describe # PR description enhancement
 ```
 
 ### **📊 AI Review Output**
@@ -147,6 +143,7 @@ You can also trigger specific AI reviews manually by commenting on PRs:
 ### **🔧 AI Configuration**
 
 **Custom Configuration:** `.qodo/config.toml`
+
 - Review focus areas and priorities
 - Custom instructions for your codebase
 - Security analysis depth
@@ -154,6 +151,7 @@ You can also trigger specific AI reviews manually by commenting on PRs:
 - Test coverage requirements
 
 **Workflow Configuration:** `.github/workflows/qodo-pr-review.yml`
+
 - Triggers and conditions for AI reviews
 - Required checks and dependencies
 - Output formatting and presentation

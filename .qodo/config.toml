@@ -9,7 +9,7 @@ publish_output = true
 publish_output_progress = true
 
 [github]
-user_token = ""
+# Qodo PR is open source - no token required
 deployment_type = "user"
 ratelimit_retries = 5
 base_url = "https://api.github.com"

@@ -1,9 +1,7 @@
 #!/bin/bash
 # Qodo AI Configuration
 # This script configures Qodo AI for PR reviews
-
-# Set your Qodo API token here
-export QODO_API_TOKEN="${QODO_API_TOKEN:-}"
+# Note: Qodo PR is open source and does not require an API token
 
 # Repository configuration
 export QODO_REPOSITORY="${GITHUB_REPOSITORY:-TheCreditPros/dev_framework_demo}"
@@ -21,3 +19,4 @@ export QODO_VERBOSE_MODE="true"
 echo "Qodo AI configured for repository: $QODO_REPOSITORY"
 echo "Review depth: $QODO_REVIEW_DEPTH"
 echo "Security focus: $QODO_SECURITY_FOCUS"
+echo "Note: No API token required - Qodo PR is open source"
