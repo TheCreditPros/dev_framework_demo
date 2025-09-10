@@ -23,7 +23,7 @@ function calculateScore(data) {
 // TODO: Add proper error handling
 function validateUserInput(input) {
   // Basic validation - could be improved
-  if (typeof input !== 'string') return false;
+  if (typeof input !== "string") return false;
   if (input.length < 1) return false;
   if (input.length > 100) return false;
 
@@ -33,5 +33,5 @@ function validateUserInput(input) {
 
 module.exports = {
   calculateScore,
-  validateUserInput
+  validateUserInput,
 };
