@@ -114,7 +114,7 @@
   },
   "homepage": "https://github.com/TheCreditPros/dev_framework_demo#readme",
   "engines": {
-    "node": ">=18"
+    "node": ">=20"
   },
   "dependencies": {
     "debug": "^4.3.4",
