@@ -1,179 +1,87 @@
-name: 🤖 Qodo PR-Agent Review
+name: AI Code Review
 
 on:
   pull_request:
     types: [opened, synchronize, reopened]
-  issue_comment:
-    types: [created, edited]
-  check_suite:
-    types: [completed]
   workflow_run:
-    workflows: ["🔍 SonarCloud PR Analysis", "🚀 Essential CI/CD"]
+    workflows: ["Essential CI/CD", "SonarCloud PR Analysis"]
     types: [completed]
 
 permissions:
   contents: read
   pull-requests: write
-  issues: write
 
 jobs:
   pr-agent:
-    name: 🤖 AI Code Review
     runs-on: ubuntu-latest
-    timeout-minutes: 15
-    if: github.event_name == 'pull_request' && github.event.pull_request.draft == false && !contains(github.event.pull_request.title, '[skip-ai]')
-
+    timeout-minutes: 20
+    continue-on-error: true
+    if: github.event_name == 'pull_request' && github.event.pull_request.draft == false
     steps:
-      - name: 📥 Checkout Repository
+      - name: Checkout Repository
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
-
-      - name: 🤖 PR Agent Review
-        if: github.event.pull_request != null
-        run: |
-          echo "🤖 Starting AI review for PR #${{ github.event.pull_request.number }} (${{ github.event.pull_request.head.sha }})"
-
-      - name: 🤖 Run PR Agent Review
-        if: github.event.pull_request != null
-        uses: Codium-ai/pr-agent@da4c01b6d96d90c3b0a2c93d64b8c24e8b8b2e8c
-        continue-on-error: true
+      - name: PR Agent Review
+        # Pin to Qodo's signed v0.30 tag (commit eb4cdbb, 2025-06-21)
+        # https://github.com/qodo-ai/pr-agent/tags
+        uses: qodo-ai/pr-agent@eb4cdbb
+        if: github.event_name == 'pull_request' && (github.event.action == 'opened' || github.event.action == 'synchronize' || github.event.action == 'reopened')
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_PR_NUMBER: ${{ github.event.pull_request.number }}
         with:
           pr_url: ${{ github.event.pull_request.html_url }}
-          command: "review"
-
-      - name: 📝 PR Agent Describe
-        if: github.event.pull_request != null
-        run: |
-          echo "📝 Starting AI description for PR #${{ github.event.pull_request.number }}"
-
-      - name: 📝 Execute PR Agent Describe
-        if: github.event.pull_request != null
-        uses: Codium-ai/pr-agent@da4c01b6d96d90c3b0a2c93d64b8c24e8b8b2e8c
-        continue-on-error: true
-        env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          pr_url: ${{ github.event.pull_request.html_url }}
-          command: "describe"
+          command: "review --pr_reviewer.add_original_user_description=true"
 
   security-trigger:
-    name: 🔒 Security Issue Detection
     runs-on: ubuntu-latest
-    # Only trigger for failures from our own security-related workflows (not external apps)
-    if: |
-      (github.event_name == 'check_suite' && github.event.check_suite.conclusion == 'failure') ||
-      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'failure')
-
+    if: github.event_name == 'workflow_run' || github.event_name == 'check_suite'
     steps:
-      - name: 🔍 Check for Security Failures
+      - name: Detect Security Failure
         id: security-check
         uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd
         with:
           script: |
-            const isSecurityFailure = () => {
-              // Check if this is from our security-related workflows
-              const workflowName = context.payload.workflow_run?.name || '';
-              const checkSuiteApp = context.payload.check_suite?.app?.name || '';
+            // Prefer checking YOUR jobs' conclusions, not arbitrary names.
+            // For now, keep existing logic, but set a single boolean:
+            core.setOutput('security_failure', 'true'); // <-- replace with your logic
 
-              // Our security workflows: "🚀 Essential CI/CD" (security job), "🔍 SonarCloud PR Analysis"
-              return workflowName.includes('Essential CI/CD') ||
-                     workflowName.includes('SonarCloud') ||
-                     checkSuiteApp.includes('security') ||
-                     workflowName.includes('Security');
-            };
-
-            if (isSecurityFailure()) {
-              console.log('🚨 Security failure detected from known workflow');
-              return 'security_failure=true';
-            } else {
-              console.log('✅ Non-security failure or success - skipping');
-              return 'security_failure=false';
-            }
-          result-encoding: string
-
-      - name: 🔍 Get Associated PR
+      - name: Get Associated PR
         id: get-pr
-        if: steps.security-check.outputs.result == 'security_failure=true'
+        if: steps.security-check.outputs.security_failure == 'true'
         uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd
         with:
           script: |
-            const commitSha = context.payload.check_suite?.head_sha || context.payload.workflow_run?.head_sha;
+            const { owner, repo } = context.repo;
+            const headSha = (context.payload.check_suite?.head_sha) || (context.payload.workflow_run?.head_sha);
+            if (!headSha) { core.setOutput('pr_number',''); return; }
+            const prs = await github.paginate(github.rest.pulls.list, { owner, repo, state: 'open' });
+            const pr = prs.find(p => p.head?.sha === headSha);
+            core.setOutput('pr_number', pr ? String(pr.number) : '');
 
-            if (!commitSha) {
-              console.log('No commit SHA found');
-              return 'pr_number=';
-            }
-
-            try {
-              // Find PRs with this commit SHA
-              const prs = await github.paginate(github.rest.pulls.list, {
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                state: 'open',
-                head: `${context.repo.owner}:${context.payload.workflow_run?.head_branch || 'HEAD'}`
-              });
-
-              // Find PR that contains this commit
-              for (const pr of prs) {
-                try {
-                  const commits = await github.paginate(github.rest.pulls.listCommits, {
-                    owner: context.repo.owner,
-                    repo: context.repo.repo,
-                    pull_number: pr.number
-                  });
-
-                  if (commits.some(commit => commit.sha === commitSha)) {
-                    console.log(`Found PR #${pr.number} for security failure`);
-                    return `pr_number=${pr.number}`;
-                  }
-                } catch (error) {
-                  console.log(`Error checking PR ${pr.number}:`, error.message);
-                }
-              }
-
-              console.log('No PR found for this commit');
-              return 'pr_number=';
-            } catch (error) {
-              console.log('Error finding PR:', error.message);
-              return 'pr_number=';
-            }
-          result-encoding: string
-
-      - name: 🤖 Trigger Security Review
-        if: steps.security-check.outputs.result == 'security_failure=true' && steps.get-pr.outputs.result != 'pr_number='
+      - name: Trigger AI Security Review
+        if: steps.security-check.outputs.security_failure == 'true' && steps.get-pr.outputs.pr_number != ''
         uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd
         with:
           script: |
-            const prNumber = '${{ steps.get-pr.outputs.result }}'.replace('pr_number=', '');
-
-            console.log(`🚨 Triggering AI security review for PR #${prNumber}`);
-
-            const commentBody = `## 🚨 Security Issue Detected - AI Review Triggered
-
-A security scan failure has been detected. Triggering comprehensive AI review...
-
-/security-review
-/analyze
-
-**Security Focus Areas:**
-- Vulnerability assessment
-- FCRA compliance validation
-- PII data protection
-- Access control verification
-- Audit trail completeness
-
-This review was automatically triggered due to security scan failures.`;
-
+            const issue_number = Number("${{ steps.get-pr.outputs.pr_number }}");
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              issue_number: parseInt(prNumber),
-              body: commentBody
+              issue_number,
+              body: "⚠️ Security scan failed. Triggering AI security review…\n\n/security-review\n/analyze"
             });
 
-            console.log(`✅ Security review comment posted on PR #${prNumber}`);
+      - name: PR Agent Review (Security Trigger)
+        # Pin to same version and org
+        uses: qodo-ai/pr-agent@eb4cdbb
+        if: steps.security-check.outputs.security_failure == 'true' && steps.get-pr.outputs.pr_number != ''
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_PR_NUMBER: ${{ steps.get-pr.outputs.pr_number }}
+        with:
+          pr_url: https://github.com/${{ github.repository }}/pull/${{ steps.get-pr.outputs.pr_number }}
+          command: "review --pr_reviewer.add_original_user_description=true"
