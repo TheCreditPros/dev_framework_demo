@@ -90,6 +90,14 @@ Include in PR description:
 4. Test coverage changes
 5. Performance impact
 6. Database migration requirements (if any)
+
+STANDARDIZED FORMAT REQUIREMENTS:
+- Use clear section headers with emojis
+- Include impact assessment for each change type
+- Document security considerations
+- Specify testing requirements
+- Note any breaking changes or migrations needed
+- Link to related issues or documentation
 """
 
 [pr_questions]
@@ -143,7 +151,7 @@ Analyze for:
 """
 
 [pr_similar_issue]
-enable_pr_similar_issue = false
+enable_pr_similar_issue = true
 
 [pr_help]
 enable_pr_help = true
