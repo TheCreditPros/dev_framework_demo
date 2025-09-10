@@ -31,6 +31,7 @@ jobs:
         if: github.event_name == 'pull_request' && (github.event.action == 'opened' || github.event.action == 'synchronize' || github.event.action == 'reopened')
         uses: Codium-ai/pr-agent@main
         env:
+          OPENAI_KEY: ""
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_PR_NUMBER: ${{ github.event.pull_request.number }}
         with:
@@ -40,6 +41,7 @@ jobs:
         if: github.event_name == 'workflow_run' || github.event_name == 'check_suite'
         uses: Codium-ai/pr-agent@main
         env:
+          OPENAI_KEY: ""
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           command: "review --pr_reviewer.security_focus=true --pr_reviewer.add_original_user_description=true"
