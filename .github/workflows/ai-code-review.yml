@@ -1,19 +1,15 @@
 name: 🤖 Qodo PR-Agent Review
 
-# Temporarily disabled - needs proper configuration
-# on:
-#   pull_request:
-#     types: [opened, synchronize, reopened]
-#   issue_comment:
-#     types: [created, edited]
-#   check_suite:
-#     types: [completed]
-#   workflow_run:
-#     workflows: ["🔍 SonarCloud PR Analysis", "🚀 Essential CI/CD"]
-#     types: [completed]
-
 on:
-  workflow_dispatch: # Manual trigger only until properly configured
+  pull_request:
+    types: [opened, synchronize, reopened]
+  issue_comment:
+    types: [created, edited]
+  check_suite:
+    types: [completed]
+  workflow_run:
+    workflows: ["🔍 SonarCloud PR Analysis", "🚀 Essential CI/CD"]
+    types: [completed]
 
 permissions:
   contents: read
@@ -25,7 +21,7 @@ jobs:
     name: 🤖 AI Code Review
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    if: false  # Temporarily disabled - needs proper configuration
+    if: github.event_name == 'pull_request' && github.event.pull_request.draft == false
 
     steps:
       - name: 📥 Checkout Repository
@@ -36,18 +32,9 @@ jobs:
         uses: Codium-ai/pr-agent@main
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_PR_NUMBER: ${{ github.event.pull_request.number }}
         with:
-          pr_url: ${{ github.event.pull_request.html_url }}
-          command: "review"
-
-      - name: 📝 PR Agent Describe
-        if: github.event.pull_request != null
-        uses: Codium-ai/pr-agent@main
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          pr_url: ${{ github.event.pull_request.html_url }}
-          command: "describe"
+          command: "review --pr_reviewer.add_original_user_description=true"
 
   security-trigger:
     name: 🔒 Security Issue Detection
