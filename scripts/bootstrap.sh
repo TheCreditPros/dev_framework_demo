@@ -279,22 +279,20 @@ main() {
     print_info "Starting AI-SDLC Framework bootstrap..."
     print_info "Working directory: $PROJECT_ROOT"
 
-    # Run setup steps
+    # Check Node.js first
     check_node
-    setup_dependencies
-    setup_git_hooks
-    validate_config
 
-    # Skip quality gates in CI or if --skip-quality-gates flag is passed
-    if [[ "${CI:-}" != "true" ]] && [[ "$*" != *"--skip-quality-gates"* ]]; then
-        if ! run_quality_gates; then
-            print_warning "Quality gates failed - development environment may not be fully ready"
-        fi
+    # Call the smart installer with non-interactive flag
+    print_info "Running smart installer..."
+    if [[ -f "$PROJECT_ROOT/install-framework-smart.sh" ]]; then
+        bash "$PROJECT_ROOT/install-framework-smart.sh" --noninteractive || {
+            print_error "Smart installer failed"
+            exit 1
+        }
     else
-        print_info "Skipping quality gates (CI environment or --skip-quality-gates flag)"
+        print_error "Smart installer not found at $PROJECT_ROOT/install-framework-smart.sh"
+        exit 1
     fi
-
-    create_dev_info
 
     local end_time=$(date +%s)
     local duration=$((end_time - start_time))
@@ -306,7 +304,6 @@ main() {
     print_info "Development environment is ready!"
     print_info "Run 'npm run dev' to start development"
     print_info "Run 'npm run quality-gates' to validate your setup"
-    print_info "Check .dev-environment for more info"
     echo ""
 }
 

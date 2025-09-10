@@ -36,24 +36,28 @@ cd your-project
 # Run all quality gates
 npm run quality-gates
 
-# Or validate configuration
+# Validate configuration
 node validate-setup.js
+
+# Validate CI consistency (ensures local matches GitHub Actions)
+node scripts/validate-ci-consistency.cjs
 ```
 
-## ✨ **What This Framework Enforces**
+## ✨ **What Actually Runs Here**
 
-| Feature                   | Status    | Automation                | Benefit                                |
-| ------------------------- | --------- | ------------------------- | -------------------------------------- |
-| **🤖 AI Code Review**     | ✅ Active | Qodo PR-Agent             | Intelligent feedback on every PR       |
-| **🔒 Security Scanning**  | ✅ Active | SonarCloud + CodeQL       | Zero vulnerabilities in production     |
-| **📦 Dependency Updates** | ✅ Active | Dependabot daily          | Always up-to-date, secure dependencies |
-| **✅ Quality Gates**      | ✅ Active | ESLint + Prettier + Tests | Consistent code quality                |
-| **🧪 Test Coverage**      | ✅ Active | Vitest + Coverage         | 80%+ coverage enforced                 |
-| **📝 Commit Standards**   | ✅ Active | Commitlint + Husky        | Conventional commits required          |
-| **🎨 Code Formatting**    | ✅ Active | Prettier + EditorConfig   | Zero formatting debates                |
-| **🔍 Type Safety**        | ✅ Active | TypeScript + ESLint       | Catch errors before runtime            |
-| **⚡ Performance**        | ✅ Active | Build optimization        | Fast CI/CD (< 5 min)                   |
-| **📋 FCRA Compliance**    | ✅ Active | Custom rules              | Credit repair industry ready           |
+| Capability                | Enabled | Workflow file              | Blocks merge |
+| ------------------------- | ------- | -------------------------- | ------------ |
+| **Lint + Prettier**       | ✅      | ci-simplified.yml          | ✅           |
+| **TypeScript checks**     | ✅      | ci-simplified.yml          | ✅           |
+| **Unit tests + coverage** | ✅      | ci-simplified.yml          | ✅           |
+| **SonarCloud (PRs)**      | ✅      | sonarcloud-pr-analysis.yml | ✅           |
+| **AI code review**        | ✅      | ai-code-review.yml         | ❌           |
+| **E2E (Playwright)**      | ⚠️      | n/a (scaffold only)        | ❌           |
+| **Security scanning**     | ✅      | ci-simplified.yml          | ✅           |
+| **Dependency review**     | ✅      | dependency-review.yml      | ✅           |
+| **Commit standards**      | ✅      | pre-commit hooks           | ✅           |
+
+<<<<<<< HEAD
 
 ## 🔧 **What Actually Runs in This Repository**
 
@@ -211,4 +215,50 @@ npm run quality-gates
 
 ---
 
-_Built by [The Credit Pros](https://github.com/TheCreditPros) • MIT License_
+# _Built by [The Credit Pros](https://github.com/TheCreditPros) • MIT License_
+
+## 🛠️ **Available Commands**
+
+```bash
+# Development
+npm run dev              # Start development server
+npm run build            # Build for production
+npm run test:coverage    # Generate coverage report
+
+# Quality Gates
+npm run quality-gates    # Run all quality checks
+npm run lint:fix         # Auto-fix code style
+npm run format:fix       # Auto-fix formatting
+npm run type-check       # TypeScript validation
+
+# Validation
+npm run validate-ci      # CI consistency check
+node validate-setup.js   # Configuration validation
+```
+
+## 🚀 **Integration**
+
+```bash
+# Add to your project
+./scripts/bootstrap.sh   # Setup environment
+npm run quality-gates   # Verify everything works
+```
+
+## 📚 **Documentation**
+
+- [Installation Guide](docs/ci-cd-implementation-guide.md)
+- [Configuration Guide](docs/SECRETS_AND_CONFIGURATION.md)
+- [Contributing Guide](CONTRIBUTING.md)
+- [Security Policy](SECURITY.md)
+
+## 📞 **Support**
+
+- 🐛 [Issues](https://github.com/TheCreditPros/dev_framework_demo/issues)
+- 💬 [Discussions](https://github.com/TheCreditPros/dev_framework_demo/discussions)
+- 📖 [Documentation](/docs)
+
+---
+
+**Built with ❤️ by [The Credit Pros Development Team](https://github.com/TheCreditPros)**
+
+> > > > > > > 8ffcdf3 (fix: core cleanup - node 20, remove python lint rule, consolidate installers)

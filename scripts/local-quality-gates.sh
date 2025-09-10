@@ -63,12 +63,12 @@ else
     OVERALL_STATUS=1
 fi
 
-# Tests
-echo "🔍 Tests"
-if npm run test:ci > /dev/null 2>&1; then
-    echo "✅ Tests"
+# Unit Tests
+echo "🔍 Unit Tests"
+if npm run test:coverage > /dev/null 2>&1; then
+    echo "✅ Unit Tests"
 else
-    echo "❌ Tests - Fix failing tests"
+    echo "❌ Unit Tests - Fix failing tests"
     OVERALL_STATUS=1
 fi
 
