@@ -19,9 +19,9 @@ jobs:
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
 
       - name: 🔍 Dependency Review
-        uses: actions/dependency-review-action@595b5aeba73380359d98a5e087f648dbb0edce1b
-        continue-on-error: true  # Allow to fail if GitHub Advanced Security not enabled
+        uses: actions/dependency-review-action@3b139cfc5fae8b618d3eae3675e383bb1769c9c13
         with:
           # Optional: add configuration options
           fail-on-severity: moderate
           allow-licenses: MIT, Apache-2.0, BSD-2-Clause, BSD-3-Clause, ISC
+          deny-licenses: MS-PL, LGPL-2.0, LGPL-2.1, LGPL-3.0
