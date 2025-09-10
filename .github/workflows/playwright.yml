@@ -28,21 +28,41 @@ jobs:
         run: npx playwright install --with-deps
 
       - name: Start dev server
-        run: npm run dev &
+        run: |
+          npm run dev &
+          SERVER_PID=$!
+          echo "SERVER_PID=$SERVER_PID" >> $GITHUB_ENV
+          sleep 10
         env:
           PLAYWRIGHT_BASE_URL: http://localhost:5173
 
-      - name: Wait for server to be ready
+      - name: Verify server is running
         run: |
-          timeout 60 bash -c 'until curl -s http://localhost:5173 > /dev/null; do sleep 2; echo "Waiting for server..."; done'
-          echo "Server is ready!"
+          echo "Checking if server is responding..."
+          if curl -s --max-time 10 http://localhost:5173 > /dev/null; then
+            echo "✅ Server is responding"
+          else
+            echo "❌ Server is not responding, starting in foreground for debugging..."
+            timeout 30 npm run dev || echo "Server startup failed"
+            exit 1
+          fi
         env:
           PLAYWRIGHT_BASE_URL: http://localhost:5173
 
       - name: Run Playwright tests
-        run: npm run e2e:ci
+        run: |
+          echo "Running Playwright tests..."
+          npm run e2e:ci
         env:
           PLAYWRIGHT_BASE_URL: http://localhost:5173
+
+      - name: Cleanup server
+        if: always()
+        run: |
+          if [ ! -z "$SERVER_PID" ]; then
+            kill $SERVER_PID 2>/dev/null || true
+          fi
+          pkill -f "vite" 2>/dev/null || true
 
       - name: Upload test results
         uses: actions/upload-artifact@v4
