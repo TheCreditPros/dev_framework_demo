@@ -6,7 +6,7 @@ name: 🚀 Essential CI/CD
 on:
   push:
     branches: [main, master, develop, staging]
-    tags: ['v*']
+    tags: ["v*"]
   pull_request:
     branches: [main, master]
     types: [opened, synchronize, reopened, ready_for_review]
@@ -18,10 +18,10 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  NODE_VERSION: '20'
+  NODE_VERSION: "20"
   # Cache optimization
-  FORCE_COLOR: '1'
-  CI: 'true'
+  FORCE_COLOR: "1"
+  CI: "true"
 
 permissions:
   contents: read
@@ -39,14 +39,19 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
+      - name: 🛡️ Harden Runner
+        uses: step-security/harden-runner@91182cccc01eb5e619899d80e4e971d6181294a7
+        with:
+          egress-policy: audit
+
       - name: 📥 Checkout Repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
 
       - name: 🔧 Setup Node.js
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
+          cache: "npm"
 
       - name: 📦 Install Dependencies
         run: npm ci --no-audit
@@ -66,12 +71,22 @@ jobs:
       - name: 🧪 Unit Tests
         run: npm run test:coverage
 
+      - name: 📊 Verify Coverage Report
+        run: |
+          if [ ! -f "coverage/lcov.info" ]; then
+            echo "❌ Coverage report (lcov.info) not found!"
+            echo "📋 This indicates tests may not have run or coverage collection failed"
+            exit 1
+          fi
+          echo "✅ Coverage report found"
+          wc -l coverage/lcov.info
+
       - name: 🏗️ Build Check
         run: npm run build
 
       - name: 📊 Upload Test Results
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: test-results
           path: |
@@ -87,14 +102,19 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
+      - name: 🛡️ Harden Runner
+        uses: step-security/harden-runner@91182cccc01eb5e619899d80e4e971d6181294a7
+        with:
+          egress-policy: audit
+
       - name: 📥 Checkout Repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
 
       - name: 🔧 Setup Node.js
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
+          cache: "npm"
 
       - name: 📦 Install Dependencies
         run: npm ci --no-audit
@@ -103,12 +123,12 @@ jobs:
         run: npm audit --audit-level=moderate
 
       - name: 🔍 CodeQL Analysis
-        uses: github/codeql-action/init@v3
+        uses: github/codeql-action/init@34d76e91962e8cb2510669cd96bebd94e796a11f
         with:
           languages: javascript
 
       - name: 🔍 Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v3
+        uses: github/codeql-action/analyze@34d76e91962e8cb2510669cd96bebd94e796a11f
 
   # ============================================================================
   # DEPLOYMENT (If Needed)
@@ -121,11 +141,16 @@ jobs:
     if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
     environment: production
     steps:
+      - name: 🛡️ Harden Runner
+        uses: step-security/harden-runner@91182cccc01eb5e619899d80e4e971d6181294a7
+        with:
+          egress-policy: audit
+
       - name: 📥 Checkout Repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
 
       - name: 📦 Download Build Artifacts
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0
         with:
           name: test-results
           path: ./
@@ -135,4 +160,5 @@ jobs:
           echo "Deploying to production..."
           echo "Version: $(node -p "require('./package.json').version")"
           # Add your deployment logic here
+
 # Workflow cleanup completed

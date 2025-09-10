@@ -20,7 +20,7 @@ jobs:
           fetch-depth: 0
 
       - name: Setup Node.js
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: '20'
           cache: npm
@@ -30,7 +30,7 @@ jobs:
 
       - name: Find latest healing learnings artifact
         id: find-artifact
-        uses: actions/github-script@v8
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd
         with:
           script: |
             const owner = context.repo.owner;
@@ -79,7 +79,7 @@ jobs:
           fi
 
       - name: Create PR with changes
-        uses: peter-evans/create-pull-request@v7
+        uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e
         with:
           commit-message: "chore(ai): apply safe auto-fixes"
           title: "chore(ai): apply safe auto-fixes"
