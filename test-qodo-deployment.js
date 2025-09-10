@@ -97,10 +97,10 @@ console.log("\n📋 Testing Available Commands...");
 try {
     const interactiveContent = fs.readFileSync(path.join(__dirname, ".github/workflows/qodo-interactive.yml"), "utf8");
     const commandMatches = interactiveContent.match(/\/[a-zA-Z_]+/g) || [];
-    const uniqueCommands = [...new Set(commandMatches)].filter(cmd => !cmd.includes('command:'));
+    const uniqueCommands = [...new Set(commandMatches)].filter(cmd => !cmd.includes("command:"));
     const commandCount = uniqueCommands.length;
 
-    logTest(`Commands available: ${commandCount}`, commandCount >= 15, `Found ${commandCount} commands: ${uniqueCommands.join(', ')}`);
+    logTest(`Commands available: ${commandCount}`, commandCount >= 15, `Found ${commandCount} commands: ${uniqueCommands.join(", ")}`);
 } catch (error) {
     logTest("Command count validation", false, error.message);
 }
@@ -155,7 +155,7 @@ const deploymentChecks = [
     }},
     { name: "Test script executable", check: () => {
         try {
-            execSync("node test-qodo-config.js", { cwd: __dirname, stdio: 'pipe' });
+            execSync("node test-qodo-config.js", { cwd: __dirname, stdio: "pipe" });
             return true;
         } catch {
             return false;

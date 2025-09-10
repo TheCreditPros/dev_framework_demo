@@ -6,8 +6,8 @@
 // TODO: Add proper input validation
 function processUserData(data) {
   // Basic validation
-  if (!data || typeof data !== 'object') {
-    throw new Error('Invalid data provided');
+  if (!data || typeof data !== "object") {
+    throw new Error("Invalid data provided");
   }
 
   // TODO: Add comprehensive validation
@@ -21,7 +21,7 @@ function processUserData(data) {
 // TODO: Add error handling and logging
 function calculateMetrics(values) {
   if (!Array.isArray(values) || values.length === 0) {
-    return { error: 'Invalid input: expected non-empty array' };
+    return { error: "Invalid input: expected non-empty array" };
   }
 
   const sum = values.reduce((acc, val) => acc + val, 0);
