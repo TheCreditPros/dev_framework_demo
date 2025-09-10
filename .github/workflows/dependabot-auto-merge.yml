@@ -39,6 +39,20 @@ jobs:
             echo "📦 Regular dependency update"
           fi
 
+      - name: 📦 Install GitHub CLI
+        if: steps.pr-details.outputs.security_update == 'true'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gh
+
+      - name: 🔑 Authenticate GitHub CLI
+        if: steps.pr-details.outputs.security_update == 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "$GITHUB_TOKEN" | gh auth login --with-token
+          gh auth status
+
       - name: ⏳ Wait for SonarCloud Analysis
         if: steps.pr-details.outputs.security_update == 'true'
         run: echo "⏳ Waiting for check: 🔍 SonarCloud PR Analysis"
