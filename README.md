@@ -50,7 +50,7 @@ node scripts/validate-ci-consistency.cjs
 | **Lint + Prettier**       | ✅      | ci-simplified.yml          | ✅           |
 | **TypeScript checks**     | ✅      | ci-simplified.yml          | ✅           |
 | **Unit tests + coverage** | ✅      | ci-simplified.yml          | ✅           |
-| **SonarCloud (PRs)**      | ✅      | sonarcloud-pr-analysis.yml | ✅           |
+| **SonarCloud (PRs)**      | ✅      | sonarcloud-pr-analysis.yml | ❌           |
 | **AI code review**        | ✅      | ai-code-review.yml         | ❌           |
 | **E2E (Playwright)**      | ⚠️      | n/a (scaffold only)        | ❌           |
 | **Security scanning**     | ✅      | ci-simplified.yml          | ✅           |
