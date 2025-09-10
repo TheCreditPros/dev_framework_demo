@@ -55,6 +55,7 @@
     "ci:compliance": "node scripts-complex/security-scanner.js || echo \"Compliance check complete\"",
     "ci:full": "npm run ci:security && npm run test:coverage",
     "validate": "node validate-setup.js",
+    "validate-ci": "node scripts/validate-ci-consistency.cjs",
     "lint:ci:all": "eslint . --max-warnings=0",
     "lint:fix:ci": "eslint . --fix",
     "format:check": "prettier --check '**/*.{js,jsx,ts,tsx,json,md}'"
