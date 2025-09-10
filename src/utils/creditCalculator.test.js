@@ -89,9 +89,7 @@ describe("CreditCalculator", () => {
 
       const assessment = calculator.assessCreditRisk(creditReport);
       expect(assessment.riskLevel).toBe("MEDIUM"); // FICO ~675 is between 620-700
-      expect(assessment.recommendations).toContain(
-        "Monitor credit regularly"
-      );
+      expect(assessment.recommendations).toContain("Monitor credit regularly");
     });
 
     test("should assess high risk for high utilization", () => {
