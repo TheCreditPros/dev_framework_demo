@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 
 // Intentionally fragile selectors to trigger auto-heal learnings
-const BASE = process.env.PLAYWRIGHT_BASE_URL || "http://localhost:3000";
+const BASE = process.env.PLAYWRIGHT_BASE_URL || "http://localhost:5173";
 
 test.describe("Dirty Auto-Heal Validation", () => {
   test("uses outdated selectors to trigger learnings", async ({ page }) => {

@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 
 test.describe("Smoke Tests", () => {
   test("page loads without errors", async ({ page }) => {
-    await page.goto("/");
+    await page.goto("./");
 
     // Basic smoke test - page should load without throwing errors
     await expect(page.locator("body")).toBeVisible();
@@ -13,7 +13,7 @@ test.describe("Smoke Tests", () => {
   });
 
   test("page has basic structure", async ({ page }) => {
-    await page.goto("/");
+    await page.goto("./");
 
     // Check for basic page structure - at minimum should have a body
     await expect(page.locator("body")).toBeAttached();
@@ -24,7 +24,7 @@ test.describe("Smoke Tests", () => {
   });
 
   test("page responds to basic interactions", async ({ page }) => {
-    await page.goto("/");
+    await page.goto("./");
 
     // Try basic interactions that should work on most pages
     // This test is more about verifying Playwright setup than specific functionality

@@ -4,7 +4,7 @@ test.describe("Comprehensive Auto-Improvement Validation", () => {
   test("should auto-heal broken selectors and timeouts", async ({ page }) => {
     try {
       // Navigate to non-existent page to test error handling
-      await page.goto("http://localhost:3000/credit-dashboard");
+      await page.goto("./credit-dashboard");
 
       // Use old, fragile selectors that should be auto-healed
       await page.click("button[data-testid=submit-credit-application]");
@@ -36,7 +36,7 @@ test.describe("Comprehensive Auto-Improvement Validation", () => {
     page,
   }) => {
     try {
-      await page.goto("http://localhost:3000/credit-report");
+      await page.goto("./credit-report");
 
       // Test credit report loading with insufficient timeout
       await page.waitForSelector("[data-credit=report-container]", {

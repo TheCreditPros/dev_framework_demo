@@ -9,7 +9,7 @@ import { expect, test } from "@playwright/test";
 test.describe("Credit Score Component", () => {
   test("should render credit score display", async ({ page }) => {
     // For a real React app, you'd navigate to the page where the component is used
-    await page.goto("/");
+    await page.goto("./");
 
     // Wait for any dynamic content to load
     await page.waitForLoadState("networkidle");
@@ -50,7 +50,7 @@ test.describe("Credit Score Component", () => {
   });
 
   test("should handle credit score button interactions", async ({ page }) => {
-    await page.goto("/");
+    await page.goto("./");
     await page.waitForLoadState("networkidle");
 
     // Look for credit score related buttons
@@ -74,7 +74,7 @@ test.describe("Credit Score Component", () => {
   });
 
   test("should display credit score in expected format", async ({ page }) => {
-    await page.goto("/");
+    await page.goto("./");
     await page.waitForLoadState("networkidle");
 
     // Get all text content from the page and look for numeric patterns

@@ -35,7 +35,7 @@ async function globalSetup(config) {
     try {
       // Quick navigation to warm up the browser
       await page.goto(
-        process.env.PLAYWRIGHT_BASE_URL || "http://localhost:3000",
+        process.env.PLAYWRIGHT_BASE_URL || "http://localhost:5173",
         {
           waitUntil: "domcontentloaded",
           timeout: 5000,
