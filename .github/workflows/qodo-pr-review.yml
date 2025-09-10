@@ -1,0 +1,85 @@
+# Qodo AI PR Review
+# Automated AI-powered code review for pull requests
+
+name: 🤖 Qodo AI PR Review
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 'PR number to review'
+        required: false
+        type: string
+
+jobs:
+  qodo-review:
+    name: 🤖 AI Code Review
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' || github.event.inputs.pr_number != ''
+
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 🔧 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: 📦 Install Dependencies
+        run: npm ci
+
+      - name: 🔍 Run Tests
+        run: npm run test:ci
+
+      - name: 🤖 Qodo AI PR Review
+        uses: qodo-ai/pr-agent@main
+        env:
+          OPENAI_KEY: ${{ secrets.QODO_API_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_REVIEWER.EXTRA_INSTRUCTIONS: |
+            Focus on:
+            - Code quality and best practices
+            - Security vulnerabilities
+            - Performance optimizations
+            - TypeScript best practices
+            - Test coverage adequacy
+            - Documentation completeness
+
+            Provide specific, actionable feedback with code examples where possible.
+            Be constructive and helpful for developers to improve their code.
+
+      - name: 📊 Generate Coverage Report
+        run: |
+          if [ -f coverage/lcov.info ]; then
+            echo "## 📊 Test Coverage Report" >> $GITHUB_STEP_SUMMARY
+            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+            wc -l coverage/lcov.info >> $GITHUB_STEP_SUMMARY
+            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          fi
+
+  security-review:
+    name: 🔒 Security Analysis
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: 🔍 Security Audit
+        run: npm audit --audit-level=moderate
+
+      - name: 🤖 Security Review
+        uses: qodo-ai/pr-agent@main
+        env:
+          OPENAI_KEY: ${{ secrets.QODO_API_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          command: /security-review
