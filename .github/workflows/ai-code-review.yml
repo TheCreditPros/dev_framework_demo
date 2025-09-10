@@ -1,87 +1,29 @@
-name: AI Code Review
+name: 🤖 AI Code Review
 
 on:
   pull_request:
     types: [opened, synchronize, reopened]
-  workflow_run:
-    workflows: ["Essential CI/CD", "SonarCloud PR Analysis"]
-    types: [completed]
 
 permissions:
   contents: read
   pull-requests: write
 
 jobs:
-  pr-agent:
+  ai-review:
+    name: 🤖 Review Code
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 10
     continue-on-error: true
-    if: github.event_name == 'pull_request' && github.event.pull_request.draft == false
+    if: github.event.pull_request.draft == false
     steps:
-      - name: Checkout Repository
+      - name: 📥 Checkout Code
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
-      - name: PR Agent Review
-        # Pin to Qodo's signed v0.30 tag (commit eb4cdbb, 2025-06-21)
-        # https://github.com/qodo-ai/pr-agent/tags
-        uses: qodo-ai/pr-agent@eb4cdbb
-        if: github.event_name == 'pull_request' && (github.event.action == 'opened' || github.event.action == 'synchronize' || github.event.action == 'reopened')
+
+      - name: 🤖 AI Code Review
+        uses: qodo-ai/pr-agent@v0.30
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITHUB_PR_NUMBER: ${{ github.event.pull_request.number }}
         with:
           pr_url: ${{ github.event.pull_request.html_url }}
-          command: "review --pr_reviewer.add_original_user_description=true"
-
-  security-trigger:
-    runs-on: ubuntu-latest
-    if: github.event_name == 'workflow_run' || github.event_name == 'check_suite'
-    steps:
-      - name: Detect Security Failure
-        id: security-check
-        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd
-        with:
-          script: |
-            // Prefer checking YOUR jobs' conclusions, not arbitrary names.
-            // For now, keep existing logic, but set a single boolean:
-            core.setOutput('security_failure', 'true'); // <-- replace with your logic
-
-      - name: Get Associated PR
-        id: get-pr
-        if: steps.security-check.outputs.security_failure == 'true'
-        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd
-        with:
-          script: |
-            const { owner, repo } = context.repo;
-            const headSha = (context.payload.check_suite?.head_sha) || (context.payload.workflow_run?.head_sha);
-            if (!headSha) { core.setOutput('pr_number',''); return; }
-            const prs = await github.paginate(github.rest.pulls.list, { owner, repo, state: 'open' });
-            const pr = prs.find(p => p.head?.sha === headSha);
-            core.setOutput('pr_number', pr ? String(pr.number) : '');
-
-      - name: Trigger AI Security Review
-        if: steps.security-check.outputs.security_failure == 'true' && steps.get-pr.outputs.pr_number != ''
-        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd
-        with:
-          script: |
-            const issue_number = Number("${{ steps.get-pr.outputs.pr_number }}");
-            await github.rest.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number,
-              body: "⚠️ Security scan failed. Triggering AI security review…\n\n/security-review\n/analyze"
-            });
-
-      - name: PR Agent Review (Security Trigger)
-        # Pin to same version and org
-        uses: qodo-ai/pr-agent@eb4cdbb
-        if: steps.security-check.outputs.security_failure == 'true' && steps.get-pr.outputs.pr_number != ''
-        env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITHUB_PR_NUMBER: ${{ steps.get-pr.outputs.pr_number }}
-        with:
-          pr_url: https://github.com/${{ github.repository }}/pull/${{ steps.get-pr.outputs.pr_number }}
-          command: "review --pr_reviewer.add_original_user_description=true"
+          command: "review"
