@@ -21,7 +21,7 @@ jobs:
     name: 🤖 AI Code Review
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    if: github.event_name == 'pull_request' && github.event.pull_request.draft == false
+    if: false  # Temporarily disabled - needs proper configuration
 
     steps:
       - name: 📥 Checkout Repository
