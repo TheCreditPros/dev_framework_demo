@@ -76,3 +76,11 @@ ai-sdlc/
 # Test artifacts
 test-workflow.js
 test-setup-levels.sh
+
+# Playwright specific
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+/videos/
+/screenshots/

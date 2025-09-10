@@ -75,8 +75,9 @@ This framework includes **Qodo AI PR Agent** - a comprehensive open-source tool 
 **Qodo PR Agent is open source and does not require an API token!** 🎉
 
 **✨ Core Capabilities:**
+
 - ✅ **Automated PR Analysis** - Instant reviews on every PR
-- ✅ **Multiple AI Models** - GPT-4, GPT-3.5-turbo, Claude support
+- ✅ **Multiple AI Models** - GPT-5, GPT-4, GPT-3.5-turbo, Claude support
 - ✅ **Comprehensive Code Review** - Quality, security, performance, testing
 - ✅ **Interactive Commands** - Manual triggers for specific analyses
 - ✅ **Custom Configuration** - Tailored to your project's needs
@@ -88,36 +89,36 @@ This framework includes **Qodo AI PR Agent** - a comprehensive open-source tool 
 
 #### **🤖 Primary Review Commands**
 
-| Command | Description | Use Case |
-|---------|-------------|----------|
-| `/review` | Comprehensive code review | General PR analysis |
-| `/describe` | Generate/update PR description | Improve documentation |
-| `/improve` | Code improvement suggestions | Enhancement opportunities |
-| `/ask` | Answer questions about code | Clarify implementation |
-| `/update_changelog` | Auto-update CHANGELOG.md | Release management |
-| `/add_docs` | Documentation suggestions | Missing docs |
+| Command             | Description                    | Use Case                  |
+| ------------------- | ------------------------------ | ------------------------- |
+| `/review`           | Comprehensive code review      | General PR analysis       |
+| `/describe`         | Generate/update PR description | Improve documentation     |
+| `/improve`          | Code improvement suggestions   | Enhancement opportunities |
+| `/ask`              | Answer questions about code    | Clarify implementation    |
+| `/update_changelog` | Auto-update CHANGELOG.md       | Release management        |
+| `/add_docs`         | Documentation suggestions      | Missing docs              |
 
 #### **🔍 Specialized Analysis Commands**
 
-| Command | Description | Focus Area |
-|---------|-------------|------------|
-| `/security_review` | Security vulnerability analysis | Security issues |
-| `/performance_review` | Performance optimization analysis | Speed & efficiency |
-| `/test_review` | Test coverage and quality analysis | Testing adequacy |
-| `/similar_prs` | Find similar historical PRs | Context & patterns |
-| `/analyze` | Deep code analysis | Comprehensive assessment |
-| `/feedback` | General feedback on changes | Overall assessment |
-| `/checklist` | Generate review checklist | Structured review |
-| `/best_practices` | Best practice recommendations | Code standards |
+| Command               | Description                        | Focus Area               |
+| --------------------- | ---------------------------------- | ------------------------ |
+| `/security_review`    | Security vulnerability analysis    | Security issues          |
+| `/performance_review` | Performance optimization analysis  | Speed & efficiency       |
+| `/test_review`        | Test coverage and quality analysis | Testing adequacy         |
+| `/similar_prs`        | Find similar historical PRs        | Context & patterns       |
+| `/analyze`            | Deep code analysis                 | Comprehensive assessment |
+| `/feedback`           | General feedback on changes        | Overall assessment       |
+| `/checklist`          | Generate review checklist          | Structured review        |
+| `/best_practices`     | Best practice recommendations      | Code standards           |
 
 #### **🛠️ Utility Commands**
 
-| Command | Description | Purpose |
-|---------|-------------|---------|
-| `/help` | Display available commands | Command reference |
-| `/analyze_dependencies` | Dependency analysis | Package management |
-| `/check_performance` | Performance benchmarking | Optimization |
-| `/security_audit` | Security audit report | Compliance |
+| Command                 | Description                | Purpose            |
+| ----------------------- | -------------------------- | ------------------ |
+| `/help`                 | Display available commands | Command reference  |
+| `/analyze_dependencies` | Dependency analysis        | Package management |
+| `/check_performance`    | Performance benchmarking   | Optimization       |
+| `/security_audit`       | Security audit report      | Compliance         |
 
 ### **🎯 What AI Reviews Cover**
 
@@ -154,18 +155,42 @@ This framework includes **Qodo AI PR Agent** - a comprehensive open-source tool 
 
 ### **🚀 Setting Up AI Reviews**
 
-**Qodo PR is open source and does not require an API token!** 🎉
+**Qodo PR is open source and uses GPT-5 for advanced AI analysis!** 🚀
 
-**Setup is automatic:**
+**Setup Requirements:**
 
-- ✅ No API token needed - just enable the workflow
-- ✅ Uses GitHub's built-in token for authentication
-- ✅ Runs automatically on every PR
-- ✅ Analyzes entire codebase changes
+- ✅ **OpenAI API Key**: Configured at company level in GitHub secrets
+- ✅ **GitHub Token**: Uses built-in `${{ secrets.GITHUB_TOKEN }}`
+- ✅ **Automatic Execution**: Runs on every PR event
+- ✅ **GPT-5 Power**: Advanced AI model for comprehensive analysis
+
+**AI Capabilities:**
+
+- ✅ **Repository-Wide Context Analysis** - Understands entire codebase functionality
+- ✅ **Breakage Prevention Standards** - Ensures no breaking changes
+- ✅ Analyzes entire codebase changes with GPT-5
 - ✅ Posts detailed comments with specific line references
 - ✅ Provides actionable improvement suggestions
 - ✅ Includes security analysis and performance recommendations
 - ✅ Generates code quality scores and improvement plans
+- ✅ Uses most advanced AI model available (GPT-5 equivalent)
+
+### **🎯 Repository Context & Breakage Prevention**
+
+**Repository-Wide Context Analysis:**
+- Analyzes the entire repository structure and codebase
+- Understands the functions and purpose of existing code
+- Reviews how new changes integrate with existing functionality
+- Identifies potential conflicts with established patterns
+- Considers the overall architecture and design principles
+
+**Breakage Prevention Standards:**
+- NEVER suggests changes that could break existing functionality
+- Ensures backward compatibility is maintained
+- Verifies API contracts and interfaces remain intact
+- Checks for potential side effects on other components
+- Validates that existing tests continue to pass
+- Confirms no breaking changes to public APIs or interfaces
 
 ### **💬 AI Review Commands**
 

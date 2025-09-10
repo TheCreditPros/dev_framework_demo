@@ -10,7 +10,22 @@
     "test": "vitest",
     "test:ci": "vitest run --coverage",
     "lint": "eslint . --fix",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "e2e": "playwright test",
+    "e2e:ci": "playwright test --project=chromium --reporter=github,line",
+    "e2e:debug": "playwright test --debug",
+    "e2e:headed": "playwright test --headed",
+    "e2e:mobile": "playwright test --project=mobile-chrome",
+    "e2e:accessibility": "playwright test --project=accessibility",
+    "e2e:ui": "playwright test --ui",
+    "e2e:install": "playwright install",
+    "e2e:install-deps": "playwright install-deps",
+    "e2e:codegen": "playwright codegen",
+    "e2e:report": "playwright show-report",
+    "e2e:trace": "playwright show-trace",
+    "test:all": "npm run test:ci && npm run e2e:ci",
+    "test:smoke": "npm run e2e -- --grep @smoke",
+    "test:regression": "npm run e2e -- --grep @regression"
   },
   "keywords": [
     "ai-sdlc",

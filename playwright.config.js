@@ -1,32 +1,75 @@
 import { defineConfig, devices } from "@playwright/test";
 
-// Gate E2E by env var; disabled by default for template/demo
-const ENABLE_E2E = process.env.ENABLE_E2E === "true";
-const USE_WEBSERVER = ENABLE_E2E && !!process.env.PLAYWRIGHT_WEB_SERVER;
+const isCI = !!process.env.CI;
 
 export default defineConfig({
   testDir: "./tests/e2e",
+
+  // Simple but effective configuration
   fullyParallel: true,
-  forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 2 : 0,
-  workers: process.env.CI ? 1 : undefined,
-  reporter: [["html"]],
+  forbidOnly: isCI,
+  retries: isCI ? 2 : 0,
+  workers: isCI ? 1 : undefined,
+
+  // Multiple reporter formats for different needs
+  reporter: [
+    ["html", { outputFolder: "playwright-report", open: !isCI }],
+    ["json", { outputFile: "playwright-results.json" }],
+    ...(isCI ? [["github"]] : []),
+  ],
+
+  // Timeout configuration
+  timeout: 60000,
+  expect: {
+    timeout: 10000,
+  },
+
+  // Browser projects - start simple, expand as needed
+  projects: [
+    {
+      name: "chromium",
+      use: {
+        ...devices["Desktop Chrome"],
+        // Reasonable viewport for most applications
+        viewport: { width: 1280, height: 720 },
+      },
+    },
+    // Add mobile testing when your app supports it
+    {
+      name: "mobile-chrome",
+      use: {
+        ...devices["Pixel 7"],
+      },
+    },
+  ],
+
+  // Core browser configuration
   use: {
     baseURL: process.env.PLAYWRIGHT_BASE_URL || "http://localhost:3000",
-    trace: "on-first-retry",
+
+    // Essential timeouts
+    actionTimeout: 10000,
+    navigationTimeout: 30000,
+
+    // Debugging and reporting
     screenshot: "only-on-failure",
-    actionTimeout: 10000, // 10 seconds for actions
-    navigationTimeout: 30000, // 30 seconds for navigation
+    trace: isCI ? "retain-on-failure" : "on-first-retry",
+    video: isCI ? "retain-on-failure" : "off",
+
+    // Browser launch options
+    launchOptions: {
+      headless: isCI,
+      slowMo: process.env.PLAYWRIGHT_SLOW_MO
+        ? parseInt(process.env.PLAYWRIGHT_SLOW_MO)
+        : undefined,
+    },
   },
-  timeout: 60000, // 60 seconds total test timeout
-  projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
-  ...(USE_WEBSERVER
-    ? {
-        webServer: {
-          command: process.env.PLAYWRIGHT_WEB_SERVER,
-          url: process.env.PLAYWRIGHT_BASE_URL || "http://localhost:3000",
-          reuseExistingServer: !process.env.CI,
-        },
-      }
-    : {}),
+
+  // Simple web server configuration
+  webServer: {
+    command: "npm run dev",
+    url: process.env.PLAYWRIGHT_BASE_URL || "http://localhost:3000",
+    reuseExistingServer: !isCI,
+    timeout: 60000,
+  },
 });

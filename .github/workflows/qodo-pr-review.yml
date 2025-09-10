@@ -60,7 +60,25 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           OPENAI_KEY: ${{ secrets.OPENAI_API_KEY }}
+          PR_AGENT_CONFIG_PATH: ".pr_agent.toml"
           PR_REVIEWER.EXTRA_INSTRUCTIONS: |
+            CRITICAL REPOSITORY ANALYSIS REQUIREMENTS:
+
+            REPOSITORY-WIDE CONTEXT ANALYSIS:
+            - Analyze the entire repository structure and understand existing functionality
+            - Review how proposed changes integrate with the established codebase
+            - Identify potential conflicts with existing patterns and architecture
+            - Consider the impact on all existing features and components
+            - Understand the established coding standards and design principles
+
+            BREAKAGE PREVENTION STANDARDS:
+            - NEVER suggest changes that could break existing functionality
+            - Ensure backward compatibility is maintained at all times
+            - Verify API contracts and interfaces remain intact
+            - Check for potential side effects on other components
+            - Validate that existing tests continue to pass
+            - Confirm no breaking changes to public APIs or interfaces
+
             Focus on:
             - Code quality and best practices
             - Security vulnerabilities
@@ -79,6 +97,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           OPENAI_KEY: ${{ secrets.OPENAI_API_KEY }}
+          PR_AGENT_CONFIG_PATH: ".pr_agent.toml"
         with:
           command: "/describe"
 
@@ -87,6 +106,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           OPENAI_KEY: ${{ secrets.OPENAI_API_KEY }}
+          PR_AGENT_CONFIG_PATH: ".pr_agent.toml"
         with:
           command: "/improve"
 
@@ -95,6 +115,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           OPENAI_KEY: ${{ secrets.OPENAI_API_KEY }}
+          PR_AGENT_CONFIG_PATH: ".pr_agent.toml"
         with:
           command: "/update_changelog"
 
@@ -124,6 +145,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           OPENAI_KEY: ${{ secrets.OPENAI_API_KEY }}
+          PR_AGENT_CONFIG_PATH: ".pr_agent.toml"
         with:
           command: "/security_review"
 
@@ -141,6 +163,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           OPENAI_KEY: ${{ secrets.OPENAI_API_KEY }}
+          PR_AGENT_CONFIG_PATH: ".pr_agent.toml"
         with:
           command: "/performance_review"
 
@@ -158,6 +181,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           OPENAI_KEY: ${{ secrets.OPENAI_API_KEY }}
+          PR_AGENT_CONFIG_PATH: ".pr_agent.toml"
         with:
           command: "/test_review"
 
@@ -175,5 +199,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           OPENAI_KEY: ${{ secrets.OPENAI_API_KEY }}
+          PR_AGENT_CONFIG_PATH: ".pr_agent.toml"
         with:
           command: "/add_docs"
