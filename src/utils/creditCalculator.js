@@ -52,7 +52,8 @@ class CreditCalculator {
       return 0; // This might not be the best approach
     }
 
-    const utilization = (creditData.totalBalances / creditData.totalCreditLimit) * 100;
+    const utilization =
+      (creditData.totalBalances / creditData.totalCreditLimit) * 100;
 
     // Handle negative values (shouldn't happen but defensive programming)
     if (utilization < 0) {
@@ -71,21 +72,21 @@ class CreditCalculator {
     const ficoScore = this.calculateFicoScore(creditReport);
     const utilization = this.calculateUtilization(creditReport);
 
-    let riskLevel = 'LOW';
-    let recommendations = [];
+    let riskLevel = "LOW";
+    const recommendations = [];
 
     // Risk assessment logic
     if (ficoScore < 620) {
-      riskLevel = 'HIGH';
-      recommendations.push('Consider credit counseling');
+      riskLevel = "HIGH";
+      recommendations.push("Consider credit counseling");
     } else if (ficoScore < 700) {
-      riskLevel = 'MEDIUM';
-      recommendations.push('Monitor credit regularly');
+      riskLevel = "MEDIUM";
+      recommendations.push("Monitor credit regularly");
     }
 
     if (utilization > this.maxCreditUtilization) {
-      riskLevel = 'HIGH';
-      recommendations.push('Reduce credit utilization below 30%');
+      riskLevel = "HIGH";
+      recommendations.push("Reduce credit utilization below 30%");
     }
 
     // Missing: No logging for audit trail
@@ -97,7 +98,7 @@ class CreditCalculator {
       ficoScore,
       utilization,
       recommendations,
-      assessmentDate: new Date().toISOString()
+      assessmentDate: new Date().toISOString(),
     };
   }
 
@@ -114,10 +115,10 @@ class CreditCalculator {
     // Basic dispute processing - missing validation
     const result = {
       disputeId: disputeData.id,
-      status: 'PENDING',
+      status: "PENDING",
       responseDeadline: responseDeadline.toISOString(),
       bureau: disputeData.bureau,
-      reason: disputeData.reason
+      reason: disputeData.reason,
     };
 
     // Missing: State management
@@ -134,10 +135,17 @@ class CreditCalculator {
    */
   generateSummary(accounts) {
     // Simple aggregation - potential performance issues with large datasets
-    const totalBalances = accounts.reduce((sum, account) => sum + account.balance, 0);
-    const totalLimits = accounts.reduce((sum, account) => sum + account.limit, 0);
+    const totalBalances = accounts.reduce(
+      (sum, account) => sum + account.balance,
+      0
+    );
+    const totalLimits = accounts.reduce(
+      (sum, account) => sum + account.limit,
+      0
+    );
 
-    const utilization = totalLimits > 0 ? (totalBalances / totalLimits) * 100 : 0;
+    const utilization =
+      totalLimits > 0 ? (totalBalances / totalLimits) * 100 : 0;
 
     // Missing: Error handling for empty accounts array
     // Missing: Validation of account data structure
@@ -148,7 +156,7 @@ class CreditCalculator {
       totalBalances: Math.round(totalBalances * 100) / 100,
       totalLimits: Math.round(totalLimits * 100) / 100,
       overallUtilization: Math.round(utilization * 100) / 100,
-      generatedAt: new Date().toISOString()
+      generatedAt: new Date().toISOString(),
     };
   }
 }
