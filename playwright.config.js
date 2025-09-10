@@ -66,7 +66,7 @@ export default defineConfig({
   },
 
   // Simple web server configuration
-  webServer: {
+  webServer: isCI ? undefined : {
     command: "npm run dev",
     url: process.env.PLAYWRIGHT_BASE_URL || "http://localhost:3000",
     reuseExistingServer: !isCI,

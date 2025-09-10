@@ -39,8 +39,8 @@ console.log(`✅ Configured model: ${configuredModel}`);
 const hasRepositoryContext = configContent.includes("REPOSITORY-WIDE CONTEXT ANALYSIS");
 const hasBreakagePrevention = configContent.includes("BREAKAGE PREVENTION STANDARDS");
 
-console.log(`✅ Repository context analysis: ${hasRepositoryContext ? 'ENABLED' : 'MISSING'}`);
-console.log(`✅ Breakage prevention standards: ${hasBreakagePrevention ? 'ENABLED' : 'MISSING'}`);
+console.log(`✅ Repository context analysis: ${hasRepositoryContext ? "ENABLED" : "MISSING"}`);
+console.log(`✅ Breakage prevention standards: ${hasBreakagePrevention ? "ENABLED" : "MISSING"}`);
 
 if (!hasRepositoryContext || !hasBreakagePrevention) {
   console.error("❌ Repository context or breakage prevention instructions are missing!");
