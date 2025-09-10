@@ -7,13 +7,13 @@ on:
   workflow_dispatch: # Manual trigger only (for cleanup/migration)
     inputs:
       force_recreate:
-        description: 'DEPRECATED - Use sonarcloud-analysis.yml instead'
+        description: "DEPRECATED - Use sonarcloud-analysis.yml instead"
         required: false
         default: false
         type: boolean
 
 env:
-  NODE_VERSION: '20'
+  NODE_VERSION: "20"
 
 permissions:
   contents: read
@@ -134,7 +134,7 @@ jobs:
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
+          cache: "npm"
 
       - name: 📦 Install Dependencies
         run: npm ci --no-audit

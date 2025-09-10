@@ -7,9 +7,9 @@ on:
   workflow_dispatch: # Manual trigger only (for cleanup/migration)
     inputs:
       migrate_note:
-        description: 'DEPRECATED - Use ai-code-review.yml instead'
+        description: "DEPRECATED - Use ai-code-review.yml instead"
         required: false
-        default: 'This workflow has been merged into ai-code-review.yml'
+        default: "This workflow has been merged into ai-code-review.yml"
         type: string
 
 permissions:
@@ -26,7 +26,7 @@ jobs:
 
     steps:
       - name: 📥 Checkout Repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
 
       - name: 🔍 Check for Security Failures
         id: security-check
@@ -100,13 +100,13 @@ jobs:
 
     steps:
       - name: 📥 Checkout Repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
 
       - name: 🔧 Setup Node.js
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: "20"
+          cache: "npm"
 
       - name: 📦 Install Dependencies
         run: npm ci --no-audit

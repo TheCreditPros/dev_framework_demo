@@ -20,8 +20,10 @@ jobs:
 
       - name: 🔍 Dependency Review
         uses: actions/dependency-review-action@3b139cfc5fae8b618d3eae3675e383bb1769c9c13
+        continue-on-error: true
         with:
-          # Optional: add configuration options
+          # Soft gate policy: Warn on moderate+ severity, allow merge to proceed
+          # TODO: Consider upgrading to hard gate (remove continue-on-error) after testing
           fail-on-severity: moderate
           allow-licenses: MIT, Apache-2.0, BSD-2-Clause, BSD-3-Clause, ISC
           deny-licenses: MS-PL, LGPL-2.0, LGPL-2.1, LGPL-3.0

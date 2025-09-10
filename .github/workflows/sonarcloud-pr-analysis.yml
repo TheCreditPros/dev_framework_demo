@@ -14,7 +14,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  NODE_VERSION: '20'
+  NODE_VERSION: "20"
   SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
 permissions:
@@ -30,7 +30,7 @@ jobs:
 
     steps:
       - name: 📥 Checkout Repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
         with:
           fetch-depth: 0 # Shallow clones should be disabled for better analysis
 
@@ -57,7 +57,7 @@ jobs:
         uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
+          cache: "npm"
 
       - name: 📦 Install Dependencies
         run: npm ci --no-audit
@@ -110,6 +110,7 @@ jobs:
       - name: 📋 SonarCloud Status Summary
         if: always()
         run: |
+          echo "🔑 SonarCloud Project Key: ${{ steps.setup-project.outputs.project-key }}"
           if [ -z "${{ secrets.SONAR_TOKEN }}" ]; then
             echo "⚠️ SONAR_TOKEN not configured - SonarCloud analysis skipped"
             echo "📋 This is expected for forks and repositories without SonarCloud setup"
@@ -136,7 +137,6 @@ jobs:
         run: |
           echo "Checking SonarCloud Quality Gate status..."
           echo "✅ Quality Gate passed - PR can proceed"
-
 
       - name: 📊 Upload Coverage Reports
         if: always()

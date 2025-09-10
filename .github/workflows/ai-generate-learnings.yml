@@ -4,13 +4,13 @@ on:
   workflow_dispatch:
     inputs:
       base_url:
-        description: 'Base URL for E2E'
+        description: "Base URL for E2E"
         required: false
-        default: 'http://localhost:3000'
+        default: "http://localhost:3000"
       web_server:
-        description: 'Command to start web server'
+        description: "Command to start web server"
         required: false
-        default: 'node scripts/simple-static-server.js'
+        default: "node scripts/simple-static-server.js"
 
 permissions:
   contents: read
@@ -24,13 +24,13 @@ jobs:
       PLAYWRIGHT_WEB_SERVER: ${{ inputs.web_server }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
 
       - name: Setup Node.js
         uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
-          node-version: '20'
-          cache: npm
+          node-version: "20"
+          cache: "npm"
 
       - name: Cache Playwright browsers
         uses: actions/cache@0400d5f644dc74513175e3cd8d07132dd4860809
@@ -60,4 +60,3 @@ jobs:
             playwright-report/
           if-no-files-found: warn
           retention-days: 7
-

@@ -104,6 +104,7 @@ jobs:
       - name: 📋 SonarCloud Status Summary
         if: always()
         run: |
+          echo "🔑 SonarCloud Project Key: ${{ steps.setup-project.outputs.project-key }}"
           if [ -z "${{ secrets.SONAR_TOKEN }}" ]; then
             echo "⚠️ SONAR_TOKEN not configured - SonarCloud analysis skipped"
             echo "📋 This is expected for repositories without SonarCloud setup"

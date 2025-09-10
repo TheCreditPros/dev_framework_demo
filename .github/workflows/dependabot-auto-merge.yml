@@ -41,6 +41,10 @@ jobs:
 
       - name: ⏳ Wait for SonarCloud Analysis
         if: steps.pr-details.outputs.security_update == 'true'
+        run: echo "⏳ Waiting for check: 🔍 SonarCloud PR Analysis"
+
+      - name: ⏳ Wait for SonarCloud Analysis
+        if: steps.pr-details.outputs.security_update == 'true'
         uses: lewagon/wait-on-check-action@ccfb013c15c8afb7bf2b7c028fb74dc5a068cccc
         with:
           ref: ${{ github.event.pull_request.head.sha }}
@@ -49,6 +53,10 @@ jobs:
           wait-interval: 30
           allowed-conclusions: success,neutral,skipped,failure
         continue-on-error: true
+
+      - name: ⏳ Wait for Quality Gates
+        if: steps.pr-details.outputs.security_update == 'true'
+        run: echo "⏳ Waiting for check: 🚀 Essential CI/CD"
 
       - name: ⏳ Wait for Quality Gates
         if: steps.pr-details.outputs.security_update == 'true'
