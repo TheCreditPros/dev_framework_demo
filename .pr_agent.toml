@@ -29,6 +29,14 @@ maximal_review_effort = 5
 extra_instructions = """
 CRITICAL: This is a credit repair application subject to FCRA regulations.
 
+DEEP CODE LOGIC ANALYSIS REQUIREMENTS:
+1. Analyze function complexity and algorithmic efficiency
+2. Review data flow patterns and state management
+3. Examine error handling and edge case coverage
+4. Validate business logic implementation accuracy
+5. Assess code maintainability and technical debt
+6. Evaluate performance implications of architectural decisions
+
 MANDATORY COMPLIANCE CHECKS:
 1. FCRA Section 604 - Verify permissible purpose validation for all credit data access
 2. PII Protection - Ensure all SSN, DOB, and financial data is encrypted/masked
@@ -37,22 +45,34 @@ MANDATORY COMPLIANCE CHECKS:
 5. Access Control - Verify role-based permissions for credit data access
 
 CREDIT REPAIR DOMAIN VALIDATION:
-- FICO score calculations must enforce 300-850 range
-- Credit utilization calculations must handle edge cases
-- Dispute workflows must track 30-day investigation timelines
-- All credit bureau API calls must include retry logic and rate limiting
+- FICO score calculations must enforce 300-850 range with proper validation
+- Credit utilization calculations must handle edge cases (0%, 100%, negative values)
+- Dispute workflows must track 30-day investigation timelines with state management
+- All credit bureau API calls must include retry logic, rate limiting, and circuit breakers
+- Credit report generation must follow FCRA formatting requirements
+
+ARCHITECTURAL ANALYSIS REQUIREMENTS:
+- Review database schema design and relationship integrity
+- Analyze API endpoint design and RESTful compliance
+- Examine caching strategies and performance optimization
+- Validate microservice boundaries and data consistency
+- Assess scalability considerations and resource usage patterns
 
 SECURITY REQUIREMENTS:
-- No hardcoded credentials or API keys
-- All database queries must use parameterized statements
-- Input validation for all user-provided data
-- Proper authentication and authorization checks
+- No hardcoded credentials or API keys (use environment variables)
+- All database queries must use parameterized statements to prevent SQL injection
+- Input validation for all user-provided data with proper sanitization
+- Proper authentication and authorization checks with role-based access
+- Encryption at rest and in transit for sensitive credit data
+- Secure session management and CSRF protection
 
 TESTING REQUIREMENTS:
-- Minimum 80% test coverage for new code
-- Include edge cases and error scenarios
-- Mock external API calls (credit bureaus)
-- Validate FCRA compliance in test scenarios
+- Minimum 80% test coverage for new code with comprehensive scenarios
+- Include edge cases: null values, empty collections, boundary conditions
+- Mock external API calls (credit bureaus) to ensure test reliability
+- Validate FCRA compliance in test scenarios with legal requirement coverage
+- Integration tests for end-to-end credit repair workflows
+- Performance tests for high-volume credit report processing
 """
 
 [pr_reviewer.incremental]
@@ -141,14 +161,49 @@ Categorize changes as:
 [pr_analyze]
 enable_pr_analyze = true
 extra_instructions = """
-Analyze for:
-1. FCRA compliance risks
-2. Credit calculation accuracy
-3. Security vulnerabilities
-4. Performance bottlenecks
-5. Test coverage gaps
-6. Code maintainability
+Perform deep architectural and logic analysis:
+
+CODE LOGIC ANALYSIS:
+1. Algorithm complexity and computational efficiency
+2. Data flow patterns and state transitions
+3. Business rule implementation accuracy
+4. Error propagation and exception handling
+5. Concurrency and thread safety considerations
+6. Memory management and resource utilization
+
+ARCHITECTURAL ANALYSIS:
+1. Design pattern usage and appropriateness
+2. Dependency injection and coupling analysis
+3. Interface design and abstraction layers
+4. Data persistence and caching strategies
+5. API design and contract compliance
+6. Microservice communication patterns
+
+DOMAIN-SPECIFIC ANALYSIS:
+1. FCRA compliance risks and legal requirements
+2. Credit calculation accuracy and formula validation
+3. Security vulnerabilities in credit data handling
+4. Performance bottlenecks in credit report generation
+5. Test coverage gaps in business-critical workflows
+6. Code maintainability for regulatory compliance
+
+TECHNICAL DEBT ASSESSMENT:
+1. Code duplication and refactoring opportunities
+2. Legacy code integration and modernization needs
+3. Documentation completeness and accuracy
+4. Configuration management and environment handling
+5. Monitoring and observability implementation
+6. Scalability considerations and capacity planning
 """
+
+[pr_reviewer.logic_analysis]
+enable_deep_logic_analysis = true
+analyze_code_flow = true
+review_business_logic = true
+assess_algorithmic_complexity = true
+validate_data_integrity = true
+examine_error_handling_patterns = true
+review_performance_implications = true
 
 [pr_similar_issue]
 enable_pr_similar_issue = true
