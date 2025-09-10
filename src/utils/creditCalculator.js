@@ -161,4 +161,4 @@ class CreditCalculator {
   }
 }
 
-module.exports = CreditCalculator;
+export default CreditCalculator;
