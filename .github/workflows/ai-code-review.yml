@@ -1,15 +1,19 @@
 name: 🤖 Qodo PR-Agent Review
 
+# Temporarily disabled - needs proper configuration
+# on:
+#   pull_request:
+#     types: [opened, synchronize, reopened]
+#   issue_comment:
+#     types: [created, edited]
+#   check_suite:
+#     types: [completed]
+#   workflow_run:
+#     workflows: ["🔍 SonarCloud PR Analysis", "🚀 Essential CI/CD"]
+#     types: [completed]
+
 on:
-  pull_request:
-    types: [opened, synchronize, reopened]
-  issue_comment:
-    types: [created, edited]
-  check_suite:
-    types: [completed]
-  workflow_run:
-    workflows: ["🔍 SonarCloud PR Analysis", "🚀 Essential CI/CD"]
-    types: [completed]
+  workflow_dispatch: # Manual trigger only until properly configured
 
 permissions:
   contents: read
