@@ -1,0 +1,120 @@
+# Qodo AI Interactive Commands
+# Manual triggers for specific Qodo PR Agent tools
+
+name: 🤖 Qodo Interactive
+
+on:
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: "PR number to analyze"
+        required: true
+        type: string
+      command:
+        description: "Qodo command to execute"
+        required: true
+        type: choice
+        options:
+          - "/review"
+          - "/describe"
+          - "/improve"
+          - "/ask"
+          - "/update_changelog"
+          - "/add_docs"
+          - "/security_review"
+          - "/performance_review"
+          - "/test_review"
+          - "/similar_prs"
+          - "/help"
+          - "/analyze"
+          - "/feedback"
+          - "/checklist"
+          - "/best_practices"
+      custom_question:
+        description: "Custom question for /ask command (optional)"
+        required: false
+        type: string
+
+jobs:
+  interactive-command:
+    name: 🤖 Execute Qodo Command
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 🔧 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: 📦 Install Dependencies
+        run: npm ci
+
+      - name: 🤖 Execute Qodo Command
+        uses: qodo-ai/pr-agent@main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OPENAI_KEY: ${{ secrets.OPENAI_API_KEY }}
+          PR_AGENT_CONFIG_PATH: ".pr_agent.toml"
+        with:
+          command: ${{ github.event.inputs.command }}
+          question: ${{ github.event.inputs.custom_question || '' }}
+
+  batch-analysis:
+    name: 📊 Batch Analysis
+    runs-on: ubuntu-latest
+    if: github.event.inputs.command == '/analyze'
+
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 🔧 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: 📦 Install Dependencies
+        run: npm ci
+
+      - name: 🤖 Comprehensive Analysis
+        uses: qodo-ai/pr-agent@main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OPENAI_KEY: ${{ secrets.OPENAI_API_KEY }}
+        with:
+          command: "/review"
+
+      - name: 🤖 Code Improvements
+        uses: qodo-ai/pr-agent@main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OPENAI_KEY: ${{ secrets.OPENAI_API_KEY }}
+        with:
+          command: "/improve"
+
+      - name: 🤖 Security Analysis
+        uses: qodo-ai/pr-agent@main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OPENAI_KEY: ${{ secrets.OPENAI_API_KEY }}
+        with:
+          command: "/security_review"
+
+      - name: 🤖 Performance Analysis
+        uses: qodo-ai/pr-agent@main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OPENAI_KEY: ${{ secrets.OPENAI_API_KEY }}
+        with:
+          command: "/performance_review"

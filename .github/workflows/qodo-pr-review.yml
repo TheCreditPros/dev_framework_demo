@@ -1,5 +1,5 @@
 # Qodo AI PR Review
-# Automated AI-powered code review for pull requests
+# Comprehensive AI-powered code review for pull requests
 
 name: 🤖 Qodo AI PR Review
 
@@ -12,9 +12,26 @@ on:
         description: "PR number to review"
         required: false
         type: string
+      command:
+        description: "Qodo command to run"
+        required: false
+        default: "/review"
+        type: choice
+        options:
+          - "/review"
+          - "/describe"
+          - "/improve"
+          - "/ask"
+          - "/update_changelog"
+          - "/add_docs"
+          - "/security_review"
+          - "/performance_review"
+          - "/test_review"
+          - "/similar_prs"
+          - "/help"
 
 jobs:
-  qodo-review:
+  qodo-pr-review:
     name: 🤖 AI Code Review
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request' || github.event.inputs.pr_number != ''
@@ -38,10 +55,11 @@ jobs:
       - name: 🔍 Run Tests
         run: npm run test:ci
 
-      - name: 🤖 Qodo AI PR Review
+      - name: 🤖 Qodo AI Review
         uses: qodo-ai/pr-agent@main
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OPENAI_KEY: ${{ secrets.OPENAI_API_KEY }}
           PR_REVIEWER.EXTRA_INSTRUCTIONS: |
             Focus on:
             - Code quality and best practices
@@ -53,6 +71,32 @@ jobs:
 
             Provide specific, actionable feedback with code examples where possible.
             Be constructive and helpful for developers to improve their code.
+        with:
+          command: ${{ github.event.inputs.command || '/review' }}
+
+      - name: 🤖 Qodo AI Describe
+        uses: qodo-ai/pr-agent@main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OPENAI_KEY: ${{ secrets.OPENAI_API_KEY }}
+        with:
+          command: "/describe"
+
+      - name: 🤖 Qodo AI Improve
+        uses: qodo-ai/pr-agent@main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OPENAI_KEY: ${{ secrets.OPENAI_API_KEY }}
+        with:
+          command: "/improve"
+
+      - name: 📝 Update Changelog
+        uses: qodo-ai/pr-agent@main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OPENAI_KEY: ${{ secrets.OPENAI_API_KEY }}
+        with:
+          command: "/update_changelog"
 
       - name: 📊 Generate Coverage Report
         run: |
@@ -63,7 +107,7 @@ jobs:
             echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
           fi
 
-  security-review:
+  qodo-security-review:
     name: 🔒 Security Analysis
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
@@ -75,9 +119,61 @@ jobs:
       - name: 🔍 Security Audit
         run: npm audit --audit-level=moderate
 
-      - name: 🤖 Security Review
+      - name: 🤖 Qodo Security Review
         uses: qodo-ai/pr-agent@main
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OPENAI_KEY: ${{ secrets.OPENAI_API_KEY }}
         with:
-          command: /security-review
+          command: "/security_review"
+
+  qodo-performance-review:
+    name: 🚀 Performance Analysis
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: 🤖 Qodo Performance Review
+        uses: qodo-ai/pr-agent@main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OPENAI_KEY: ${{ secrets.OPENAI_API_KEY }}
+        with:
+          command: "/performance_review"
+
+  qodo-test-review:
+    name: 🧪 Test Analysis
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: 🤖 Qodo Test Review
+        uses: qodo-ai/pr-agent@main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OPENAI_KEY: ${{ secrets.OPENAI_API_KEY }}
+        with:
+          command: "/test_review"
+
+  qodo-documentation-review:
+    name: 📚 Documentation Review
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: 🤖 Qodo Documentation Review
+        uses: qodo-ai/pr-agent@main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OPENAI_KEY: ${{ secrets.OPENAI_API_KEY }}
+        with:
+          command: "/add_docs"

@@ -68,7 +68,56 @@ The project includes a simple CI/CD pipeline that runs on every push to main and
 
 ## 🤖 **AI-Powered PR Reviews**
 
-This framework includes **Qodo AI PR Agent** for automated, intelligent code reviews that provide detailed feedback directly in your pull requests.
+This framework includes **Qodo AI PR Agent** - a comprehensive open-source tool for automated, intelligent code reviews that provide detailed feedback directly in your pull requests.
+
+### **🚀 Qodo PR Agent Features**
+
+**Qodo PR Agent is open source and does not require an API token!** 🎉
+
+**✨ Core Capabilities:**
+- ✅ **Automated PR Analysis** - Instant reviews on every PR
+- ✅ **Multiple AI Models** - GPT-4, GPT-3.5-turbo, Claude support
+- ✅ **Comprehensive Code Review** - Quality, security, performance, testing
+- ✅ **Interactive Commands** - Manual triggers for specific analyses
+- ✅ **Custom Configuration** - Tailored to your project's needs
+- ✅ **GitHub Integration** - Native workflow and comment support
+- ✅ **Batch Processing** - Multiple analyses in sequence
+- ✅ **Self-Reflection** - AI validates its own suggestions
+
+### **📋 Available Qodo Commands**
+
+#### **🤖 Primary Review Commands**
+
+| Command | Description | Use Case |
+|---------|-------------|----------|
+| `/review` | Comprehensive code review | General PR analysis |
+| `/describe` | Generate/update PR description | Improve documentation |
+| `/improve` | Code improvement suggestions | Enhancement opportunities |
+| `/ask` | Answer questions about code | Clarify implementation |
+| `/update_changelog` | Auto-update CHANGELOG.md | Release management |
+| `/add_docs` | Documentation suggestions | Missing docs |
+
+#### **🔍 Specialized Analysis Commands**
+
+| Command | Description | Focus Area |
+|---------|-------------|------------|
+| `/security_review` | Security vulnerability analysis | Security issues |
+| `/performance_review` | Performance optimization analysis | Speed & efficiency |
+| `/test_review` | Test coverage and quality analysis | Testing adequacy |
+| `/similar_prs` | Find similar historical PRs | Context & patterns |
+| `/analyze` | Deep code analysis | Comprehensive assessment |
+| `/feedback` | General feedback on changes | Overall assessment |
+| `/checklist` | Generate review checklist | Structured review |
+| `/best_practices` | Best practice recommendations | Code standards |
+
+#### **🛠️ Utility Commands**
+
+| Command | Description | Purpose |
+|---------|-------------|---------|
+| `/help` | Display available commands | Command reference |
+| `/analyze_dependencies` | Dependency analysis | Package management |
+| `/check_performance` | Performance benchmarking | Optimization |
+| `/security_audit` | Security audit report | Compliance |
 
 ### **🎯 What AI Reviews Cover**
 
@@ -108,6 +157,7 @@ This framework includes **Qodo AI PR Agent** for automated, intelligent code rev
 **Qodo PR is open source and does not require an API token!** 🎉
 
 **Setup is automatic:**
+
 - ✅ No API token needed - just enable the workflow
 - ✅ Uses GitHub's built-in token for authentication
 - ✅ Runs automatically on every PR
