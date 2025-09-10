@@ -60,6 +60,7 @@ public/            # Static assets
 The project includes a simple CI/CD pipeline that runs on every push to main and pull requests.
 
 **Checks performed:**
+
 - Code linting with ESLint
 - TypeScript type checking
 - Unit tests with coverage
