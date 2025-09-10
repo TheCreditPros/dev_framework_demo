@@ -28,22 +28,18 @@ jobs:
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
 
       - name: 🤖 PR Agent Review
-        if: github.event.pull_request != null && (secrets.OPENAI_API_KEY != '' || secrets.ANTHROPIC_API_KEY != '')
+        if: github.event.pull_request != null
         uses: Codium-ai/pr-agent@v0.21
         env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           pr_url: ${{ github.event.pull_request.html_url }}
           command: "review"
 
       - name: 📝 PR Agent Describe
-        if: github.event.pull_request != null && (secrets.OPENAI_API_KEY != '' || secrets.ANTHROPIC_API_KEY != '')
+        if: github.event.pull_request != null
         uses: Codium-ai/pr-agent@v0.21
         env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           pr_url: ${{ github.event.pull_request.html_url }}
