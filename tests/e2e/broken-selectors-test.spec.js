@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 
 test.describe("Credit Score Display - Broken Selectors Test", () => {
   test("should display credit score with old selectors", async ({ page }) => {

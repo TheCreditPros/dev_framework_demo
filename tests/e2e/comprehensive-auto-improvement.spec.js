@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 
 test.describe("Comprehensive Auto-Improvement Validation", () => {
   test("should auto-heal broken selectors and timeouts", async ({ page }) => {
