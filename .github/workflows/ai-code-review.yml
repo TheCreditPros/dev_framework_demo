@@ -34,12 +34,12 @@ jobs:
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
 
       - name: 🤖 PR Agent Review
-        if: github.event_name == 'pull_request' && (github.event.action == 'opened' || github.event.action == 'synchronize' || github.event.action == 'reopened')
+        if: (github.event_name == 'pull_request' && (github.event.action == 'opened' || github.event.action == 'synchronize' || github.event.action == 'reopened')) || github.event_name == 'workflow_dispatch'
         uses: Codium-ai/pr-agent@main
         env:
           OPENAI_KEY: ""
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITHUB_PR_NUMBER: ${{ github.event.pull_request.number }}
+          GITHUB_PR_NUMBER: ${{ github.event.inputs.pr_number || github.event.pull_request.number }}
         with:
           command: "review --pr_reviewer.add_original_user_description=true"
 
