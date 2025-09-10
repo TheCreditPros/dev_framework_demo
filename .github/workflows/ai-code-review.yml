@@ -10,6 +10,12 @@ on:
   workflow_run:
     workflows: ["🔍 SonarCloud PR Analysis", "🚀 Essential CI/CD"]
     types: [completed]
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 'PR number to review'
+        required: false
+        type: string
 
 permissions:
   contents: read
