@@ -20,7 +20,7 @@ jobs:
   pr-agent:
     name: 🤖 AI Code Review
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     if: github.event_name == 'pull_request' && github.event.pull_request.draft == false
 
     steps:
@@ -29,7 +29,7 @@ jobs:
 
       - name: 🤖 PR Agent Review
         if: github.event.pull_request != null
-        uses: Codium-ai/pr-agent@v0.21
+        uses: Codium-ai/pr-agent@main
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -38,7 +38,7 @@ jobs:
 
       - name: 📝 PR Agent Describe
         if: github.event.pull_request != null
-        uses: Codium-ai/pr-agent@v0.21
+        uses: Codium-ai/pr-agent@main
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
