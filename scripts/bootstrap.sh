@@ -4,7 +4,8 @@
 # Idempotent setup for development environment
 # Version: 3.3.2
 
-set -euo pipefail
+set -Eeuo pipefail
+trap 'echo "❌ Bootstrap failed at line $LINENO"; exit 1' ERR
 
 # Colors for output
 RED='\033[0;31m'
@@ -48,12 +49,12 @@ check_node() {
 
     if ! command_exists node; then
         print_error "Node.js is not installed"
-        echo "Please install Node.js 18+ from https://nodejs.org/"
+        echo "Please install Node.js 20+ from https://nodejs.org/"
         exit 1
     fi
 
     local node_version=$(node -v | sed 's/v//')
-    local required_version="18.0.0"
+    local required_version="20.0.0"
 
     if [[ "$(printf '%s\n' "$required_version" "$node_version" | sort -V | head -n1)" != "$required_version" ]]; then
         print_error "Node.js version $node_version is too old. Required: $required_version+"
@@ -75,28 +76,45 @@ check_node() {
     fi
 }
 
-# Check npm and install dependencies
+# Check npm and install dependencies (idempotent)
 setup_dependencies() {
     print_info "Setting up dependencies..."
 
     cd "$PROJECT_ROOT"
 
     if [[ ! -f "package.json" ]]; then
-        print_error "package.json not found"
+        print_error "package.json not found in $PROJECT_ROOT"
+        print_error "Please ensure you're running this from the correct directory"
         exit 1
     fi
 
-    # Check if node_modules exists and is recent
-    if [[ -d "node_modules" ]] && [[ "node_modules" -nt "package-lock.json" ]]; then
+    # Verify package.json is valid JSON
+    if ! jq . package.json >/dev/null 2>&1; then
+        print_error "package.json is not valid JSON"
+        exit 1
+    fi
+
+    # Check if node_modules exists and package-lock.json is up to date
+    if [[ -d "node_modules" ]] && [[ -f "package-lock.json" ]] && [[ "node_modules" -nt "package-lock.json" ]]; then
         print_status "Dependencies are up to date"
     else
         print_info "Installing dependencies..."
-        npm ci --no-audit
-        print_status "Dependencies installed"
+        if ! npm ci --no-audit --prefer-offline; then
+            print_error "Failed to install dependencies"
+            print_info "Try: rm -rf node_modules package-lock.json && npm install"
+            exit 1
+        fi
+        print_status "Dependencies installed successfully"
+    fi
+
+    # Verify critical dependencies are available
+    if ! command_exists npx; then
+        print_error "npx is not available after npm install"
+        exit 1
     fi
 }
 
-# Setup Git hooks
+# Setup Git hooks (idempotent)
 setup_git_hooks() {
     print_info "Setting up Git hooks..."
 
@@ -110,19 +128,27 @@ setup_git_hooks() {
     # Install Husky hooks if they don't exist
     if [[ ! -d ".husky/_" ]]; then
         print_info "Installing Husky Git hooks..."
-        npx husky install
+        if ! npx husky install; then
+            print_error "Failed to install Husky hooks"
+            return 1
+        fi
         print_status "Husky hooks installed"
     else
         print_status "Git hooks already configured"
     fi
 
-    # Verify hooks are executable
-    if [[ -f ".husky/pre-commit" ]] && [[ ! -x ".husky/pre-commit" ]]; then
-        chmod +x .husky/pre-commit
-    fi
+    # Ensure hooks are executable
+    local hooks=(".husky/pre-commit" ".husky/commit-msg" ".husky/pre-push")
+    for hook in "${hooks[@]}"; do
+        if [[ -f "$hook" ]] && [[ ! -x "$hook" ]]; then
+            print_info "Making $hook executable..."
+            chmod +x "$hook"
+        fi
+    done
 
-    if [[ -f ".husky/commit-msg" ]] && [[ ! -x ".husky/commit-msg" ]]; then
-        chmod +x .husky/commit-msg
+    # Verify husky is properly configured
+    if ! npx husky --version >/dev/null 2>&1; then
+        print_warning "Husky may not be properly configured"
     fi
 }
 

@@ -55,6 +55,22 @@ node validate-setup.js
 | **⚡ Performance**        | ✅ Active | Build optimization        | Fast CI/CD (< 5 min)                   |
 | **📋 FCRA Compliance**    | ✅ Active | Custom rules              | Credit repair industry ready           |
 
+## 🔧 **What Actually Runs in This Repository**
+
+| Capability             | Enabled Here | Workflow File(s)            | Blocks Merge | Status      |
+| ---------------------- | ------------ | --------------------------- | ------------ | ----------- |
+| **ESLint + Prettier**  | ✅           | `ci-simplified.yml`         | ✅           | Active      |
+| **TypeScript Checks**  | ✅           | `ci-simplified.yml`         | ✅           | Active      |
+| **Unit Tests**         | ✅           | `ci-simplified.yml`         | ✅           | Active      |
+| **Test Coverage**      | ✅           | `ci-simplified.yml`         | ✅           | Active      |
+| **Security Audit**     | ✅           | `ci-simplified.yml`         | ✅           | Active      |
+| **CodeQL Analysis**    | ✅           | `ci-simplified.yml`         | ✅           | Active      |
+| **SonarCloud Quality** | ✅           | `sonarcloud-analysis.yml`   | ✅           | Active      |
+| **Dependabot Updates** | ✅           | `dependabot-auto-merge.yml` | ✅           | Active      |
+| **AI Code Review**     | ✅           | `ai-code-review.yml`        | ❌           | Active      |
+| **E2E Tests**          | ⚠️ scaffold  | n/a                         | ❌           | Config only |
+| **Performance Tests**  | ❌           | n/a                         | ❌           | Not enabled |
+
 ## 🛠️ **Core Features**
 
 ### **AI-Powered Development**
@@ -77,257 +93,122 @@ node validate-setup.js
 - **☁️ Any Platform**: GitHub, GitLab, BitBucket, Azure DevOps
 - **🐳 Any Environment**: Docker, Kubernetes, serverless, traditional hosting
 
-## 📋 **Available Commands**
+## 🛠️ **Available Commands**
 
-### **Development**
-
-```bash
-npm run dev              # Start development server
-npm run build            # Build for production
-npm run test             # Run tests
-npm run test:coverage    # Generate coverage report
-```
-
-### **Quality Assurance**
+### **Quick Commands**
 
 ```bash
-npm run quality-gates    # Run all quality checks
-npm run lint             # Check code style
-npm run lint:fix         # Auto-fix code style
-npm run format           # Check formatting
-npm run format:fix       # Auto-fix formatting
-npm run type-check       # TypeScript validation
-```
-
-### **Framework Management**
-
-```bash
+npm run quality-gates    # Run all checks (lint, test, type-check, build)
+npm run test:coverage    # Run tests with coverage
 ./scripts/bootstrap.sh   # Setup development environment
-./scripts/teardown.sh    # Clean uninstall
 node validate-setup.js   # Validate configuration
 ```
 
+[📚 **Full Command Reference**](docs/commands.md)
+
 ## 🚀 **Integration Guide**
 
-### **Step 1: Repository Setup**
+### **Quick Setup**
 
 ```bash
-# Add to your existing project
-git clone https://github.com/TheCreditPros/dev_framework_demo.git temp-framework
-cp -r temp-framework/.github ./
-cp -r temp-framework/scripts ./
-cp temp-framework/.* ./  # Copy config files
-rm -rf temp-framework
-
-# Run setup
+# Add to existing project
+git clone https://github.com/TheCreditPros/dev_framework_demo.git temp
+cp -r temp/.github ./ && cp -r temp/scripts ./
+cp temp/.* ./ && rm -rf temp
 ./scripts/bootstrap.sh
 ```
 
-### **Step 2: Configure Secrets**
+### **Required Secrets**
 
-Add to GitHub Repository Secrets:
+Add `SONAR_TOKEN` to GitHub Repository Secrets.
 
-```
-SONAR_TOKEN=your-sonarcloud-token
-```
-
-### **Step 3: Customize Configuration**
-
-Edit these files for your project:
-
-- `package.json` - Project name and scripts
-- `.pr_agent.toml` - AI review preferences
-- `sonar-project.properties` - Code analysis settings
-- `.github/CODEOWNERS` - Code review assignments
-
-### **Step 4: Verify Integration**
-
-```bash
-# Create a test PR
-git checkout -b test-framework
-echo "console.log('Framework test');" > test.js
-git add . && git commit -m "test: verify framework integration"
-git push origin test-framework
-
-# Check automation:
-# ✅ AI review comment appears
-# ✅ Quality gates run
-# ✅ SonarCloud analysis completes
-```
+[📚 **Complete Integration Guide**](docs/integration-guide.md)
 
 ## 🤖 **AI Features**
 
 ### **Qodo PR-Agent Commands**
 
-Use in PR comments:
-
-| Command            | Purpose                        | Example                                      |
-| ------------------ | ------------------------------ | -------------------------------------------- |
-| `/review`          | Comprehensive code review      | Analyzes code quality, security, performance |
-| `/describe`        | Generate/update PR description | Creates detailed description with impact     |
-| `/improve`         | Code improvement suggestions   | Specific actionable recommendations          |
-| `/security-review` | Security-focused analysis      | FCRA compliance, PII protection              |
-| `/analyze`         | Deep code analysis             | Architecture, patterns, best practices       |
+Use in PR comments: `/review`, `/describe`, `/improve`, `/security-review`, `/analyze`
 
 ### **Smart Automation**
 
 - **🔍 Auto-Review Triggers**: Security failures, dependency updates
 - **🛠️ Self-Healing Tests**: E2E tests automatically adapt to UI changes
 - **📊 Quality Insights**: Continuous code quality monitoring
-- **⚡ Performance Optimization**: Build and runtime improvements
 
-## 📊 **Metrics & Monitoring**
+[📚 **AI Features Guide**](docs/ai-features.md)
 
-### **Quality Metrics**
+## 📊 **Quality Metrics**
 
-- **Test Coverage**: 80%+ enforced
-- **Code Quality**: A-grade SonarCloud rating
-- **Security**: Zero high/critical vulnerabilities
-- **Performance**: < 5 minute CI/CD pipeline
+- **✅ Test Coverage**: 80%+ enforced
+- **✅ Code Quality**: A-grade SonarCloud rating
+- **✅ Security**: Zero high/critical vulnerabilities
+- **⚡ Performance**: < 5 minute CI/CD pipeline
+- **💰 Cost**: 97% reduction vs GPT-4
 
-### **Cost Optimization**
-
-- **97% cost reduction** vs GPT-4 (using GPT-4o-mini)
-- **Intelligent model selection** based on complexity
-- **Batch processing** for efficiency
-- **Rate limiting** and retry logic
+[📚 **Metrics Dashboard**](docs/metrics.md)
 
 ## 🔧 **Configuration Files**
 
-| File                       | Purpose            | Status                 |
-| -------------------------- | ------------------ | ---------------------- |
-| `.github/dependabot.yml`   | Dependency updates | ✅ Production-ready    |
-| `.github/workflows/`       | CI/CD automation   | ✅ Production-ready    |
-| `.pr_agent.toml`           | AI review settings | ✅ FCRA-compliant      |
-| `sonar-project.properties` | Code analysis      | ✅ Optimized           |
-| `eslint.config.mjs`        | Code linting       | ✅ TypeScript-ready    |
-| `vitest.config.js`         | Testing framework  | ✅ Coverage-enabled    |
-| `.editorconfig`            | Code formatting    | ✅ Team consistency    |
-| `.husky/`                  | Git hooks          | ✅ Quality enforcement |
+**Core Configs**: `.github/workflows/`, `eslint.config.mjs`, `vitest.config.js`, `.pr_agent.toml`, `sonar-project.properties`
+
+**Quality Gates**: `.husky/`, `.editorconfig`, `.github/dependabot.yml`
+
+[📚 **Configuration Guide**](docs/configuration.md)
 
 ## 📚 **Documentation**
 
-### **Getting Started**
+- [🚀 **Installation Guide**](docs/ci-cd-implementation-guide.md)
+- [🔧 **Configuration Guide**](docs/SECRETS_AND_CONFIGURATION.md)
+- [🤝 **Contributing Guide**](CONTRIBUTING.md)
+- [🔒 **Security Policy**](SECURITY.md)
+- [🧪 **E2E Testing**](docs/E2E-CONFIGURATION.md)
+- [📊 **SonarCloud Setup**](docs/sonarcloud-setup.md)
 
-- [Installation Guide](docs/ci-cd-implementation-guide.md)
-- [Configuration Guide](docs/SECRETS_AND_CONFIGURATION.md)
-- [Contributing Guide](CONTRIBUTING.md)
-- [Security Policy](SECURITY.md)
+[📚 **Full Documentation Index**](docs/README.md)
 
-### **Advanced Topics**
+## 🌟 **Impact**
 
-- [E2E Testing](docs/E2E-CONFIGURATION.md)
-- [SonarCloud Setup](docs/sonarcloud-setup.md)
-- [Production Readiness](docs/production-readiness-assessment.md)
+**Before**: Manual reviews (2-3 days), security vulnerabilities, inconsistent quality, high maintenance
 
-## 🌟 **Success Stories**
+**After**: Instant AI reviews, zero vulnerabilities, consistent quality, 90% less maintenance
 
-### **Before Framework**
+## 🚀 **Latest Features (v3.3.2)**
 
-- ❌ Manual code reviews taking 2-3 days
-- ❌ Security vulnerabilities in production
-- ❌ Inconsistent code quality
-- ❌ High maintenance overhead
+- **🧠 Smart Repository Detection**: Auto-adapts to test/production
+- **🔄 Idempotent Bootstrap**: Safe to run multiple times
+- **⚡ Enhanced Automation**: Concurrency control, timeout protection
+- **🤖 Advanced AI**: Cost-optimized models, FCRA compliance focus
+- **🔧 Self-Healing Tests**: Playwright tests adapt automatically
 
-### **After Framework**
-
-- ✅ Instant AI-powered code reviews
-- ✅ Zero security vulnerabilities
-- ✅ Consistent quality enforcement
-- ✅ 90% reduction in maintenance time
-
-## 🚀 **What's New in v3.3.2**
-
-### **✨ Enhanced Developer Experience**
-
-- **Smart Repository Detection**: Automatically adapts to test/production environments
-- **Idempotent Bootstrap**: Safe to run multiple times
-- **Comprehensive Teardown**: Clean uninstall option
-- **Better Error Messages**: Clear, actionable feedback
-
-### **🔧 Improved Automation**
-
-- **Concurrency Control**: Cancel redundant workflow runs
-- **Timeout Protection**: Prevent hanging processes
-- **Enhanced Caching**: Faster CI/CD performance
-- **Rate Limiting**: Built-in API protection
-
-### **🤖 Advanced AI Integration**
-
-- **Cost-Optimized Models**: GPT-4o-mini primary, Claude fallback
-- **FCRA Compliance Focus**: Credit repair industry validation
-- **Security Auto-Triggers**: Automatic reviews on security issues
-- **Self-Healing E2E Tests**: Playwright tests adapt automatically to UI changes
-- **Intelligent Batching**: Reduced API costs
-
-#### **Auto-Healing Test Features**
-
-- **Smart Selector Fallbacks**: Tests automatically find elements using alternative selectors
-- **Learning System**: Records successful fallback patterns for future use
-- **Credit Repair Utilities**: FCRA-compliant test helpers and validation
-- **Maintenance Reduction**: 90% reduction in test maintenance overhead
+[📋 **Changelog**](CHANGELOG.md)
 
 ## 🎯 **Perfect For**
 
-### **Credit Repair Companies**
-
-- ✅ FCRA compliance built-in
-- ✅ PII protection automation
-- ✅ Audit trail requirements
-- ✅ Industry-specific validation
-
-### **Development Teams**
-
-- ✅ Consistent code quality
-- ✅ Automated security scanning
-- ✅ AI-powered code reviews
-- ✅ Zero-configuration setup
-
-### **Startups & Enterprises**
-
-- ✅ Scales with team size
-- ✅ Cost-optimized AI features
-- ✅ Production-ready from day one
-- ✅ Universal technology support
+- **🏦 Credit Repair Companies**: FCRA compliance, PII protection, audit trails
+- **👥 Development Teams**: Consistent quality, automated security, AI reviews
+- **🚀 Startups & Enterprises**: Scales with team size, production-ready, cost-optimized
 
 ## 📞 **Support & Community**
 
-### **Getting Help**
-
-- 📖 **Documentation**: Comprehensive guides in `/docs`
-- 🏗️ **Architecture**: [Consolidation Summary](docs/ARCHITECTURE_CONSOLIDATION.md)
-- 🚀 **Deployment**: [Validation Report](DEPLOYMENT_VALIDATION_REPORT.md)
-- 🧪 **Installation Testing**: [Test Results](test-installation/FRAMEWORK_INSTALLATION_TEST_REPORT.md)
-- 🎯 **New Repository Setup**: [Deployment Guide](NEW_REPOSITORY_DEPLOYMENT_GUIDE.md)
-- 🔬 **Jest Elimination**: [Complete Report](JEST_ELIMINATION_REPORT.md)
-- 🔍 **Pre-Deployment**: [Validation Report](PRE_DEPLOYMENT_VALIDATION_REPORT.md)
-- 🚀 **Deployment**: [Execution Plan](DEPLOYMENT_EXECUTION_PLAN.md)
 - 🐛 **Issues**: [GitHub Issues](https://github.com/TheCreditPros/dev_framework_demo/issues)
 - 💬 **Discussions**: [GitHub Discussions](https://github.com/TheCreditPros/dev_framework_demo/discussions)
+- 📖 **Documentation**: [Full Docs Index](docs/README.md)
 - 🔒 **Security**: security@thecreditpros.com
-
-### **Contributing**
-
-We welcome contributions! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
-
-### **License**
-
-MIT License - see [LICENSE](LICENSE) for details.
 
 ---
 
-## 🎉 **Ready to Transform Your Development Workflow?**
+## 🎉 **Get Started**
 
 ```bash
-# Get started in 2 minutes
 git clone https://github.com/TheCreditPros/dev_framework_demo.git your-project
 cd your-project
 ./scripts/bootstrap.sh
 npm run quality-gates
 ```
 
-**🚀 Your AI-powered development environment is ready!**
+**🚀 Ready in 2 minutes!**
 
 ---
 
-_Built with ❤️ by [The Credit Pros Development Team](https://github.com/TheCreditPros) for the credit repair industry and beyond._
+_Built by [The Credit Pros](https://github.com/TheCreditPros) • MIT License_

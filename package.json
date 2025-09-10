@@ -27,7 +27,7 @@
     "examples:extract-laravel": "node scripts/relocate-laravel-example.js",
     "ai:analyze": "node scripts-complex/api-process-analyzer.js",
     "framework:validate": "node validate-setup.js",
-    "framework:setup": "./setup.sh",
+    "framework:setup": "./scripts/bootstrap.sh",
     "pr:review": "pr-agent --pr_url=${PR_URL} review",
     "pr:describe": "pr-agent --pr_url=${PR_URL} describe",
     "pr:improve": "pr-agent --pr_url=${PR_URL} improve",
@@ -40,7 +40,8 @@
     "pr:compliance-review": "pr-agent --pr_url=${PR_URL} review --extra_instructions=\"Focus on FCRA compliance requirements, audit trails, and regulatory adherence\"",
     "test:ai-pr-review": "node test-ai-pr-review.js",
     "quality-gates": "./scripts/local-quality-gates.sh",
-    "pre-push": "npm run quality-gates",
+    "validate-ci": "node scripts/validate-ci-consistency.cjs",
+    "pre-push": "npm run validate-ci",
     "pr:dirty": "node scripts/create-dirty-pr.js --type=mixed --open-pr",
     "pr:dirty:lint": "node scripts/create-dirty-pr.js --type=lint --open-pr",
     "pr:dirty:e2e": "node scripts/create-dirty-pr.js --type=e2e --open-pr",
@@ -113,7 +114,7 @@
   },
   "homepage": "https://github.com/TheCreditPros/dev_framework_demo#readme",
   "engines": {
-    "node": ">=18"
+    "node": ">=20"
   },
   "dependencies": {
     "debug": "^4.3.4",
