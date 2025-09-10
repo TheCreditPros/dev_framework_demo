@@ -1,9 +1,9 @@
 [config]
-# Model configuration for Qodo PR Agent - GPT-5 (maps to GPT-4o, most advanced available)
+# Model configuration for Qodo PR Agent - GPT-4o (Company-level API key)
 model = "gpt-4o"  # GPT-5 equivalent - most advanced available model
 model_turbo = "gpt-4o"  # GPT-5 turbo equivalent
 fallback_models = ["gpt-4o-mini", "gpt-4-turbo", "gpt-3.5-turbo"]
-# Note: GPT-5 maps to GPT-4o as it's the most advanced available model
+# Note: OpenAI API key configured at GitHub organization level
 verbosity_level = 1
 use_repo_settings_file = true
 enable_help_text = true
@@ -11,7 +11,7 @@ publish_output = true
 publish_output_progress = true
 
 [github]
-# GitHub integration settings
+# GitHub integration settings - OpenAI API key configured at organization level
 deployment_type = "user"
 ratelimit_retries = 5
 base_url = "https://api.github.com"

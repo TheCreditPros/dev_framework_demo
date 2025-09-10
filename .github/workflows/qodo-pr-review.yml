@@ -61,6 +61,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           OPENAI_KEY: ${{ secrets.OPENAI_API_KEY }}
           PR_AGENT_CONFIG_PATH: ".pr_agent.toml"
+          OPENAI_API_BASE: "https://api.openai.com/v1"
           PR_REVIEWER.EXTRA_INSTRUCTIONS: |
             CRITICAL REPOSITORY ANALYSIS REQUIREMENTS:
 
@@ -98,6 +99,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           OPENAI_KEY: ${{ secrets.OPENAI_API_KEY }}
           PR_AGENT_CONFIG_PATH: ".pr_agent.toml"
+          OPENAI_API_BASE: "https://api.openai.com/v1"
         with:
           command: "/describe"
 
@@ -107,6 +109,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           OPENAI_KEY: ${{ secrets.OPENAI_API_KEY }}
           PR_AGENT_CONFIG_PATH: ".pr_agent.toml"
+          OPENAI_API_BASE: "https://api.openai.com/v1"
         with:
           command: "/improve"
 
@@ -116,6 +119,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           OPENAI_KEY: ${{ secrets.OPENAI_API_KEY }}
           PR_AGENT_CONFIG_PATH: ".pr_agent.toml"
+          OPENAI_API_BASE: "https://api.openai.com/v1"
         with:
           command: "/update_changelog"
 
@@ -146,6 +150,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           OPENAI_KEY: ${{ secrets.OPENAI_API_KEY }}
           PR_AGENT_CONFIG_PATH: ".pr_agent.toml"
+          OPENAI_API_BASE: "https://api.openai.com/v1"
         with:
           command: "/security_review"
 
@@ -164,6 +169,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           OPENAI_KEY: ${{ secrets.OPENAI_API_KEY }}
           PR_AGENT_CONFIG_PATH: ".pr_agent.toml"
+          OPENAI_API_BASE: "https://api.openai.com/v1"
         with:
           command: "/performance_review"
 
@@ -182,6 +188,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           OPENAI_KEY: ${{ secrets.OPENAI_API_KEY }}
           PR_AGENT_CONFIG_PATH: ".pr_agent.toml"
+          OPENAI_API_BASE: "https://api.openai.com/v1"
         with:
           command: "/test_review"
 
@@ -200,5 +207,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           OPENAI_KEY: ${{ secrets.OPENAI_API_KEY }}
           PR_AGENT_CONFIG_PATH: ".pr_agent.toml"
+          OPENAI_API_BASE: "https://api.openai.com/v1"
         with:
           command: "/add_docs"
