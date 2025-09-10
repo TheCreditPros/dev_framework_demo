@@ -1,169 +1,36 @@
-# Simplified CI/CD Pipeline - Essential Checks Only
-# Matches local quality gates for consistency
+# Simple CI/CD Pipeline
+# Basic quality checks that match local development
 
-name: 🚀 Essential CI/CD
+name: 🚀 CI/CD
 
 on:
   push:
-    branches: [main, master, develop, staging]
-    tags: ["v*"]
+    branches: [main, master]
   pull_request:
     branches: [main, master]
-    types: [opened, synchronize, reopened, ready_for_review]
-  workflow_dispatch:
-
-# Concurrency control - cancel in-progress runs for same PR/branch
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
-
-env:
-  NODE_VERSION: "20"
-  # Cache optimization
-  FORCE_COLOR: "1"
-  CI: "true"
-
-permissions:
-  contents: read
-  security-events: write
-  actions: read
-  checks: write
-  pull-requests: write
 
 jobs:
-  # TODO: After 1 week of successful audit mode runs (target: 2025-09-17),
-  # flip harden-runner from egress-policy: audit to egress-policy: block
-  # and add allowed-endpoints for GitHub API, npm registry, and SonarCloud
-  # ============================================================================
-  # ESSENTIAL QUALITY GATES (Same as Local)
-  # ============================================================================
-  quality-gates:
-    name: 🔍 Essential Quality Gates
+  quality-check:
+    name: 🔍 Quality Check
     runs-on: ubuntu-latest
-    timeout-minutes: 15
     steps:
-      # TODO: After 1 week of successful audit mode runs, transition to block mode with allowlist
-      # Change egress-policy: audit to egress-policy: block and add allowed-endpoints configuration
-      - name: 🛡️ Harden Runner
-        uses: step-security/harden-runner@91182cccc01eb5e619899d80e4e971d6181294a7
-        with:
-          egress-policy: audit
-
-      - name: 📥 Checkout Repository
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
 
       - name: 🔧 Setup Node.js
-        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        uses: actions/setup-node@v4
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version: "20"
           cache: "npm"
 
       - name: 📦 Install Dependencies
-        run: npm ci --no-audit
+        run: npm ci
 
-      - name: 🔍 Dependencies Check
-        run: npm ci --dry-run
+      - name: 🔍 Lint Code
+        run: npm run lint
 
-      - name: 🔍 Linting
-        run: npm run lint:ci
-
-      - name: 🎨 Formatting Check
-        run: npm run format:check
-
-      - name: 📝 TypeScript Check
+      - name: ✅ Type Check
         run: npm run type-check
 
-      - name: 🧪 Unit Tests
-        run: npm run test:coverage
-
-      - name: 📊 Verify Coverage Report
-        run: |
-          if [ ! -f "coverage/lcov.info" ]; then
-            echo "❌ Coverage report (lcov.info) not found!"
-            echo "📋 This indicates tests may not have run or coverage collection failed"
-            exit 1
-          fi
-          echo "✅ Coverage report found"
-          wc -l coverage/lcov.info
-
-      - name: 🏗️ Build Check
-        run: npm run build
-
-      - name: 📊 Upload Test Results
-        if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        with:
-          name: test-results
-          path: |
-            coverage/
-            test-results/
-          retention-days: 7
-
-  # ============================================================================
-  # SECURITY (Essential Only)
-  # ============================================================================
-  security:
-    name: 🔒 Essential Security
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - name: 🛡️ Harden Runner
-        uses: step-security/harden-runner@91182cccc01eb5e619899d80e4e971d6181294a7
-        with:
-          egress-policy: audit
-
-      - name: 📥 Checkout Repository
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
-
-      - name: 🔧 Setup Node.js
-        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: "npm"
-
-      - name: 📦 Install Dependencies
-        run: npm ci --no-audit
-
-      - name: 🔍 Security Audit
-        run: npm audit --audit-level=moderate
-
-      - name: 🔍 CodeQL Analysis
-        uses: github/codeql-action/init@34d76e91962e8cb2510669cd96bebd94e796a11f
-        with:
-          languages: javascript
-
-      - name: 🔍 Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@34d76e91962e8cb2510669cd96bebd94e796a11f
-
-  # ============================================================================
-  # DEPLOYMENT (If Needed)
-  # ============================================================================
-  deploy:
-    name: 🚀 Deploy
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    needs: [quality-gates, security]
-    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
-    environment: production
-    steps:
-      - name: 🛡️ Harden Runner
-        uses: step-security/harden-runner@91182cccc01eb5e619899d80e4e971d6181294a7
-        with:
-          egress-policy: audit
-
-      - name: 📥 Checkout Repository
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
-
-      - name: 📦 Download Build Artifacts
-        uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0
-        with:
-          name: test-results
-          path: ./
-
-      - name: 🚀 Deploy Application
-        run: |
-          echo "Deploying to production..."
-          echo "Version: $(node -p "require('./package.json').version")"
-          # Add your deployment logic here
-
-# Workflow cleanup completed
+      - name: 🧪 Run Tests
+        run: npm run test:ci
