@@ -30,18 +30,18 @@ jobs:
       - name: Start dev server
         run: npm run dev &
         env:
-          PLAYWRIGHT_BASE_URL: http://localhost:3000
+          PLAYWRIGHT_BASE_URL: http://localhost:5173
 
       - name: Wait for server to be ready
         run: |
-          timeout 30 bash -c 'until curl -f http://localhost:3000; do sleep 1; done'
+          timeout 30 bash -c 'until curl -f http://localhost:5173; do sleep 1; done'
         env:
-          PLAYWRIGHT_BASE_URL: http://localhost:3000
+          PLAYWRIGHT_BASE_URL: http://localhost:5173
 
       - name: Run Playwright tests
         run: npm run e2e:ci
         env:
-          PLAYWRIGHT_BASE_URL: http://localhost:3000
+          PLAYWRIGHT_BASE_URL: http://localhost:5173
 
       - name: Upload test results
         uses: actions/upload-artifact@v4
