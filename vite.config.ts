@@ -6,6 +6,9 @@ export default defineConfig({
   publicDir: "public",
   build: {
     outDir: "dist",
+    rollupOptions: {
+      input: "index.html",
+    },
   },
   server: {
     host: true,
