@@ -13,6 +13,16 @@ class GitHubActionsMonitor {
     this.repo = this.getRepoInfo();
     this.token = process.env.GITHUB_TOKEN;
     this.interval = 30000; // 30 seconds
+    this.intervalId = null;
+    this.timeout = parseInt(process.env.MONITOR_TIMEOUT) || 300000; // 5 minutes default
+    this.startTime = Date.now();
+  }
+
+  stop() {
+    if (this.intervalId) {
+      clearInterval(this.intervalId);
+      this.intervalId = null;
+    }
   }
 
   getRepoInfo() {
@@ -158,8 +168,16 @@ class GitHubActionsMonitor {
     // Initial display
     await this.displayWorkflowRuns();
 
-    // Set up interval monitoring
-    setInterval(async () => {
+    // Set up interval monitoring with timeout
+    this.intervalId = setInterval(async () => {
+      // Check if timeout has been exceeded
+      if (Date.now() - this.startTime > this.timeout) {
+        console.log(`\n⏰ Monitor timeout reached after ${this.timeout / 1000} seconds`);
+        console.log("👋 Stopping GitHub Actions monitor...");
+        this.stop();
+        return;
+      }
+
       await this.displayWorkflowRuns();
     }, this.interval);
   }
@@ -185,6 +203,13 @@ if (require.main === module) {
   // Handle graceful shutdown
   process.on("SIGINT", () => {
     console.log("\n👋 Stopping GitHub Actions monitor...");
+    monitor.stop();
+    process.exit(0);
+  });
+
+  process.on("SIGTERM", () => {
+    console.log("\n👋 Stopping GitHub Actions monitor...");
+    monitor.stop();
     process.exit(0);
   });
 }
