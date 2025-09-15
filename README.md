@@ -1,6 +1,6 @@
 # 🚀 Simple Dev Framework
 
-> **Basic TypeScript development framework with essential tooling**
+> **Basic TypeScript development framework with essential tooling - Updated 2025**
 
 [![GitHub Actions](https://img.shields.io/github/actions/workflow/status/your-username/your-repo-name/ci-simplified.yml?branch=main)](https://github.com/your-username/your-repo-name/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
