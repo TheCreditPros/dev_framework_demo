@@ -1,0 +1,81 @@
+name: 🔍 SonarCloud Main Branch Analysis
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+concurrency:
+  group: sonarcloud-main-${{ github.sha }}
+  cancel-in-progress: true
+
+jobs:
+  sonarcloud:
+    name: 🔍 SonarCloud Analysis
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 🔧 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: 📦 Install dependencies
+        run: npm ci
+
+      - name: 🔍 Run tests with coverage
+        run: npm run test:coverage
+
+      - name: 🔍 Setup SonarCloud Project
+        id: setup-project
+        run: |
+          # Extract organization and project key from repository
+          REPO="${{ github.repository }}"
+          ORG="${REPO%/*}"
+          PROJECT_KEY="${REPO/\//_}"
+
+          echo "organization=$ORG" >> $GITHUB_OUTPUT
+          echo "project-key=$PROJECT_KEY" >> $GITHUB_OUTPUT
+
+      - name: 🔍 Run SonarCloud Analysis
+        id: sonar-analysis
+        if: env.SONAR_TOKEN != ''
+        continue-on-error: true
+        uses: SonarSource/sonarqube-scan-action@v5.3.1
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ vars.SONAR_HOST_URL }}
+        with:
+          args: >
+            -Dsonar.organization=${{ steps.setup-project.outputs.organization }}
+            -Dsonar.projectKey=${{ steps.setup-project.outputs.project-key }}
+            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
+            -Dsonar.typescript.lcov.reportPaths=coverage/lcov.info
+            -Dsonar.coverageReportPaths=coverage/lcov.info
+            -Dsonar.coverage.exclusions=**/*.test.js,**/*.test.ts,**/*.spec.js,**/*.spec.ts,**/node_modules/**,**/dist/**,**/build/**
+            -Dsonar.qualitygate.wait=false
+            -Dsonar.qualitygate.timeout=300
+            -Dsonar.verbose=false
+
+      - name: 📋 SonarCloud Status Summary
+        if: always()
+        run: |
+          if [ -z "${{ secrets.SONAR_TOKEN }}" ]; then
+            echo "⚠️ SONAR_TOKEN not configured - SonarCloud analysis skipped"
+            echo "📋 This is expected for repositories without SonarCloud setup"
+            echo "🔍 For full analysis, configure SONAR_TOKEN in repository secrets"
+            echo "✅ Build continues without SonarCloud analysis"
+          elif [[ "${{ steps.sonar-analysis.outcome }}" == "failure" ]]; then
+            echo "⚠️ SonarCloud analysis failed - project may not exist yet"
+            echo "📋 This can happen when the SonarCloud project hasn't been created"
+            echo "🔍 Create the project at: https://sonarcloud.io/projects/create"
+            echo "✅ Build continues without blocking on SonarCloud"
+          else
+            echo "✅ SonarCloud analysis completed successfully"
+          fi
