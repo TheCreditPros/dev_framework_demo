@@ -3,11 +3,12 @@ import { defineConfig } from "vite";
 
 export default defineConfig({
   plugins: [react()],
-  root: ".",
+  publicDir: "public",
   build: {
     outDir: "dist",
-    rollupOptions: {
-      input: "public/index.html",
-    },
+  },
+  server: {
+    host: true,
+    port: 5173,
   },
 });
