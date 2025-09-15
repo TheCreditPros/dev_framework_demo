@@ -41,6 +41,18 @@ jobs:
           echo "Checking if server is responding..."
           if curl -s --max-time 10 http://localhost:5173 > /dev/null; then
             echo "✅ Server is responding"
+
+            # Check if the server is serving the correct HTML content
+            echo "Checking if server is serving HTML with root element..."
+            HTML_CONTENT=$(curl -s http://localhost:5173)
+            if echo "$HTML_CONTENT" | grep -q "id=\"root\""; then
+              echo "✅ Server is serving correct HTML with root element"
+            else
+              echo "❌ Server is not serving HTML with root element"
+              echo "HTML content received:"
+              echo "$HTML_CONTENT" | head -20
+              exit 1
+            fi
           else
             echo "❌ Server is not responding, starting in foreground for debugging..."
             timeout 30 npm run dev || echo "Server startup failed"
