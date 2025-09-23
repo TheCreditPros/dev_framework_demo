@@ -47,7 +47,7 @@ jobs:
         id: sonar-analysis
         if: env.SONAR_TOKEN != ''
         continue-on-error: true
-        uses: SonarSource/sonarqube-scan-action@v5.3.1
+        uses: SonarSource/sonarqube-scan-action@v6.0.0
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ vars.SONAR_HOST_URL }}
